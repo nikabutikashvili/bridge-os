@@ -231,7 +231,7 @@ function TrafficCell({
 }: {
   readonly traffic: BridgePortfolioItem["traffic"];
 }): React.ReactElement {
-  if (traffic === null || traffic.dailyTraffic === null) {
+  if (traffic?.dailyTraffic == null) {
     return <span className="font-mono text-muted-foreground">—</span>;
   }
   return (
@@ -275,7 +275,7 @@ function ConditionTrend({
         title={`Improving${delta ? ` ${delta}` : ""}`}
       >
         <ArrowDownRight aria-hidden="true" size={11} />
-        {delta ? String(delta) : ""}
+        {delta ?? ""}
       </span>
     );
   }
