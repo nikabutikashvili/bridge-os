@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node -r ../../scripts/register-env.cjs ./node_modules/next/dist/bin/next build",
+    "build": "node -r ../../scripts/register-env-build.cjs ./node_modules/next/dist/bin/next build",
     "dev": "node -r ../../scripts/register-env.cjs ./node_modules/next/dist/bin/next dev --port 3000",
     "lint": "eslint .",
-    "start": "node -r ../../scripts/register-env.cjs ./node_modules/next/dist/bin/next start",
+    "start": "node -r ../../scripts/register-env-build.cjs ./node_modules/next/dist/bin/next start",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
