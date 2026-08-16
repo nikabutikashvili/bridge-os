@@ -1,0 +1,4807 @@
+{
+  "id": "26b8eb93-487b-4926-a4ef-0d5adac64751",
+  "prevId": "1dcc5a3a-3d8b-46c4-9b8a-3c2b0d4073f9",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.bridges": {
+      "name": "bridges",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "external_structure_number": {
+          "name": "external_structure_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "road": {
+          "name": "road",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "country_code": {
+          "name": "country_code",
+          "type": "char(2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "federal_state": {
+          "name": "federal_state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "district": {
+          "name": "district",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "municipality": {
+          "name": "municipality",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "locality": {
+          "name": "locality",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postal_code": {
+          "name": "postal_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stationing": {
+          "name": "stationing",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "crossed_feature": {
+          "name": "crossed_feature",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "numeric(9, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "numeric(10, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "owner": {
+          "name": "owner",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "load_bearing_responsibility": {
+          "name": "load_bearing_responsibility",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "responsible_authority": {
+          "name": "responsible_authority",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maintenance_office": {
+          "name": "maintenance_office",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "data_origin": {
+          "name": "data_origin",
+          "type": "bridge_data_origin",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "bridges_external_structure_number_unique": {
+          "name": "bridges_external_structure_number_unique",
+          "columns": [
+            {
+              "expression": "external_structure_number",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "bridges_road_idx": {
+          "name": "bridges_road_idx",
+          "columns": [
+            {
+              "expression": "road",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "bridges_federal_state_idx": {
+          "name": "bridges_federal_state_idx",
+          "columns": [
+            {
+              "expression": "federal_state",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "bridges_responsible_authority_idx": {
+          "name": "bridges_responsible_authority_idx",
+          "columns": [
+            {
+              "expression": "responsible_authority",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "bridges_maintenance_office_idx": {
+          "name": "bridges_maintenance_office_idx",
+          "columns": [
+            {
+              "expression": "maintenance_office",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "bridges_data_origin_idx": {
+          "name": "bridges_data_origin_idx",
+          "columns": [
+            {
+              "expression": "data_origin",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "bridges_global_search_trgm_idx": {
+          "name": "bridges_global_search_trgm_idx",
+          "columns": [
+            {
+              "expression": "(\n        coalesce(\"external_structure_number\", '') || ' ' ||\n        coalesce(\"name\", '') || ' ' ||\n        coalesce(\"road\", '') || ' ' ||\n        coalesce(\"federal_state\", '') || ' ' ||\n        coalesce(\"district\", '') || ' ' ||\n        coalesce(\"municipality\", '') || ' ' ||\n        coalesce(\"locality\", '') || ' ' ||\n        coalesce(\"stationing\", '') || ' ' ||\n        coalesce(\"crossed_feature\", '')\n      ) gin_trgm_ops",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "bridges_external_structure_number_not_blank": {
+          "name": "bridges_external_structure_number_not_blank",
+          "value": "\"bridges\".\"external_structure_number\" is null or btrim(\"bridges\".\"external_structure_number\") <> ''"
+        },
+        "bridges_country_code_format": {
+          "name": "bridges_country_code_format",
+          "value": "\"bridges\".\"country_code\" is null or \"bridges\".\"country_code\" ~ '^[A-Z]{2}$'"
+        },
+        "bridges_latitude_range": {
+          "name": "bridges_latitude_range",
+          "value": "\"bridges\".\"latitude\" is null or \"bridges\".\"latitude\" between -90 and 90"
+        },
+        "bridges_longitude_range": {
+          "name": "bridges_longitude_range",
+          "value": "\"bridges\".\"longitude\" is null or \"bridges\".\"longitude\" between -180 and 180"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.partial_structures": {
+      "name": "partial_structures",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "bridge_id": {
+          "name": "bridge_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "external_partial_structure_number": {
+          "name": "external_partial_structure_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "construction_year": {
+          "name": "construction_year",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "structure_type": {
+          "name": "structure_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "structural_system": {
+          "name": "structural_system",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "length_m": {
+          "name": "length_m",
+          "type": "numeric(12, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "width_m": {
+          "name": "width_m",
+          "type": "numeric(12, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "area_sq_m": {
+          "name": "area_sq_m",
+          "type": "numeric(14, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "clear_height_m": {
+          "name": "clear_height_m",
+          "type": "numeric(12, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "span_count": {
+          "name": "span_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "partial_structures_bridge_external_number_unique": {
+          "name": "partial_structures_bridge_external_number_unique",
+          "columns": [
+            {
+              "expression": "bridge_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "external_partial_structure_number",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "partial_structures_bridge_id_idx": {
+          "name": "partial_structures_bridge_id_idx",
+          "columns": [
+            {
+              "expression": "bridge_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "partial_structures_bridge_id_bridges_id_fk": {
+          "name": "partial_structures_bridge_id_bridges_id_fk",
+          "tableFrom": "partial_structures",
+          "tableTo": "bridges",
+          "columnsFrom": [
+            "bridge_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "partial_structures_id_bridge_unique": {
+          "name": "partial_structures_id_bridge_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "bridge_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "partial_structures_external_number_not_blank": {
+          "name": "partial_structures_external_number_not_blank",
+          "value": "\"partial_structures\".\"external_partial_structure_number\" is null or btrim(\"partial_structures\".\"external_partial_structure_number\") <> ''"
+        },
+        "partial_structures_construction_year_range": {
+          "name": "partial_structures_construction_year_range",
+          "value": "\"partial_structures\".\"construction_year\" is null or \"partial_structures\".\"construction_year\" between 1700 and 2200"
+        },
+        "partial_structures_positive_geometry": {
+          "name": "partial_structures_positive_geometry",
+          "value": "(\"partial_structures\".\"length_m\" is null or \"partial_structures\".\"length_m\" > 0)\n        and (\"partial_structures\".\"width_m\" is null or \"partial_structures\".\"width_m\" > 0)\n        and (\"partial_structures\".\"area_sq_m\" is null or \"partial_structures\".\"area_sq_m\" > 0)\n        and (\"partial_structures\".\"clear_height_m\" is null or \"partial_structures\".\"clear_height_m\" > 0)"
+        },
+        "partial_structures_positive_span_count": {
+          "name": "partial_structures_positive_span_count",
+          "value": "\"partial_structures\".\"span_count\" is null or \"partial_structures\".\"span_count\" > 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.budget_program_interventions": {
+      "name": "budget_program_interventions",
+      "schema": "",
+      "columns": {
+        "budget_program_id": {
+          "name": "budget_program_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "intervention_id": {
+          "name": "intervention_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "planning_year": {
+          "name": "planning_year",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "budget_program_interventions_year_idx": {
+          "name": "budget_program_interventions_year_idx",
+          "columns": [
+            {
+              "expression": "planning_year",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "budget_program_interventions_program_year_fk": {
+          "name": "budget_program_interventions_program_year_fk",
+          "tableFrom": "budget_program_interventions",
+          "tableTo": "budget_programs",
+          "columnsFrom": [
+            "budget_program_id",
+            "planning_year"
+          ],
+          "columnsTo": [
+            "id",
+            "planning_year"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "budget_program_interventions_intervention_year_fk": {
+          "name": "budget_program_interventions_intervention_year_fk",
+          "tableFrom": "budget_program_interventions",
+          "tableTo": "planned_interventions",
+          "columnsFrom": [
+            "intervention_id",
+            "planning_year"
+          ],
+          "columnsTo": [
+            "id",
+            "planned_year"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "budget_program_interventions_pk": {
+          "name": "budget_program_interventions_pk",
+          "columns": [
+            "budget_program_id",
+            "intervention_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "budget_program_interventions_intervention_unique": {
+          "name": "budget_program_interventions_intervention_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "intervention_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.budget_programs": {
+      "name": "budget_programs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "planning_year": {
+          "name": "planning_year",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "approved_budget_amount": {
+          "name": "approved_budget_amount",
+          "type": "numeric(16, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "currency": {
+          "name": "currency",
+          "type": "char(3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "budget_programs_planning_year_unique": {
+          "name": "budget_programs_planning_year_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "planning_year"
+          ]
+        },
+        "budget_programs_id_planning_year_unique": {
+          "name": "budget_programs_id_planning_year_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "planning_year"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "budget_programs_year_range": {
+          "name": "budget_programs_year_range",
+          "value": "\"budget_programs\".\"planning_year\" between 1700 and 2200"
+        },
+        "budget_programs_amount_currency_pair": {
+          "name": "budget_programs_amount_currency_pair",
+          "value": "(\"budget_programs\".\"approved_budget_amount\" is null and \"budget_programs\".\"currency\" is null)\n        or (\"budget_programs\".\"approved_budget_amount\" >= 0 and \"budget_programs\".\"currency\" ~ '^[A-Z]{3}$')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.components": {
+      "name": "components",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "bridge_id": {
+          "name": "bridge_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "partial_structure_id": {
+          "name": "partial_structure_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location": {
+          "name": "location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "material": {
+          "name": "material",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "construction_year": {
+          "name": "construction_year",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "install_year": {
+          "name": "install_year",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "additional_properties": {
+          "name": "additional_properties",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "components_bridge_id_idx": {
+          "name": "components_bridge_id_idx",
+          "columns": [
+            {
+              "expression": "bridge_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "components_partial_structure_id_idx": {
+          "name": "components_partial_structure_id_idx",
+          "columns": [
+            {
+              "expression": "partial_structure_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "components_type_idx": {
+          "name": "components_type_idx",
+          "columns": [
+            {
+              "expression": "type",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "components_bridge_id_bridges_id_fk": {
+          "name": "components_bridge_id_bridges_id_fk",
+          "tableFrom": "components",
+          "tableTo": "bridges",
+          "columnsFrom": [
+            "bridge_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "components_partial_structure_bridge_fk": {
+          "name": "components_partial_structure_bridge_fk",
+          "tableFrom": "components",
+          "tableTo": "partial_structures",
+          "columnsFrom": [
+            "partial_structure_id",
+            "bridge_id"
+          ],
+          "columnsTo": [
+            "id",
+            "bridge_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "components_id_bridge_partial_unique": {
+          "name": "components_id_bridge_partial_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "bridge_id",
+            "partial_structure_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "components_type_not_blank": {
+          "name": "components_type_not_blank",
+          "value": "\"components\".\"type\" is null or btrim(\"components\".\"type\") <> ''"
+        },
+        "components_year_ranges": {
+          "name": "components_year_ranges",
+          "value": "(\"components\".\"construction_year\" is null or \"components\".\"construction_year\" between 1700 and 2200)\n        and (\"components\".\"install_year\" is null or \"components\".\"install_year\" between 1700 and 2200)"
+        },
+        "components_additional_properties_object": {
+          "name": "components_additional_properties_object",
+          "value": "\"components\".\"additional_properties\" is null or jsonb_typeof(\"components\".\"additional_properties\") = 'object'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.document_extraction_invocations": {
+      "name": "document_extraction_invocations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "run_id": {
+          "name": "run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "document_id": {
+          "name": "document_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stage": {
+          "name": "stage",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "page_numbers": {
+          "name": "page_numbers",
+          "type": "integer[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "prompt_version": {
+          "name": "prompt_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider": {
+          "name": "provider",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "model": {
+          "name": "model",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "extraction_invocation_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider_request_id": {
+          "name": "provider_request_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duration_ms": {
+          "name": "duration_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "input_tokens": {
+          "name": "input_tokens",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "output_tokens": {
+          "name": "output_tokens",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estimated_cost": {
+          "name": "estimated_cost",
+          "type": "numeric(14, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cost_currency": {
+          "name": "cost_currency",
+          "type": "char(3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error_code": {
+          "name": "error_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error_message": {
+          "name": "error_message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "document_extraction_invocations_run_idx": {
+          "name": "document_extraction_invocations_run_idx",
+          "columns": [
+            {
+              "expression": "run_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "document_extraction_invocations_run_document_fk": {
+          "name": "document_extraction_invocations_run_document_fk",
+          "tableFrom": "document_extraction_invocations",
+          "tableTo": "document_extraction_runs",
+          "columnsFrom": [
+            "run_id",
+            "document_id"
+          ],
+          "columnsTo": [
+            "id",
+            "document_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "document_extraction_invocations_id_run_document_unique": {
+          "name": "document_extraction_invocations_id_run_document_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "run_id",
+            "document_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "document_extraction_invocations_stage_shape": {
+          "name": "document_extraction_invocations_stage_shape",
+          "value": "(\"document_extraction_invocations\".\"stage\" = 'PAGE_CLASSIFICATION' and \"document_extraction_invocations\".\"category\" is null)\n        or (\"document_extraction_invocations\".\"stage\" = 'SECTION_EXTRACTION'\n          and nullif(btrim(\"document_extraction_invocations\".\"category\"), '') is not null)"
+        },
+        "document_extraction_invocations_pages_present": {
+          "name": "document_extraction_invocations_pages_present",
+          "value": "cardinality(\"document_extraction_invocations\".\"page_numbers\") > 0"
+        },
+        "document_extraction_invocations_identity_not_blank": {
+          "name": "document_extraction_invocations_identity_not_blank",
+          "value": "nullif(btrim(\"document_extraction_invocations\".\"prompt_version\"), '') is not null\n        and nullif(btrim(\"document_extraction_invocations\".\"provider\"), '') is not null\n        and nullif(btrim(\"document_extraction_invocations\".\"model\"), '') is not null"
+        },
+        "document_extraction_invocations_usage_non_negative": {
+          "name": "document_extraction_invocations_usage_non_negative",
+          "value": "(\"document_extraction_invocations\".\"duration_ms\" is null or \"document_extraction_invocations\".\"duration_ms\" >= 0)\n        and (\"document_extraction_invocations\".\"input_tokens\" is null or \"document_extraction_invocations\".\"input_tokens\" >= 0)\n        and (\"document_extraction_invocations\".\"output_tokens\" is null or \"document_extraction_invocations\".\"output_tokens\" >= 0)\n        and (\"document_extraction_invocations\".\"estimated_cost\" is null or \"document_extraction_invocations\".\"estimated_cost\" >= 0)"
+        },
+        "document_extraction_invocations_cost_pair": {
+          "name": "document_extraction_invocations_cost_pair",
+          "value": "(\"document_extraction_invocations\".\"estimated_cost\" is null and \"document_extraction_invocations\".\"cost_currency\" is null)\n        or (\"document_extraction_invocations\".\"estimated_cost\" is not null and \"document_extraction_invocations\".\"cost_currency\" ~ '^[A-Z]{3}$')"
+        },
+        "document_extraction_invocations_error_shape": {
+          "name": "document_extraction_invocations_error_shape",
+          "value": "(\"document_extraction_invocations\".\"status\" = 'FAILED'\n        and nullif(btrim(\"document_extraction_invocations\".\"error_code\"), '') is not null\n        and nullif(btrim(\"document_extraction_invocations\".\"error_message\"), '') is not null)\n        or (\"document_extraction_invocations\".\"status\" <> 'FAILED'\n          and \"document_extraction_invocations\".\"error_code\" is null and \"document_extraction_invocations\".\"error_message\" is null)"
+        },
+        "document_extraction_invocations_timing_shape": {
+          "name": "document_extraction_invocations_timing_shape",
+          "value": "(\"document_extraction_invocations\".\"status\" = 'RUNNING' and \"document_extraction_invocations\".\"completed_at\" is null)\n        or (\"document_extraction_invocations\".\"status\" in ('SUCCEEDED', 'FAILED') and \"document_extraction_invocations\".\"completed_at\" is not null)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.document_extraction_runs": {
+      "name": "document_extraction_runs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "document_id": {
+          "name": "document_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "processing_run_id": {
+          "name": "processing_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "retry_of_run_id": {
+          "name": "retry_of_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attempt": {
+          "name": "attempt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "extraction_run_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pipeline_version": {
+          "name": "pipeline_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "prompt_versions": {
+          "name": "prompt_versions",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider": {
+          "name": "provider",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "model": {
+          "name": "model",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "temperature": {
+          "name": "temperature",
+          "type": "numeric(3, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "output_bridge_id": {
+          "name": "output_bridge_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "duration_ms": {
+          "name": "duration_ms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "input_tokens": {
+          "name": "input_tokens",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "output_tokens": {
+          "name": "output_tokens",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estimated_cost": {
+          "name": "estimated_cost",
+          "type": "numeric(14, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cost_currency": {
+          "name": "cost_currency",
+          "type": "char(3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error_stage": {
+          "name": "error_stage",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error_code": {
+          "name": "error_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error_message": {
+          "name": "error_message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "document_extraction_runs_document_attempt_unique": {
+          "name": "document_extraction_runs_document_attempt_unique",
+          "columns": [
+            {
+              "expression": "document_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "attempt",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "document_extraction_runs_one_active_per_document": {
+          "name": "document_extraction_runs_one_active_per_document",
+          "columns": [
+            {
+              "expression": "document_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"document_extraction_runs\".\"status\" in ('PENDING', 'CLASSIFYING', 'EXTRACTING', 'VALIDATING', 'PERSISTING')",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "document_extraction_runs_document_created_idx": {
+          "name": "document_extraction_runs_document_created_idx",
+          "columns": [
+            {
+              "expression": "document_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "document_extraction_runs_status_idx": {
+          "name": "document_extraction_runs_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "document_extraction_runs_document_id_documents_id_fk": {
+          "name": "document_extraction_runs_document_id_documents_id_fk",
+          "tableFrom": "document_extraction_runs",
+          "tableTo": "documents",
+          "columnsFrom": [
+            "document_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "document_extraction_runs_processing_run_id_document_processing_runs_id_fk": {
+          "name": "document_extraction_runs_processing_run_id_document_processing_runs_id_fk",
+          "tableFrom": "document_extraction_runs",
+          "tableTo": "document_processing_runs",
+          "columnsFrom": [
+            "processing_run_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "document_extraction_runs_output_bridge_id_bridges_id_fk": {
+          "name": "document_extraction_runs_output_bridge_id_bridges_id_fk",
+          "tableFrom": "document_extraction_runs",
+          "tableTo": "bridges",
+          "columnsFrom": [
+            "output_bridge_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "document_extraction_runs_retry_of_fk": {
+          "name": "document_extraction_runs_retry_of_fk",
+          "tableFrom": "document_extraction_runs",
+          "tableTo": "document_extraction_runs",
+          "columnsFrom": [
+            "retry_of_run_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "document_extraction_runs_id_document_unique": {
+          "name": "document_extraction_runs_id_document_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "document_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "document_extraction_runs_attempt_positive": {
+          "name": "document_extraction_runs_attempt_positive",
+          "value": "\"document_extraction_runs\".\"attempt\" > 0"
+        },
+        "document_extraction_runs_identity_not_blank": {
+          "name": "document_extraction_runs_identity_not_blank",
+          "value": "nullif(btrim(\"document_extraction_runs\".\"pipeline_version\"), '') is not null\n        and nullif(btrim(\"document_extraction_runs\".\"provider\"), '') is not null\n        and nullif(btrim(\"document_extraction_runs\".\"model\"), '') is not null"
+        },
+        "document_extraction_runs_prompt_versions_object": {
+          "name": "document_extraction_runs_prompt_versions_object",
+          "value": "jsonb_typeof(\"document_extraction_runs\".\"prompt_versions\") = 'object'"
+        },
+        "document_extraction_runs_temperature_range": {
+          "name": "document_extraction_runs_temperature_range",
+          "value": "\"document_extraction_runs\".\"temperature\" between 0 and 0.20"
+        },
+        "document_extraction_runs_usage_non_negative": {
+          "name": "document_extraction_runs_usage_non_negative",
+          "value": "(\"document_extraction_runs\".\"duration_ms\" is null or \"document_extraction_runs\".\"duration_ms\" >= 0)\n        and (\"document_extraction_runs\".\"input_tokens\" is null or \"document_extraction_runs\".\"input_tokens\" >= 0)\n        and (\"document_extraction_runs\".\"output_tokens\" is null or \"document_extraction_runs\".\"output_tokens\" >= 0)\n        and (\"document_extraction_runs\".\"estimated_cost\" is null or \"document_extraction_runs\".\"estimated_cost\" >= 0)"
+        },
+        "document_extraction_runs_cost_pair": {
+          "name": "document_extraction_runs_cost_pair",
+          "value": "(\"document_extraction_runs\".\"estimated_cost\" is null and \"document_extraction_runs\".\"cost_currency\" is null)\n        or (\"document_extraction_runs\".\"estimated_cost\" is not null and \"document_extraction_runs\".\"cost_currency\" ~ '^[A-Z]{3}$')"
+        },
+        "document_extraction_runs_error_shape": {
+          "name": "document_extraction_runs_error_shape",
+          "value": "(\"document_extraction_runs\".\"status\" = 'FAILED'\n        and nullif(btrim(\"document_extraction_runs\".\"error_stage\"), '') is not null\n        and nullif(btrim(\"document_extraction_runs\".\"error_code\"), '') is not null\n        and nullif(btrim(\"document_extraction_runs\".\"error_message\"), '') is not null)\n        or (\"document_extraction_runs\".\"status\" <> 'FAILED'\n          and \"document_extraction_runs\".\"error_stage\" is null\n          and \"document_extraction_runs\".\"error_code\" is null\n          and \"document_extraction_runs\".\"error_message\" is null)"
+        },
+        "document_extraction_runs_timing_shape": {
+          "name": "document_extraction_runs_timing_shape",
+          "value": "(\"document_extraction_runs\".\"status\" = 'PENDING'\n          and \"document_extraction_runs\".\"started_at\" is null and \"document_extraction_runs\".\"completed_at\" is null)\n        or (\"document_extraction_runs\".\"status\" in ('CLASSIFYING', 'EXTRACTING', 'VALIDATING', 'PERSISTING')\n          and \"document_extraction_runs\".\"started_at\" is not null and \"document_extraction_runs\".\"completed_at\" is null)\n        or (\"document_extraction_runs\".\"status\" in ('SUCCEEDED', 'FAILED')\n          and \"document_extraction_runs\".\"started_at\" is not null and \"document_extraction_runs\".\"completed_at\" is not null)"
+        },
+        "document_extraction_runs_success_output": {
+          "name": "document_extraction_runs_success_output",
+          "value": "\"document_extraction_runs\".\"status\" <> 'SUCCEEDED' or \"document_extraction_runs\".\"output_bridge_id\" is not null"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.document_page_classifications": {
+      "name": "document_page_classifications",
+      "schema": "",
+      "columns": {
+        "run_id": {
+          "name": "run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "document_id": {
+          "name": "document_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invocation_id": {
+          "name": "invocation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "page_number": {
+          "name": "page_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "confidence": {
+          "name": "confidence",
+          "type": "numeric(4, 3)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "section_title": {
+          "name": "section_title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "document_page_classifications_category_idx": {
+          "name": "document_page_classifications_category_idx",
+          "columns": [
+            {
+              "expression": "run_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "category",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "document_page_classifications_run_document_fk": {
+          "name": "document_page_classifications_run_document_fk",
+          "tableFrom": "document_page_classifications",
+          "tableTo": "document_extraction_runs",
+          "columnsFrom": [
+            "run_id",
+            "document_id"
+          ],
+          "columnsTo": [
+            "id",
+            "document_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "document_page_classifications_invocation_scope_fk": {
+          "name": "document_page_classifications_invocation_scope_fk",
+          "tableFrom": "document_page_classifications",
+          "tableTo": "document_extraction_invocations",
+          "columnsFrom": [
+            "invocation_id",
+            "run_id",
+            "document_id"
+          ],
+          "columnsTo": [
+            "id",
+            "run_id",
+            "document_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "document_page_classifications_document_page_fk": {
+          "name": "document_page_classifications_document_page_fk",
+          "tableFrom": "document_page_classifications",
+          "tableTo": "document_pages",
+          "columnsFrom": [
+            "document_id",
+            "page_number"
+          ],
+          "columnsTo": [
+            "document_id",
+            "page_number"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "document_page_classifications_run_id_page_number_category_pk": {
+          "name": "document_page_classifications_run_id_page_number_category_pk",
+          "columns": [
+            "run_id",
+            "page_number",
+            "category"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "document_page_classifications_confidence_range": {
+          "name": "document_page_classifications_confidence_range",
+          "value": "\"document_page_classifications\".\"confidence\" between 0 and 1"
+        },
+        "document_page_classifications_category_not_blank": {
+          "name": "document_page_classifications_category_not_blank",
+          "value": "nullif(btrim(\"document_page_classifications\".\"category\"), '') is not null"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.document_pages": {
+      "name": "document_pages",
+      "schema": "",
+      "columns": {
+        "document_id": {
+          "name": "document_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "page_number": {
+          "name": "page_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "text_content": {
+          "name": "text_content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "document_pages_document_id_documents_id_fk": {
+          "name": "document_pages_document_id_documents_id_fk",
+          "tableFrom": "document_pages",
+          "tableTo": "documents",
+          "columnsFrom": [
+            "document_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "document_pages_document_id_page_number_pk": {
+          "name": "document_pages_document_id_page_number_pk",
+          "columns": [
+            "document_id",
+            "page_number"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "document_pages_positive_page_number": {
+          "name": "document_pages_positive_page_number",
+          "value": "\"document_pages\".\"page_number\" > 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.document_processing_runs": {
+      "name": "document_processing_runs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "document_id": {
+          "name": "document_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "document_processing_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parser": {
+          "name": "parser",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "page_count": {
+          "name": "page_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error_code": {
+          "name": "error_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error_message": {
+          "name": "error_message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parsing_started_at": {
+          "name": "parsing_started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parsing_completed_at": {
+          "name": "parsing_completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "document_processing_runs_document_created_idx": {
+          "name": "document_processing_runs_document_created_idx",
+          "columns": [
+            {
+              "expression": "document_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "document_processing_runs_status_idx": {
+          "name": "document_processing_runs_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "document_processing_runs_document_id_documents_id_fk": {
+          "name": "document_processing_runs_document_id_documents_id_fk",
+          "tableFrom": "document_processing_runs",
+          "tableTo": "documents",
+          "columnsFrom": [
+            "document_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "document_processing_runs_page_count_valid": {
+          "name": "document_processing_runs_page_count_valid",
+          "value": "\"document_processing_runs\".\"page_count\" is null or \"document_processing_runs\".\"page_count\" >= 0"
+        },
+        "document_processing_runs_error_shape": {
+          "name": "document_processing_runs_error_shape",
+          "value": "(\n        \"document_processing_runs\".\"status\" = 'FAILED'\n        and nullif(btrim(\"document_processing_runs\".\"error_code\"), '') is not null\n        and nullif(btrim(\"document_processing_runs\".\"error_message\"), '') is not null\n      ) or (\n        \"document_processing_runs\".\"status\" <> 'FAILED'\n        and \"document_processing_runs\".\"error_code\" is null\n        and \"document_processing_runs\".\"error_message\" is null\n      )"
+        },
+        "document_processing_runs_timing_shape": {
+          "name": "document_processing_runs_timing_shape",
+          "value": "(\n        \"document_processing_runs\".\"status\" = 'UPLOADED'\n        and \"document_processing_runs\".\"parsing_started_at\" is null\n        and \"document_processing_runs\".\"parsing_completed_at\" is null\n        and \"document_processing_runs\".\"page_count\" is null\n      ) or (\n        \"document_processing_runs\".\"status\" = 'PARSING'\n        and \"document_processing_runs\".\"parsing_started_at\" is not null\n        and \"document_processing_runs\".\"parsing_completed_at\" is null\n        and \"document_processing_runs\".\"page_count\" is null\n      ) or (\n        \"document_processing_runs\".\"status\" in ('PARSED', 'EXTRACTION_PENDING', 'EXTRACTED')\n        and \"document_processing_runs\".\"parsing_started_at\" is not null\n        and \"document_processing_runs\".\"parsing_completed_at\" is not null\n        and \"document_processing_runs\".\"page_count\" is not null\n      ) or \"document_processing_runs\".\"status\" = 'FAILED'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.documents": {
+      "name": "documents",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "bridge_id": {
+          "name": "bridge_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "partial_structure_id": {
+          "name": "partial_structure_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "original_filename": {
+          "name": "original_filename",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "document_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "checksum_sha256": {
+          "name": "checksum_sha256",
+          "type": "char(64)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mime_type": {
+          "name": "mime_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "size_bytes": {
+          "name": "size_bytes",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "storage_key": {
+          "name": "storage_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "documents_bridge_id_idx": {
+          "name": "documents_bridge_id_idx",
+          "columns": [
+            {
+              "expression": "bridge_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "documents_partial_structure_id_idx": {
+          "name": "documents_partial_structure_id_idx",
+          "columns": [
+            {
+              "expression": "partial_structure_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "documents_status_idx": {
+          "name": "documents_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "documents_checksum_sha256_unique": {
+          "name": "documents_checksum_sha256_unique",
+          "columns": [
+            {
+              "expression": "checksum_sha256",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"documents\".\"checksum_sha256\" is not null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "documents_storage_key_unique": {
+          "name": "documents_storage_key_unique",
+          "columns": [
+            {
+              "expression": "storage_key",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "\"documents\".\"storage_key\" is not null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "documents_bridge_id_bridges_id_fk": {
+          "name": "documents_bridge_id_bridges_id_fk",
+          "tableFrom": "documents",
+          "tableTo": "bridges",
+          "columnsFrom": [
+            "bridge_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "documents_partial_structure_bridge_fk": {
+          "name": "documents_partial_structure_bridge_fk",
+          "tableFrom": "documents",
+          "tableTo": "partial_structures",
+          "columnsFrom": [
+            "partial_structure_id",
+            "bridge_id"
+          ],
+          "columnsTo": [
+            "id",
+            "bridge_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "documents_type_not_blank": {
+          "name": "documents_type_not_blank",
+          "value": "btrim(\"documents\".\"type\") <> ''"
+        },
+        "documents_original_filename_not_blank": {
+          "name": "documents_original_filename_not_blank",
+          "value": "btrim(\"documents\".\"original_filename\") <> ''"
+        },
+        "documents_partial_structure_requires_bridge": {
+          "name": "documents_partial_structure_requires_bridge",
+          "value": "\"documents\".\"partial_structure_id\" is null or \"documents\".\"bridge_id\" is not null"
+        },
+        "documents_metadata_object": {
+          "name": "documents_metadata_object",
+          "value": "\"documents\".\"metadata\" is null or jsonb_typeof(\"documents\".\"metadata\") = 'object'"
+        },
+        "documents_checksum_sha256_valid": {
+          "name": "documents_checksum_sha256_valid",
+          "value": "\"documents\".\"checksum_sha256\" is null or \"documents\".\"checksum_sha256\" ~ '^[0-9a-f]{64}$'"
+        },
+        "documents_ingestion_metadata_complete": {
+          "name": "documents_ingestion_metadata_complete",
+          "value": "(\n        \"documents\".\"checksum_sha256\" is null and \"documents\".\"mime_type\" is null\n        and \"documents\".\"size_bytes\" is null and \"documents\".\"storage_key\" is null\n      ) or (\n        \"documents\".\"checksum_sha256\" is not null and \"documents\".\"mime_type\" is not null\n        and \"documents\".\"size_bytes\" is not null and \"documents\".\"storage_key\" is not null\n      )"
+        },
+        "documents_ingested_pdf_valid": {
+          "name": "documents_ingested_pdf_valid",
+          "value": "\"documents\".\"mime_type\" is null or (\n        \"documents\".\"mime_type\" = 'application/pdf'\n        and \"documents\".\"size_bytes\" > 0\n        and nullif(btrim(\"documents\".\"storage_key\"), '') is not null\n      )"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.findings": {
+      "name": "findings",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "bridge_id": {
+          "name": "bridge_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "partial_structure_id": {
+          "name": "partial_structure_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "inspection_id": {
+          "name": "inspection_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "component_id": {
+          "name": "component_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_identifier": {
+          "name": "source_identifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "defect_type": {
+          "name": "defect_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location": {
+          "name": "location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "extent": {
+          "name": "extent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dimension_length": {
+          "name": "dimension_length",
+          "type": "numeric(14, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dimension_width": {
+          "name": "dimension_width",
+          "type": "numeric(14, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dimension_depth": {
+          "name": "dimension_depth",
+          "type": "numeric(14, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dimension_unit": {
+          "name": "dimension_unit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "numeric(16, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "quantity_unit": {
+          "name": "quantity_unit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stability_rating": {
+          "name": "stability_rating",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "traffic_safety_rating": {
+          "name": "traffic_safety_rating",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "durability_rating": {
+          "name": "durability_rating",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "finding_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "findings_inspection_source_identifier_unique": {
+          "name": "findings_inspection_source_identifier_unique",
+          "columns": [
+            {
+              "expression": "inspection_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "source_identifier",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "findings_bridge_status_idx": {
+          "name": "findings_bridge_status_idx",
+          "columns": [
+            {
+              "expression": "bridge_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "findings_partial_structure_idx": {
+          "name": "findings_partial_structure_idx",
+          "columns": [
+            {
+              "expression": "partial_structure_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "findings_inspection_id_idx": {
+          "name": "findings_inspection_id_idx",
+          "columns": [
+            {
+              "expression": "inspection_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "findings_component_id_idx": {
+          "name": "findings_component_id_idx",
+          "columns": [
+            {
+              "expression": "component_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "findings_global_search_trgm_idx": {
+          "name": "findings_global_search_trgm_idx",
+          "columns": [
+            {
+              "expression": "(\n        coalesce(\"source_identifier\", '') || ' ' ||\n        coalesce(\"defect_type\", '') || ' ' ||\n        coalesce(\"description\", '') || ' ' ||\n        coalesce(\"location\", '') || ' ' ||\n        coalesce(\"extent\", '')\n      ) gin_trgm_ops",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "findings_bridge_id_bridges_id_fk": {
+          "name": "findings_bridge_id_bridges_id_fk",
+          "tableFrom": "findings",
+          "tableTo": "bridges",
+          "columnsFrom": [
+            "bridge_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "findings_partial_structure_bridge_fk": {
+          "name": "findings_partial_structure_bridge_fk",
+          "tableFrom": "findings",
+          "tableTo": "partial_structures",
+          "columnsFrom": [
+            "partial_structure_id",
+            "bridge_id"
+          ],
+          "columnsTo": [
+            "id",
+            "bridge_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "findings_inspection_scope_fk": {
+          "name": "findings_inspection_scope_fk",
+          "tableFrom": "findings",
+          "tableTo": "inspections",
+          "columnsFrom": [
+            "inspection_id",
+            "bridge_id",
+            "partial_structure_id"
+          ],
+          "columnsTo": [
+            "id",
+            "bridge_id",
+            "partial_structure_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "findings_component_scope_fk": {
+          "name": "findings_component_scope_fk",
+          "tableFrom": "findings",
+          "tableTo": "components",
+          "columnsFrom": [
+            "component_id",
+            "bridge_id",
+            "partial_structure_id"
+          ],
+          "columnsTo": [
+            "id",
+            "bridge_id",
+            "partial_structure_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "findings_id_bridge_partial_unique": {
+          "name": "findings_id_bridge_partial_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "bridge_id",
+            "partial_structure_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "findings_description_not_blank": {
+          "name": "findings_description_not_blank",
+          "value": "\"findings\".\"description\" is null or btrim(\"findings\".\"description\") <> ''"
+        },
+        "findings_non_negative_measurements": {
+          "name": "findings_non_negative_measurements",
+          "value": "(\"findings\".\"dimension_length\" is null or \"findings\".\"dimension_length\" >= 0)\n        and (\"findings\".\"dimension_width\" is null or \"findings\".\"dimension_width\" >= 0)\n        and (\"findings\".\"dimension_depth\" is null or \"findings\".\"dimension_depth\" >= 0)\n        and (\"findings\".\"quantity\" is null or \"findings\".\"quantity\" >= 0)"
+        },
+        "findings_dimension_unit_pair": {
+          "name": "findings_dimension_unit_pair",
+          "value": "(\n        (\"findings\".\"dimension_length\" is null and \"findings\".\"dimension_width\" is null and \"findings\".\"dimension_depth\" is null and \"findings\".\"dimension_unit\" is null)\n        or\n        ((\"findings\".\"dimension_length\" is not null or \"findings\".\"dimension_width\" is not null or \"findings\".\"dimension_depth\" is not null)\n          and nullif(btrim(\"findings\".\"dimension_unit\"), '') is not null)\n      )"
+        },
+        "findings_quantity_unit_pair": {
+          "name": "findings_quantity_unit_pair",
+          "value": "(\"findings\".\"quantity\" is null and \"findings\".\"quantity_unit\" is null)\n        or (\"findings\".\"quantity\" is not null and nullif(btrim(\"findings\".\"quantity_unit\"), '') is not null)"
+        },
+        "findings_svd_ranges": {
+          "name": "findings_svd_ranges",
+          "value": "(\"findings\".\"stability_rating\" is null or \"findings\".\"stability_rating\" between 0 and 4)\n        and (\"findings\".\"traffic_safety_rating\" is null or \"findings\".\"traffic_safety_rating\" between 0 and 4)\n        and (\"findings\".\"durability_rating\" is null or \"findings\".\"durability_rating\" between 0 and 4)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.historical_works": {
+      "name": "historical_works",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "bridge_id": {
+          "name": "bridge_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "partial_structure_id": {
+          "name": "partial_structure_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "contractor": {
+          "name": "contractor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "client": {
+          "name": "client",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "started_on": {
+          "name": "started_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ended_on": {
+          "name": "ended_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "numeric(16, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "unit": {
+          "name": "unit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "contract_amount": {
+          "name": "contract_amount",
+          "type": "numeric(16, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "final_amount": {
+          "name": "final_amount",
+          "type": "numeric(16, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "currency": {
+          "name": "currency",
+          "type": "char(3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "historical_works_bridge_start_date_idx": {
+          "name": "historical_works_bridge_start_date_idx",
+          "columns": [
+            {
+              "expression": "bridge_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "started_on",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "historical_works_partial_structure_idx": {
+          "name": "historical_works_partial_structure_idx",
+          "columns": [
+            {
+              "expression": "partial_structure_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "historical_works_bridge_id_bridges_id_fk": {
+          "name": "historical_works_bridge_id_bridges_id_fk",
+          "tableFrom": "historical_works",
+          "tableTo": "bridges",
+          "columnsFrom": [
+            "bridge_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "historical_works_partial_structure_bridge_fk": {
+          "name": "historical_works_partial_structure_bridge_fk",
+          "tableFrom": "historical_works",
+          "tableTo": "partial_structures",
+          "columnsFrom": [
+            "partial_structure_id",
+            "bridge_id"
+          ],
+          "columnsTo": [
+            "id",
+            "bridge_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "historical_works_title_not_blank": {
+          "name": "historical_works_title_not_blank",
+          "value": "\"historical_works\".\"title\" is null or btrim(\"historical_works\".\"title\") <> ''"
+        },
+        "historical_works_date_order": {
+          "name": "historical_works_date_order",
+          "value": "\"historical_works\".\"started_on\" is null or \"historical_works\".\"ended_on\" is null or \"historical_works\".\"ended_on\" >= \"historical_works\".\"started_on\""
+        },
+        "historical_works_quantity_unit_pair": {
+          "name": "historical_works_quantity_unit_pair",
+          "value": "(\"historical_works\".\"quantity\" is null and \"historical_works\".\"unit\" is null)\n        or (\"historical_works\".\"quantity\" >= 0 and nullif(btrim(\"historical_works\".\"unit\"), '') is not null)"
+        },
+        "historical_works_amount_currency_pair": {
+          "name": "historical_works_amount_currency_pair",
+          "value": "(\"historical_works\".\"contract_amount\" is null and \"historical_works\".\"final_amount\" is null and \"historical_works\".\"currency\" is null)\n        or (\n          (\"historical_works\".\"contract_amount\" is not null or \"historical_works\".\"final_amount\" is not null)\n          and (\"historical_works\".\"contract_amount\" is null or \"historical_works\".\"contract_amount\" >= 0)\n          and (\"historical_works\".\"final_amount\" is null or \"historical_works\".\"final_amount\" >= 0)\n          and \"historical_works\".\"currency\" ~ '^[A-Z]{3}$'\n        )"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.inspections": {
+      "name": "inspections",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "bridge_id": {
+          "name": "bridge_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "partial_structure_id": {
+          "name": "partial_structure_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "inspection_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inspected_on": {
+          "name": "inspected_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "inspector": {
+          "name": "inspector",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "condition_score": {
+          "name": "condition_score",
+          "type": "numeric(2, 1)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cycle_months": {
+          "name": "cycle_months",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "inspections_bridge_date_idx": {
+          "name": "inspections_bridge_date_idx",
+          "columns": [
+            {
+              "expression": "bridge_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "inspected_on",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "inspections_partial_structure_date_idx": {
+          "name": "inspections_partial_structure_date_idx",
+          "columns": [
+            {
+              "expression": "partial_structure_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "inspected_on",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "inspections_bridge_id_bridges_id_fk": {
+          "name": "inspections_bridge_id_bridges_id_fk",
+          "tableFrom": "inspections",
+          "tableTo": "bridges",
+          "columnsFrom": [
+            "bridge_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "inspections_partial_structure_bridge_fk": {
+          "name": "inspections_partial_structure_bridge_fk",
+          "tableFrom": "inspections",
+          "tableTo": "partial_structures",
+          "columnsFrom": [
+            "partial_structure_id",
+            "bridge_id"
+          ],
+          "columnsTo": [
+            "id",
+            "bridge_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "inspections_id_bridge_partial_unique": {
+          "name": "inspections_id_bridge_partial_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "bridge_id",
+            "partial_structure_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "inspections_condition_score_range": {
+          "name": "inspections_condition_score_range",
+          "value": "\"inspections\".\"condition_score\" is null or \"inspections\".\"condition_score\" between 1.0 and 4.0"
+        },
+        "inspections_positive_cycle_months": {
+          "name": "inspections_positive_cycle_months",
+          "value": "\"inspections\".\"cycle_months\" is null or \"inspections\".\"cycle_months\" > 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.planned_interventions": {
+      "name": "planned_interventions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "recommendation_id": {
+          "name": "recommendation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bridge_id": {
+          "name": "bridge_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "partial_structure_id": {
+          "name": "partial_structure_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "work_type": {
+          "name": "work_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "planned_year": {
+          "name": "planned_year",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "numeric(16, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "unit": {
+          "name": "unit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estimated_cost": {
+          "name": "estimated_cost",
+          "type": "numeric(16, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estimated_cost_currency": {
+          "name": "estimated_cost_currency",
+          "type": "char(3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estimated_cost_source": {
+          "name": "estimated_cost_source",
+          "type": "intervention_estimate_source",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estimated_cost_status": {
+          "name": "estimated_cost_status",
+          "type": "intervention_estimate_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "planned_intervention_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'PLANNED'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "planned_interventions_status_year_idx": {
+          "name": "planned_interventions_status_year_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "planned_year",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "planned_interventions_bridge_idx": {
+          "name": "planned_interventions_bridge_idx",
+          "columns": [
+            {
+              "expression": "bridge_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "planned_interventions_recommendation_scope_fk": {
+          "name": "planned_interventions_recommendation_scope_fk",
+          "tableFrom": "planned_interventions",
+          "tableTo": "recommendations",
+          "columnsFrom": [
+            "recommendation_id",
+            "bridge_id",
+            "partial_structure_id"
+          ],
+          "columnsTo": [
+            "id",
+            "bridge_id",
+            "partial_structure_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "planned_interventions_partial_structure_bridge_fk": {
+          "name": "planned_interventions_partial_structure_bridge_fk",
+          "tableFrom": "planned_interventions",
+          "tableTo": "partial_structures",
+          "columnsFrom": [
+            "partial_structure_id",
+            "bridge_id"
+          ],
+          "columnsTo": [
+            "id",
+            "bridge_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "planned_interventions_recommendation_unique": {
+          "name": "planned_interventions_recommendation_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "recommendation_id"
+          ]
+        },
+        "planned_interventions_id_planned_year_unique": {
+          "name": "planned_interventions_id_planned_year_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "planned_year"
+          ]
+        },
+        "planned_interventions_work_package_scope_unique": {
+          "name": "planned_interventions_work_package_scope_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "recommendation_id",
+            "bridge_id",
+            "partial_structure_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "planned_interventions_work_type_not_blank": {
+          "name": "planned_interventions_work_type_not_blank",
+          "value": "btrim(\"planned_interventions\".\"work_type\") <> ''"
+        },
+        "planned_interventions_quantity_unit_pair": {
+          "name": "planned_interventions_quantity_unit_pair",
+          "value": "(\"planned_interventions\".\"quantity\" is null and \"planned_interventions\".\"unit\" is null)\n        or (\"planned_interventions\".\"quantity\" >= 0 and nullif(btrim(\"planned_interventions\".\"unit\"), '') is not null)"
+        },
+        "planned_interventions_estimated_cost_pair": {
+          "name": "planned_interventions_estimated_cost_pair",
+          "value": "(\"planned_interventions\".\"estimated_cost\" is null\n          and \"planned_interventions\".\"estimated_cost_currency\" is null\n          and \"planned_interventions\".\"estimated_cost_source\" is null\n          and \"planned_interventions\".\"estimated_cost_status\" is null)\n        or (\"planned_interventions\".\"estimated_cost\" >= 0\n          and \"planned_interventions\".\"estimated_cost_currency\" ~ '^[A-Z]{3}$'\n          and \"planned_interventions\".\"estimated_cost_source\" is not null\n          and \"planned_interventions\".\"estimated_cost_status\" is not null)"
+        },
+        "planned_interventions_planned_year_range": {
+          "name": "planned_interventions_planned_year_range",
+          "value": "\"planned_interventions\".\"planned_year\" between 1700 and 2200"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.bridge_evidence": {
+      "name": "bridge_evidence",
+      "schema": "",
+      "columns": {
+        "bridge_id": {
+          "name": "bridge_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "evidence_id": {
+          "name": "evidence_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "field_name": {
+          "name": "field_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "provenance_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "derivation_method": {
+          "name": "derivation_method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "bridge_evidence_evidence_id_idx": {
+          "name": "bridge_evidence_evidence_id_idx",
+          "columns": [
+            {
+              "expression": "evidence_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "bridge_evidence_bridge_id_bridges_id_fk": {
+          "name": "bridge_evidence_bridge_id_bridges_id_fk",
+          "tableFrom": "bridge_evidence",
+          "tableTo": "bridges",
+          "columnsFrom": [
+            "bridge_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "bridge_evidence_evidence_id_source_evidence_id_fk": {
+          "name": "bridge_evidence_evidence_id_source_evidence_id_fk",
+          "tableFrom": "bridge_evidence",
+          "tableTo": "source_evidence",
+          "columnsFrom": [
+            "evidence_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "bridge_evidence_bridge_id_evidence_id_field_name_pk": {
+          "name": "bridge_evidence_bridge_id_evidence_id_field_name_pk",
+          "columns": [
+            "bridge_id",
+            "evidence_id",
+            "field_name"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "bridge_evidence_field_name_valid": {
+          "name": "bridge_evidence_field_name_valid",
+          "value": "\"bridge_evidence\".\"field_name\" in (\n        '$', 'externalStructureNumber', 'name', 'road', 'location.countryCode',\n        'location.federalState', 'location.district', 'location.municipality',\n        'location.locality', 'location.postalCode', 'location.stationing',\n        'location.crossedFeature', 'location.latitude', 'location.longitude',\n        'owner', 'loadBearingResponsibility', 'responsibleAuthority', 'maintenanceOffice'\n      )"
+        },
+        "bridge_evidence_derivation_valid": {
+          "name": "bridge_evidence_derivation_valid",
+          "value": "(\"bridge_evidence\".\"kind\" = 'SOURCE_FACT' and \"bridge_evidence\".\"derivation_method\" is null)\n        or (\"bridge_evidence\".\"kind\" = 'DERIVED' and nullif(btrim(\"bridge_evidence\".\"derivation_method\"), '') is not null)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.component_evidence": {
+      "name": "component_evidence",
+      "schema": "",
+      "columns": {
+        "component_id": {
+          "name": "component_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "evidence_id": {
+          "name": "evidence_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "field_name": {
+          "name": "field_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "provenance_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "derivation_method": {
+          "name": "derivation_method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "component_evidence_evidence_id_idx": {
+          "name": "component_evidence_evidence_id_idx",
+          "columns": [
+            {
+              "expression": "evidence_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "component_evidence_component_id_components_id_fk": {
+          "name": "component_evidence_component_id_components_id_fk",
+          "tableFrom": "component_evidence",
+          "tableTo": "components",
+          "columnsFrom": [
+            "component_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "component_evidence_evidence_id_source_evidence_id_fk": {
+          "name": "component_evidence_evidence_id_source_evidence_id_fk",
+          "tableFrom": "component_evidence",
+          "tableTo": "source_evidence",
+          "columnsFrom": [
+            "evidence_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "component_evidence_component_id_evidence_id_field_name_pk": {
+          "name": "component_evidence_component_id_evidence_id_field_name_pk",
+          "columns": [
+            "component_id",
+            "evidence_id",
+            "field_name"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "component_evidence_field_name_valid": {
+          "name": "component_evidence_field_name_valid",
+          "value": "\"component_evidence\".\"field_name\" in (\n        '$', 'type', 'name', 'location', 'material', 'constructionYear', 'installYear',\n        'additionalProperties'\n      )"
+        },
+        "component_evidence_derivation_valid": {
+          "name": "component_evidence_derivation_valid",
+          "value": "(\"component_evidence\".\"kind\" = 'SOURCE_FACT' and \"component_evidence\".\"derivation_method\" is null)\n        or (\"component_evidence\".\"kind\" = 'DERIVED' and nullif(btrim(\"component_evidence\".\"derivation_method\"), '') is not null)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.finding_evidence": {
+      "name": "finding_evidence",
+      "schema": "",
+      "columns": {
+        "finding_id": {
+          "name": "finding_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "evidence_id": {
+          "name": "evidence_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "field_name": {
+          "name": "field_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "provenance_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "derivation_method": {
+          "name": "derivation_method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "finding_evidence_evidence_id_idx": {
+          "name": "finding_evidence_evidence_id_idx",
+          "columns": [
+            {
+              "expression": "evidence_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "finding_evidence_finding_id_findings_id_fk": {
+          "name": "finding_evidence_finding_id_findings_id_fk",
+          "tableFrom": "finding_evidence",
+          "tableTo": "findings",
+          "columnsFrom": [
+            "finding_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "finding_evidence_evidence_id_source_evidence_id_fk": {
+          "name": "finding_evidence_evidence_id_source_evidence_id_fk",
+          "tableFrom": "finding_evidence",
+          "tableTo": "source_evidence",
+          "columnsFrom": [
+            "evidence_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "finding_evidence_finding_id_evidence_id_field_name_pk": {
+          "name": "finding_evidence_finding_id_evidence_id_field_name_pk",
+          "columns": [
+            "finding_id",
+            "evidence_id",
+            "field_name"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "finding_evidence_field_name_valid": {
+          "name": "finding_evidence_field_name_valid",
+          "value": "\"finding_evidence\".\"field_name\" in (\n        '$', 'sourceIdentifier', 'defectType', 'description', 'location', 'extent',\n        'dimensionLength', 'dimensionWidth', 'dimensionDepth', 'dimensionUnit',\n        'quantity', 'quantityUnit', 'stabilityRating', 'trafficSafetyRating',\n        'durabilityRating', 'status', 'componentId'\n      )"
+        },
+        "finding_evidence_derivation_valid": {
+          "name": "finding_evidence_derivation_valid",
+          "value": "(\"finding_evidence\".\"kind\" = 'SOURCE_FACT' and \"finding_evidence\".\"derivation_method\" is null)\n        or (\"finding_evidence\".\"kind\" = 'DERIVED' and nullif(btrim(\"finding_evidence\".\"derivation_method\"), '') is not null)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.historical_work_evidence": {
+      "name": "historical_work_evidence",
+      "schema": "",
+      "columns": {
+        "historical_work_id": {
+          "name": "historical_work_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "evidence_id": {
+          "name": "evidence_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "field_name": {
+          "name": "field_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "provenance_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "derivation_method": {
+          "name": "derivation_method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "historical_work_evidence_evidence_id_idx": {
+          "name": "historical_work_evidence_evidence_id_idx",
+          "columns": [
+            {
+              "expression": "evidence_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "historical_work_evidence_historical_work_id_historical_works_id_fk": {
+          "name": "historical_work_evidence_historical_work_id_historical_works_id_fk",
+          "tableFrom": "historical_work_evidence",
+          "tableTo": "historical_works",
+          "columnsFrom": [
+            "historical_work_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "historical_work_evidence_evidence_id_source_evidence_id_fk": {
+          "name": "historical_work_evidence_evidence_id_source_evidence_id_fk",
+          "tableFrom": "historical_work_evidence",
+          "tableTo": "source_evidence",
+          "columnsFrom": [
+            "evidence_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "historical_work_evidence_historical_work_id_evidence_id_field_name_pk": {
+          "name": "historical_work_evidence_historical_work_id_evidence_id_field_name_pk",
+          "columns": [
+            "historical_work_id",
+            "evidence_id",
+            "field_name"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "historical_work_evidence_field_name_valid": {
+          "name": "historical_work_evidence_field_name_valid",
+          "value": "\"historical_work_evidence\".\"field_name\" in (\n        '$', 'partialStructureId', 'type', 'title', 'reason', 'contractor', 'client',\n        'startedOn', 'endedOn', 'quantity', 'unit', 'contractAmount', 'finalAmount', 'currency'\n      )"
+        },
+        "historical_work_evidence_derivation_valid": {
+          "name": "historical_work_evidence_derivation_valid",
+          "value": "(\"historical_work_evidence\".\"kind\" = 'SOURCE_FACT' and \"historical_work_evidence\".\"derivation_method\" is null)\n        or (\"historical_work_evidence\".\"kind\" = 'DERIVED' and nullif(btrim(\"historical_work_evidence\".\"derivation_method\"), '') is not null)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.inspection_evidence": {
+      "name": "inspection_evidence",
+      "schema": "",
+      "columns": {
+        "inspection_id": {
+          "name": "inspection_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "evidence_id": {
+          "name": "evidence_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "field_name": {
+          "name": "field_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "provenance_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "derivation_method": {
+          "name": "derivation_method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "inspection_evidence_evidence_id_idx": {
+          "name": "inspection_evidence_evidence_id_idx",
+          "columns": [
+            {
+              "expression": "evidence_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "inspection_evidence_inspection_id_inspections_id_fk": {
+          "name": "inspection_evidence_inspection_id_inspections_id_fk",
+          "tableFrom": "inspection_evidence",
+          "tableTo": "inspections",
+          "columnsFrom": [
+            "inspection_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "inspection_evidence_evidence_id_source_evidence_id_fk": {
+          "name": "inspection_evidence_evidence_id_source_evidence_id_fk",
+          "tableFrom": "inspection_evidence",
+          "tableTo": "source_evidence",
+          "columnsFrom": [
+            "evidence_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "inspection_evidence_inspection_id_evidence_id_field_name_pk": {
+          "name": "inspection_evidence_inspection_id_evidence_id_field_name_pk",
+          "columns": [
+            "inspection_id",
+            "evidence_id",
+            "field_name"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "inspection_evidence_field_name_valid": {
+          "name": "inspection_evidence_field_name_valid",
+          "value": "\"inspection_evidence\".\"field_name\" in (\n        '$', 'type', 'inspectedOn', 'inspector', 'conditionScore', 'cycleMonths'\n      )"
+        },
+        "inspection_evidence_derivation_valid": {
+          "name": "inspection_evidence_derivation_valid",
+          "value": "(\"inspection_evidence\".\"kind\" = 'SOURCE_FACT' and \"inspection_evidence\".\"derivation_method\" is null)\n        or (\"inspection_evidence\".\"kind\" = 'DERIVED' and nullif(btrim(\"inspection_evidence\".\"derivation_method\"), '') is not null)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.partial_structure_evidence": {
+      "name": "partial_structure_evidence",
+      "schema": "",
+      "columns": {
+        "partial_structure_id": {
+          "name": "partial_structure_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "evidence_id": {
+          "name": "evidence_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "field_name": {
+          "name": "field_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "provenance_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "derivation_method": {
+          "name": "derivation_method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "partial_structure_evidence_evidence_id_idx": {
+          "name": "partial_structure_evidence_evidence_id_idx",
+          "columns": [
+            {
+              "expression": "evidence_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "partial_structure_evidence_partial_structure_id_partial_structures_id_fk": {
+          "name": "partial_structure_evidence_partial_structure_id_partial_structures_id_fk",
+          "tableFrom": "partial_structure_evidence",
+          "tableTo": "partial_structures",
+          "columnsFrom": [
+            "partial_structure_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "partial_structure_evidence_evidence_id_source_evidence_id_fk": {
+          "name": "partial_structure_evidence_evidence_id_source_evidence_id_fk",
+          "tableFrom": "partial_structure_evidence",
+          "tableTo": "source_evidence",
+          "columnsFrom": [
+            "evidence_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "partial_structure_evidence_partial_structure_id_evidence_id_field_name_pk": {
+          "name": "partial_structure_evidence_partial_structure_id_evidence_id_field_name_pk",
+          "columns": [
+            "partial_structure_id",
+            "evidence_id",
+            "field_name"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "partial_structure_evidence_field_name_valid": {
+          "name": "partial_structure_evidence_field_name_valid",
+          "value": "\"partial_structure_evidence\".\"field_name\" in (\n        '$', 'externalPartialStructureNumber', 'name', 'constructionYear', 'structureType',\n        'structuralSystem', 'lengthM', 'widthM', 'areaSqM', 'clearHeightM', 'spanCount'\n      )"
+        },
+        "partial_structure_evidence_derivation_valid": {
+          "name": "partial_structure_evidence_derivation_valid",
+          "value": "(\"partial_structure_evidence\".\"kind\" = 'SOURCE_FACT' and \"partial_structure_evidence\".\"derivation_method\" is null)\n        or (\"partial_structure_evidence\".\"kind\" = 'DERIVED' and nullif(btrim(\"partial_structure_evidence\".\"derivation_method\"), '') is not null)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.recommendation_evidence": {
+      "name": "recommendation_evidence",
+      "schema": "",
+      "columns": {
+        "recommendation_id": {
+          "name": "recommendation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "evidence_id": {
+          "name": "evidence_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "field_name": {
+          "name": "field_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "provenance_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "derivation_method": {
+          "name": "derivation_method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "recommendation_evidence_evidence_id_idx": {
+          "name": "recommendation_evidence_evidence_id_idx",
+          "columns": [
+            {
+              "expression": "evidence_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "recommendation_evidence_recommendation_id_recommendations_id_fk": {
+          "name": "recommendation_evidence_recommendation_id_recommendations_id_fk",
+          "tableFrom": "recommendation_evidence",
+          "tableTo": "recommendations",
+          "columnsFrom": [
+            "recommendation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "recommendation_evidence_evidence_id_source_evidence_id_fk": {
+          "name": "recommendation_evidence_evidence_id_source_evidence_id_fk",
+          "tableFrom": "recommendation_evidence",
+          "tableTo": "source_evidence",
+          "columnsFrom": [
+            "evidence_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "recommendation_evidence_recommendation_id_evidence_id_field_name_pk": {
+          "name": "recommendation_evidence_recommendation_id_evidence_id_field_name_pk",
+          "columns": [
+            "recommendation_id",
+            "evidence_id",
+            "field_name"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "recommendation_evidence_field_name_valid": {
+          "name": "recommendation_evidence_field_name_valid",
+          "value": "\"recommendation_evidence\".\"field_name\" in (\n        '$', 'workType', 'description', 'urgency', 'quantity', 'unit',\n        'sourceEstimatedCost', 'sourceEstimatedCostCurrency', 'targetYear', 'plannedYear', 'status'\n      )"
+        },
+        "recommendation_evidence_derivation_valid": {
+          "name": "recommendation_evidence_derivation_valid",
+          "value": "(\"recommendation_evidence\".\"kind\" = 'SOURCE_FACT' and \"recommendation_evidence\".\"derivation_method\" is null)\n        or (\"recommendation_evidence\".\"kind\" = 'DERIVED' and nullif(btrim(\"recommendation_evidence\".\"derivation_method\"), '') is not null)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.source_evidence": {
+      "name": "source_evidence",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "document_id": {
+          "name": "document_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "extraction_run_id": {
+          "name": "extraction_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "page_number": {
+          "name": "page_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_excerpt": {
+          "name": "source_excerpt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bounding_box_x": {
+          "name": "bounding_box_x",
+          "type": "numeric(8, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bounding_box_y": {
+          "name": "bounding_box_y",
+          "type": "numeric(8, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bounding_box_width": {
+          "name": "bounding_box_width",
+          "type": "numeric(8, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bounding_box_height": {
+          "name": "bounding_box_height",
+          "type": "numeric(8, 6)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "extraction_confidence": {
+          "name": "extraction_confidence",
+          "type": "numeric(4, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "extraction_method": {
+          "name": "extraction_method",
+          "type": "extraction_method",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "review_state": {
+          "name": "review_state",
+          "type": "evidence_review_state",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "source_evidence_document_page_idx": {
+          "name": "source_evidence_document_page_idx",
+          "columns": [
+            {
+              "expression": "document_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "page_number",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "source_evidence_extraction_run_idx": {
+          "name": "source_evidence_extraction_run_idx",
+          "columns": [
+            {
+              "expression": "extraction_run_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "source_evidence_document_id_documents_id_fk": {
+          "name": "source_evidence_document_id_documents_id_fk",
+          "tableFrom": "source_evidence",
+          "tableTo": "documents",
+          "columnsFrom": [
+            "document_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "source_evidence_extraction_run_id_document_extraction_runs_id_fk": {
+          "name": "source_evidence_extraction_run_id_document_extraction_runs_id_fk",
+          "tableFrom": "source_evidence",
+          "tableTo": "document_extraction_runs",
+          "columnsFrom": [
+            "extraction_run_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "source_evidence_positive_page_number": {
+          "name": "source_evidence_positive_page_number",
+          "value": "\"source_evidence\".\"page_number\" is null or \"source_evidence\".\"page_number\" > 0"
+        },
+        "source_evidence_excerpt_not_blank": {
+          "name": "source_evidence_excerpt_not_blank",
+          "value": "\"source_evidence\".\"source_excerpt\" is null or btrim(\"source_evidence\".\"source_excerpt\") <> ''"
+        },
+        "source_evidence_bounding_box_complete": {
+          "name": "source_evidence_bounding_box_complete",
+          "value": "(\n        \"source_evidence\".\"bounding_box_x\" is null and \"source_evidence\".\"bounding_box_y\" is null\n        and \"source_evidence\".\"bounding_box_width\" is null and \"source_evidence\".\"bounding_box_height\" is null\n      ) or (\n        \"source_evidence\".\"bounding_box_x\" is not null and \"source_evidence\".\"bounding_box_y\" is not null\n        and \"source_evidence\".\"bounding_box_width\" is not null and \"source_evidence\".\"bounding_box_height\" is not null\n        and \"source_evidence\".\"page_number\" is not null\n      )"
+        },
+        "source_evidence_bounding_box_range": {
+          "name": "source_evidence_bounding_box_range",
+          "value": "\"source_evidence\".\"bounding_box_x\" is null or (\n        \"source_evidence\".\"bounding_box_x\" between 0 and 1\n        and \"source_evidence\".\"bounding_box_y\" between 0 and 1\n        and \"source_evidence\".\"bounding_box_width\" > 0 and \"source_evidence\".\"bounding_box_width\" <= 1\n        and \"source_evidence\".\"bounding_box_height\" > 0 and \"source_evidence\".\"bounding_box_height\" <= 1\n        and \"source_evidence\".\"bounding_box_x\" + \"source_evidence\".\"bounding_box_width\" <= 1\n        and \"source_evidence\".\"bounding_box_y\" + \"source_evidence\".\"bounding_box_height\" <= 1\n      )"
+        },
+        "source_evidence_confidence_range": {
+          "name": "source_evidence_confidence_range",
+          "value": "\"source_evidence\".\"extraction_confidence\" is null or \"source_evidence\".\"extraction_confidence\" between 0 and 1"
+        },
+        "source_evidence_run_method": {
+          "name": "source_evidence_run_method",
+          "value": "\"source_evidence\".\"extraction_run_id\" is null or \"source_evidence\".\"extraction_method\" = 'MODEL_EXTRACTION'"
+        },
+        "source_evidence_review_state": {
+          "name": "source_evidence_review_state",
+          "value": "(\"source_evidence\".\"review_state\" is null or \"source_evidence\".\"extraction_method\" = 'MODEL_EXTRACTION')\n        and (\"source_evidence\".\"extraction_run_id\" is null or \"source_evidence\".\"review_state\" is not null)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.traffic_observation_evidence": {
+      "name": "traffic_observation_evidence",
+      "schema": "",
+      "columns": {
+        "traffic_observation_id": {
+          "name": "traffic_observation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "evidence_id": {
+          "name": "evidence_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "field_name": {
+          "name": "field_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "provenance_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "derivation_method": {
+          "name": "derivation_method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "traffic_observation_evidence_evidence_id_idx": {
+          "name": "traffic_observation_evidence_evidence_id_idx",
+          "columns": [
+            {
+              "expression": "evidence_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "traffic_observation_evidence_traffic_observation_id_traffic_observations_id_fk": {
+          "name": "traffic_observation_evidence_traffic_observation_id_traffic_observations_id_fk",
+          "tableFrom": "traffic_observation_evidence",
+          "tableTo": "traffic_observations",
+          "columnsFrom": [
+            "traffic_observation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "traffic_observation_evidence_evidence_id_source_evidence_id_fk": {
+          "name": "traffic_observation_evidence_evidence_id_source_evidence_id_fk",
+          "tableFrom": "traffic_observation_evidence",
+          "tableTo": "source_evidence",
+          "columnsFrom": [
+            "evidence_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "traffic_observation_evidence_traffic_observation_id_evidence_id_field_name_pk": {
+          "name": "traffic_observation_evidence_traffic_observation_id_evidence_id_field_name_pk",
+          "columns": [
+            "traffic_observation_id",
+            "evidence_id",
+            "field_name"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "traffic_observation_evidence_field_name_valid": {
+          "name": "traffic_observation_evidence_field_name_valid",
+          "value": "\"traffic_observation_evidence\".\"field_name\" in (\n        '$', 'observationYear', 'observedOn', 'dailyTraffic', 'truckSharePercent',\n        'sourceDescription'\n      )"
+        },
+        "traffic_observation_evidence_derivation_valid": {
+          "name": "traffic_observation_evidence_derivation_valid",
+          "value": "(\"traffic_observation_evidence\".\"kind\" = 'SOURCE_FACT' and \"traffic_observation_evidence\".\"derivation_method\" is null)\n        or (\"traffic_observation_evidence\".\"kind\" = 'DERIVED' and nullif(btrim(\"traffic_observation_evidence\".\"derivation_method\"), '') is not null)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.recommendation_findings": {
+      "name": "recommendation_findings",
+      "schema": "",
+      "columns": {
+        "bridge_id": {
+          "name": "bridge_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "partial_structure_id": {
+          "name": "partial_structure_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recommendation_id": {
+          "name": "recommendation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "finding_id": {
+          "name": "finding_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "recommendation_findings_finding_id_idx": {
+          "name": "recommendation_findings_finding_id_idx",
+          "columns": [
+            {
+              "expression": "finding_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "recommendation_findings_recommendation_scope_fk": {
+          "name": "recommendation_findings_recommendation_scope_fk",
+          "tableFrom": "recommendation_findings",
+          "tableTo": "recommendations",
+          "columnsFrom": [
+            "recommendation_id",
+            "bridge_id",
+            "partial_structure_id"
+          ],
+          "columnsTo": [
+            "id",
+            "bridge_id",
+            "partial_structure_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "recommendation_findings_finding_scope_fk": {
+          "name": "recommendation_findings_finding_scope_fk",
+          "tableFrom": "recommendation_findings",
+          "tableTo": "findings",
+          "columnsFrom": [
+            "finding_id",
+            "bridge_id",
+            "partial_structure_id"
+          ],
+          "columnsTo": [
+            "id",
+            "bridge_id",
+            "partial_structure_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "recommendation_findings_pk": {
+          "name": "recommendation_findings_pk",
+          "columns": [
+            "recommendation_id",
+            "finding_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.recommendations": {
+      "name": "recommendations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "bridge_id": {
+          "name": "bridge_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "partial_structure_id": {
+          "name": "partial_structure_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "work_type": {
+          "name": "work_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "urgency": {
+          "name": "urgency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "numeric(16, 3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "unit": {
+          "name": "unit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_estimated_cost": {
+          "name": "source_estimated_cost",
+          "type": "numeric(16, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_estimated_cost_currency": {
+          "name": "source_estimated_cost_currency",
+          "type": "char(3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "target_year": {
+          "name": "target_year",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "planned_year": {
+          "name": "planned_year",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "recommendation_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "recommendations_bridge_status_idx": {
+          "name": "recommendations_bridge_status_idx",
+          "columns": [
+            {
+              "expression": "bridge_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "recommendations_partial_structure_idx": {
+          "name": "recommendations_partial_structure_idx",
+          "columns": [
+            {
+              "expression": "partial_structure_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "recommendations_planned_year_idx": {
+          "name": "recommendations_planned_year_idx",
+          "columns": [
+            {
+              "expression": "planned_year",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "recommendations_global_search_trgm_idx": {
+          "name": "recommendations_global_search_trgm_idx",
+          "columns": [
+            {
+              "expression": "(\n        coalesce(\"work_type\", '') || ' ' ||\n        coalesce(\"description\", '') || ' ' ||\n        coalesce(\"urgency\", '')\n      ) gin_trgm_ops",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "gin",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "recommendations_bridge_id_bridges_id_fk": {
+          "name": "recommendations_bridge_id_bridges_id_fk",
+          "tableFrom": "recommendations",
+          "tableTo": "bridges",
+          "columnsFrom": [
+            "bridge_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "recommendations_partial_structure_bridge_fk": {
+          "name": "recommendations_partial_structure_bridge_fk",
+          "tableFrom": "recommendations",
+          "tableTo": "partial_structures",
+          "columnsFrom": [
+            "partial_structure_id",
+            "bridge_id"
+          ],
+          "columnsTo": [
+            "id",
+            "bridge_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "recommendations_id_bridge_partial_unique": {
+          "name": "recommendations_id_bridge_partial_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "bridge_id",
+            "partial_structure_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "recommendations_description_not_blank": {
+          "name": "recommendations_description_not_blank",
+          "value": "\"recommendations\".\"description\" is null or btrim(\"recommendations\".\"description\") <> ''"
+        },
+        "recommendations_quantity_unit_pair": {
+          "name": "recommendations_quantity_unit_pair",
+          "value": "(\"recommendations\".\"quantity\" is null and \"recommendations\".\"unit\" is null)\n        or (\"recommendations\".\"quantity\" >= 0 and nullif(btrim(\"recommendations\".\"unit\"), '') is not null)"
+        },
+        "recommendations_estimated_cost_pair": {
+          "name": "recommendations_estimated_cost_pair",
+          "value": "(\"recommendations\".\"source_estimated_cost\" is null and \"recommendations\".\"source_estimated_cost_currency\" is null)\n        or (\"recommendations\".\"source_estimated_cost\" >= 0 and \"recommendations\".\"source_estimated_cost_currency\" ~ '^[A-Z]{3}$')"
+        },
+        "recommendations_year_ranges": {
+          "name": "recommendations_year_ranges",
+          "value": "(\"recommendations\".\"target_year\" is null or \"recommendations\".\"target_year\" between 1700 and 2200)\n        and (\"recommendations\".\"planned_year\" is null or \"recommendations\".\"planned_year\" between 1700 and 2200)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.traffic_observations": {
+      "name": "traffic_observations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "bridge_id": {
+          "name": "bridge_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "observation_year": {
+          "name": "observation_year",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "observed_on": {
+          "name": "observed_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "daily_traffic": {
+          "name": "daily_traffic",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "truck_share_percent": {
+          "name": "truck_share_percent",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_description": {
+          "name": "source_description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "traffic_observations_bridge_year_idx": {
+          "name": "traffic_observations_bridge_year_idx",
+          "columns": [
+            {
+              "expression": "bridge_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "observation_year",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "traffic_observations_bridge_id_bridges_id_fk": {
+          "name": "traffic_observations_bridge_id_bridges_id_fk",
+          "tableFrom": "traffic_observations",
+          "tableTo": "bridges",
+          "columnsFrom": [
+            "bridge_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "traffic_observations_year_range": {
+          "name": "traffic_observations_year_range",
+          "value": "\"traffic_observations\".\"observation_year\" between 1900 and 2200"
+        },
+        "traffic_observations_date_matches_year": {
+          "name": "traffic_observations_date_matches_year",
+          "value": "\"traffic_observations\".\"observed_on\" is null or extract(year from \"traffic_observations\".\"observed_on\") = \"traffic_observations\".\"observation_year\""
+        },
+        "traffic_observations_non_negative_daily_traffic": {
+          "name": "traffic_observations_non_negative_daily_traffic",
+          "value": "\"traffic_observations\".\"daily_traffic\" is null or \"traffic_observations\".\"daily_traffic\" >= 0"
+        },
+        "traffic_observations_truck_share_range": {
+          "name": "traffic_observations_truck_share_range",
+          "value": "\"traffic_observations\".\"truck_share_percent\" is null or \"traffic_observations\".\"truck_share_percent\" between 0 and 100"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.work_packages": {
+      "name": "work_packages",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "planned_intervention_id": {
+          "name": "planned_intervention_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recommendation_id": {
+          "name": "recommendation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bridge_id": {
+          "name": "bridge_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "partial_structure_id": {
+          "name": "partial_structure_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "work_package_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'DRAFT'"
+        },
+        "snapshot_version": {
+          "name": "snapshot_version",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "snapshot": {
+          "name": "snapshot",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "generated_at": {
+          "name": "generated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "work_packages_bridge_generated_idx": {
+          "name": "work_packages_bridge_generated_idx",
+          "columns": [
+            {
+              "expression": "bridge_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "generated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "work_packages_status_idx": {
+          "name": "work_packages_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "work_packages_planned_intervention_scope_fk": {
+          "name": "work_packages_planned_intervention_scope_fk",
+          "tableFrom": "work_packages",
+          "tableTo": "planned_interventions",
+          "columnsFrom": [
+            "planned_intervention_id",
+            "recommendation_id",
+            "bridge_id",
+            "partial_structure_id"
+          ],
+          "columnsTo": [
+            "id",
+            "recommendation_id",
+            "bridge_id",
+            "partial_structure_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "work_packages_planned_intervention_unique": {
+          "name": "work_packages_planned_intervention_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "planned_intervention_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "work_packages_title_not_blank": {
+          "name": "work_packages_title_not_blank",
+          "value": "btrim(\"work_packages\".\"title\") <> ''"
+        },
+        "work_packages_snapshot_version_v1": {
+          "name": "work_packages_snapshot_version_v1",
+          "value": "\"work_packages\".\"snapshot_version\" = 1"
+        },
+        "work_packages_snapshot_object": {
+          "name": "work_packages_snapshot_object",
+          "value": "jsonb_typeof(\"work_packages\".\"snapshot\") = 'object'"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.bridge_data_origin": {
+      "name": "bridge_data_origin",
+      "schema": "public",
+      "values": [
+        "EXTRACTED",
+        "USER_ENTERED",
+        "DEMO_FIXTURE"
+      ]
+    },
+    "public.document_processing_status": {
+      "name": "document_processing_status",
+      "schema": "public",
+      "values": [
+        "UPLOADED",
+        "PARSING",
+        "PARSED",
+        "EXTRACTION_PENDING",
+        "EXTRACTED",
+        "FAILED"
+      ]
+    },
+    "public.document_status": {
+      "name": "document_status",
+      "schema": "public",
+      "values": [
+        "UPLOADED",
+        "PROCESSING",
+        "READY",
+        "FAILED"
+      ]
+    },
+    "public.evidence_review_state": {
+      "name": "evidence_review_state",
+      "schema": "public",
+      "values": [
+        "AUTOMATICALLY_EXTRACTED",
+        "HUMAN_CONFIRMED",
+        "HUMAN_REJECTED"
+      ]
+    },
+    "public.extraction_invocation_status": {
+      "name": "extraction_invocation_status",
+      "schema": "public",
+      "values": [
+        "RUNNING",
+        "SUCCEEDED",
+        "FAILED"
+      ]
+    },
+    "public.extraction_method": {
+      "name": "extraction_method",
+      "schema": "public",
+      "values": [
+        "MANUAL",
+        "TEXT_EXTRACTION",
+        "OCR",
+        "MODEL_EXTRACTION",
+        "IMPORT",
+        "OTHER"
+      ]
+    },
+    "public.extraction_run_status": {
+      "name": "extraction_run_status",
+      "schema": "public",
+      "values": [
+        "PENDING",
+        "CLASSIFYING",
+        "EXTRACTING",
+        "VALIDATING",
+        "PERSISTING",
+        "SUCCEEDED",
+        "FAILED"
+      ]
+    },
+    "public.finding_status": {
+      "name": "finding_status",
+      "schema": "public",
+      "values": [
+        "OPEN",
+        "MONITORING",
+        "RESOLVED",
+        "DISMISSED"
+      ]
+    },
+    "public.inspection_type": {
+      "name": "inspection_type",
+      "schema": "public",
+      "values": [
+        "MAIN",
+        "SIMPLE",
+        "SPECIAL",
+        "OTHER"
+      ]
+    },
+    "public.intervention_estimate_source": {
+      "name": "intervention_estimate_source",
+      "schema": "public",
+      "values": [
+        "USER_PLANNING",
+        "EXTERNAL_ENRICHED"
+      ]
+    },
+    "public.intervention_estimate_status": {
+      "name": "intervention_estimate_status",
+      "schema": "public",
+      "values": [
+        "DRAFT",
+        "REVIEWED"
+      ]
+    },
+    "public.planned_intervention_status": {
+      "name": "planned_intervention_status",
+      "schema": "public",
+      "values": [
+        "PLANNED",
+        "BUDGETED",
+        "TENDER_PREPARATION",
+        "TENDERED_READY",
+        "IN_PROGRESS",
+        "COMPLETED"
+      ]
+    },
+    "public.provenance_kind": {
+      "name": "provenance_kind",
+      "schema": "public",
+      "values": [
+        "SOURCE_FACT",
+        "DERIVED"
+      ]
+    },
+    "public.recommendation_status": {
+      "name": "recommendation_status",
+      "schema": "public",
+      "values": [
+        "OPEN",
+        "APPROVED",
+        "SCHEDULED",
+        "IN_PROGRESS",
+        "COMPLETED",
+        "CANCELLED"
+      ]
+    },
+    "public.work_package_status": {
+      "name": "work_package_status",
+      "schema": "public",
+      "values": [
+        "DRAFT",
+        "READY_FOR_REVIEW",
+        "ARCHIVED"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

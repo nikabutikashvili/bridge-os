@@ -1,0 +1,15 @@
+**/node_modules
+**/.next
+**/dist
+.turbo
+.pnpm-store
+.git
+.data
+fixtures/bauwerksbuch/*.pdf
+*.tsbuildinfo
+.env
+.env.local
+.env.*.local
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*

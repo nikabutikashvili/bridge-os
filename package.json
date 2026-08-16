@@ -1,0 +1,32 @@
+{
+  "name": "bridge-os-challenge",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "turbo dev",
+    "extract": "pnpm --filter @bridge-os/api extract",
+    "fixtures:ingest": "pnpm --filter @bridge-os/api fixtures:ingest",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "db:generate": "pnpm --filter @bridge-os/db db:generate",
+    "db:migrate": "pnpm --filter @bridge-os/db db:migrate",
+    "db:seed": "pnpm --filter @bridge-os/db db:seed",
+    "db:reset:dev": "pnpm --filter @bridge-os/db db:reset:dev"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.20.0",
+    "@next/eslint-plugin-next": "15.5.23",
+    "@types/node": "^22.13.0",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.30.4",
+    "eslint": "^9.20.1",
+    "tsx": "^4.19.2",
+    "turbo": "^2.4.2",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.24.0",
+    "vitest": "^3.0.5"
+  }
+}

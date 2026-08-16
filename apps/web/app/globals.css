@@ -1,0 +1,231 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/*
+ * Industrial object-workspace tokens. Color is signal, not decoration:
+ * white/steel for structure, amber/red only when a value is abnormal.
+ *
+ * Type: Geist Sans for UI, Geist Mono for every quantitative value.
+ *   Object title    12px mono uppercase tracking-[0.16em]
+ *   HUD value       22px mono tabular
+ *   Table body      12px
+ *   Overline / th   10px mono uppercase tracking-[0.14em]
+ */
+@theme inline {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent-tint);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-surface: var(--surface);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-text-subtle: var(--text-subtle);
+  --color-row-hover: var(--row-hover);
+  --color-panel-border: var(--panel-border);
+  --color-accent-line: var(--accent-line);
+
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-success-border: var(--success-border-soft);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-border: var(--warning-border);
+  --color-warning-border-strong: var(--warning-border-strong);
+  --color-warning-text-strong: var(--warning-text-strong);
+  --color-warning-text-soft: var(--warning-text-soft);
+  --color-critical: var(--critical);
+  --color-critical-bg: var(--critical-bg);
+  --color-critical-border: var(--critical-border);
+  --color-critical-text-soft: var(--critical-text-soft);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-info-border: var(--info-border-soft);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-hover: var(--sidebar-hover);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-sidebar-text: var(--sidebar-text);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-link: var(--sidebar-link);
+
+  --radius-sm: 1px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
+  --radius-2xl: 2px;
+}
+
+:root {
+  color-scheme: light;
+
+  --background: #f3f3f1;
+  --foreground: #161616;
+  --card: #ffffff;
+  --card-foreground: #161616;
+  --popover: #ffffff;
+  --popover-foreground: #161616;
+  --primary: #161616;
+  --primary-foreground: #f3f3f1;
+  --secondary: #e8e8e4;
+  --secondary-foreground: #161616;
+  --muted: #e8e8e4;
+  --muted-foreground: #4f545c;
+  --accent-foreground: #161616;
+  --destructive: #c43c32;
+  --destructive-foreground: #ffffff;
+  --input: #c4c4be;
+  --ring: #161616;
+  --radius: 0.125rem;
+
+  --bg: #f3f3f1;
+  --surface: #ffffff;
+  --surface-subtle: #ecece8;
+  --surface-muted: #e8e8e4;
+  --text: #161616;
+  --text-muted: #4f545c;
+  --text-subtle: #6a6f76;
+  --border: #d8d8d2;
+  --border-strong: #c4c4be;
+  --sidebar: #f3f3f1;
+  --sidebar-hover: #ecece8;
+  --sidebar-active: #e4e4de;
+  --sidebar-text: #161616;
+  --sidebar-muted: #6a6f76;
+  --sidebar-link: #4f545c;
+  --accent: #161616;
+  --accent-strong: #161616;
+  --accent-line: #d8d8d2;
+  --accent-tint: #ecece8;
+  --accent-selection: #d4dde6;
+  --focus: #161616;
+  --success: #1f7a4d;
+  --success-bg: rgb(31 122 77 / 10%);
+  --warning: #8a6508;
+  --warning-bg: rgb(138 101 8 / 10%);
+  --warning-border: rgb(138 101 8 / 24%);
+  --warning-border-strong: #8a6508;
+  --warning-text-strong: #8a6508;
+  --warning-text-soft: #6f5614;
+  --critical: #c43c32;
+  --critical-bg: rgb(196 60 50 / 10%);
+  --critical-border: rgb(196 60 50 / 24%);
+  --critical-text-soft: #9a3c36;
+  --info: #215f86;
+  --info-bg: rgb(33 95 134 / 10%);
+  --info-border-soft: rgb(33 95 134 / 24%);
+  --success-border-soft: rgb(31 122 77 / 24%);
+  --row-hover: rgb(22 22 22 / 4%);
+  --panel-border: #d8d8d2;
+  --radius-pill: 2px;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: 0 12px 40px rgb(22 22 22 / 12%);
+  --shadow-panel: 0 16px 48px rgb(22 22 22 / 16%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    scrollbar-color: var(--border-strong) transparent;
+    scrollbar-width: thin;
+  }
+
+  html {
+    min-height: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100%;
+    margin: 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+  }
+
+  button,
+  select {
+    cursor: pointer;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  svg {
+    flex: 0 0 auto;
+  }
+
+  ::selection {
+    background: var(--accent-selection);
+    color: var(--foreground);
+  }
+}
+
+::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--border-strong);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-subtle);
+}
+
+:focus-visible {
+  outline: 1px solid var(--focus);
+  outline-offset: 1px;
+}
+
+.sr-only {
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}

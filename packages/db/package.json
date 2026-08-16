@@ -1,0 +1,36 @@
+{
+  "name": "@bridge-os/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./schema": {
+      "types": "./dist/schema/index.d.ts",
+      "import": "./dist/schema/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "db:generate": "pnpm build && node -r ../../scripts/register-env.cjs ../../node_modules/drizzle-kit/bin.cjs generate",
+    "db:migrate": "node -r ../../scripts/register-env.cjs --import tsx src/migrate.ts",
+    "db:seed": "node -r ../../scripts/register-env.cjs --import tsx src/seed.ts",
+    "db:reset:dev": "node -r ../../scripts/register-env.cjs --import tsx src/reset-development.ts",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.39.3",
+    "pg": "^8.13.3",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.11"
+  }
+}
