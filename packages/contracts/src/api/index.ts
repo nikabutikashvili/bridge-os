@@ -1,5 +1,6 @@
 export * from "./bridges.js";
 export * from "./budget.js";
+export * from "./budget-scenarios.js";
 export * from "./common.js";
 export * from "./documents.js";
 export * from "./document-overview.js";

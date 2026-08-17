@@ -51,6 +51,16 @@ export const interventionEstimateStatusEnum = pgEnum(
   ["DRAFT", "REVIEWED"]
 );
 
+export const budgetScenarioStatusEnum = pgEnum("budget_scenario_status", [
+  "DRAFT",
+  "ADOPTED"
+]);
+
+export const budgetScenarioAssignmentSourceEnum = pgEnum(
+  "budget_scenario_assignment_source",
+  ["SEEDED", "AUTO_FILL", "USER_OVERRIDE"]
+);
+
 export const workPackageStatusEnum = pgEnum("work_package_status", [
   "DRAFT",
   "READY_FOR_REVIEW",

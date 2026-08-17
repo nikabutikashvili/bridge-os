@@ -1,5 +1,6 @@
 import {
   budgetResponseSchema,
+  createBudgetScenarioSchema,
   updateBudgetSchema,
   updateBudgetMembershipSchema
 } from "../src/index.js";
@@ -43,5 +44,21 @@ describe("budget API contracts", () => {
       }
     });
     expect(result.success).toBe(true);
+  });
+
+  it("accepts a named scenario with an optional annual envelope", () => {
+    expect(
+      createBudgetScenarioSchema.safeParse({
+        name: "€5m / year",
+        horizonStartYear: 2026
+      }).success
+    ).toBe(true);
+    expect(
+      createBudgetScenarioSchema.safeParse({
+        name: "€5m / year",
+        horizonStartYear: 2026,
+        annualEnvelope: { amount: "5000000.00", currency: "EUR" }
+      }).success
+    ).toBe(true);
   });
 });

@@ -6,6 +6,9 @@ import {
   bridges,
   budgetProgramInterventions,
   budgetPrograms,
+  budgetScenarioAssignments,
+  budgetScenarioEnvelopes,
+  budgetScenarios,
   components,
   documentExtractionInvocations,
   documentExtractionRuns,
@@ -33,6 +36,9 @@ describe("database schema", () => {
       partialStructures,
       budgetPrograms,
       budgetProgramInterventions,
+      budgetScenarios,
+      budgetScenarioEnvelopes,
+      budgetScenarioAssignments,
       components,
       documentExtractionRuns,
       documentExtractionInvocations,
@@ -58,6 +64,9 @@ describe("database schema", () => {
       "partial_structures",
       "budget_programs",
       "budget_program_interventions",
+      "budget_scenarios",
+      "budget_scenario_envelopes",
+      "budget_scenario_assignments",
       "components",
       "document_extraction_runs",
       "document_extraction_invocations",
@@ -117,6 +126,24 @@ describe("database schema", () => {
     );
     expect(membershipConfig.primaryKeys).toHaveLength(1);
     expect(membershipConfig.foreignKeys).toHaveLength(2);
+  });
+
+  it("stores budget scenarios independently of the live programme", () => {
+    const scenarioConfig = getTableConfig(budgetScenarios);
+    const envelopeConfig = getTableConfig(budgetScenarioEnvelopes);
+    const assignmentConfig = getTableConfig(budgetScenarioAssignments);
+
+    expect(scenarioConfig.checks.map((constraint) => constraint.name)).toEqual(
+      expect.arrayContaining([
+        "budget_scenarios_name_not_blank",
+        "budget_scenarios_horizon_years_range",
+        "budget_scenarios_adopted_at_matches_status"
+      ])
+    );
+    expect(envelopeConfig.primaryKeys).toHaveLength(1);
+    expect(envelopeConfig.foreignKeys).toHaveLength(1);
+    expect(assignmentConfig.primaryKeys).toHaveLength(1);
+    expect(assignmentConfig.foreignKeys).toHaveLength(2);
   });
 
   it("stores deterministic document parsing separately from asset facts", () => {

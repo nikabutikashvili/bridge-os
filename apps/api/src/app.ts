@@ -9,6 +9,8 @@ import Fastify, { type FastifyInstance } from "fastify";
 
 import { loadApiEnv, type ApiEnv } from "./config/env.js";
 import { registerErrorHandler } from "./errors/error-handler.js";
+import type { BudgetScenarioService } from "./features/budget/budget-scenario-service.js";
+import { PostgresBudgetScenarioService } from "./features/budget/postgres-budget-scenario-service.js";
 import type { BudgetService } from "./features/budget/budget-service.js";
 import { PostgresBudgetService } from "./features/budget/postgres-budget-service.js";
 import { registerBudgetRoutes } from "./features/budget/routes.js";
@@ -39,6 +41,7 @@ import { registerHealthRoute } from "./routes/health.js";
 export interface BuildAppOptions {
   readonly bridgePortfolioReader?: BridgePortfolioReader;
   readonly budgetService?: BudgetService;
+  readonly budgetScenarioService?: BudgetScenarioService;
   readonly databaseConnection?: DatabaseConnection;
   readonly documentService?: DocumentService;
   readonly documentOverviewReader?: DocumentOverviewReader;
@@ -101,7 +104,11 @@ export function buildApp(options: BuildAppOptions = {}): FastifyInstance {
     dependencies.bridgeReader,
     dependencies.documentStorage
   );
-  registerBudgetRoutes(app, dependencies.budgetService);
+  registerBudgetRoutes(
+    app,
+    dependencies.budgetService,
+    dependencies.budgetScenarioService
+  );
   registerDocumentRoutes(
     app,
     dependencies.documentService,
@@ -118,6 +125,7 @@ export function buildApp(options: BuildAppOptions = {}): FastifyInstance {
 interface AppDependencies {
   readonly bridgeReader: BridgePortfolioReader;
   readonly budgetService: BudgetService;
+  readonly budgetScenarioService: BudgetScenarioService;
   readonly documentService: DocumentService;
   readonly documentOverviewReader: DocumentOverviewReader;
   readonly documentStorage: DocumentStorage;
@@ -135,6 +143,7 @@ function resolveDependencies(
   const needsDatabase =
     options.bridgePortfolioReader === undefined ||
     options.budgetService === undefined ||
+    options.budgetScenarioService === undefined ||
     options.documentOverviewReader === undefined ||
     options.documentService === undefined ||
     options.planningService === undefined ||
@@ -154,6 +163,9 @@ function resolveDependencies(
     budgetService:
       options.budgetService ??
       new PostgresBudgetService(requireConnection(connection).db),
+    budgetScenarioService:
+      options.budgetScenarioService ??
+      new PostgresBudgetScenarioService(requireConnection(connection).db),
     documentService:
       options.documentService ??
       new DocumentIngestionService({

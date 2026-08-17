@@ -1,6 +1,5 @@
 import {
   budgetResponseSchema,
-  type BudgetItem,
   type BudgetQuery,
   type BudgetResponse,
   type UpdateBudget,
@@ -20,20 +19,19 @@ import {
 } from "@bridge-os/db";
 import { and, asc, desc, eq, inArray } from "drizzle-orm";
 
-import { deriveInspectionDueStatus } from "../planning/inspection-due.js";
-import { deriveMaintenancePriority } from "../planning/prioritization.js";
-import { orderBudgetItems, summarizeBudget } from "./calculations.js";
-import { adjustForConstructionPriceInflation } from "./inflation-adjustment.js";
+import {
+  groupBy,
+  latestTrafficByBridge,
+  mapBudgetItem,
+  moneyPair
+} from "./budget-item-map.js";
 import type {
   BudgetService,
   UpdateBudgetMembershipResult
 } from "./budget-service.js";
+import { orderBudgetItems, summarizeBudget } from "./calculations.js";
 
 type Clock = () => Date;
-type BaseRow = Awaited<ReturnType<PostgresBudgetService["loadBaseRows"]>>[number];
-type FindingRow = Awaited<ReturnType<PostgresBudgetService["loadFindingRows"]>>[number];
-type InspectionRow = Awaited<ReturnType<PostgresBudgetService["loadInspectionRows"]>>[number];
-type TrafficRow = Awaited<ReturnType<PostgresBudgetService["loadTrafficRows"]>>[number];
 
 export class PostgresBudgetService implements BudgetService {
   public constructor(
@@ -48,7 +46,7 @@ export class PostgresBudgetService implements BudgetService {
       this.loadBaseRows(query.year),
       this.loadAvailableYears()
     ]);
-    const approvedBudget = money(
+    const approvedBudget = moneyPair(
       program?.approvedBudgetAmount ?? null,
       program?.currency ?? null
     );
@@ -315,145 +313,6 @@ export class PostgresBudgetService implements BudgetService {
     ]);
     return [...new Set([...interventionYears, ...programYears].map((row) => row.year))].sort();
   }
-}
-
-function mapBudgetItem(
-  row: BaseRow,
-  findingRows: readonly FindingRow[],
-  inspectionRows: readonly InspectionRow[],
-  dailyTraffic: number | null,
-  asOf: string
-): BudgetItem {
-  const activeFindings = findingRows.filter(
-    (finding) => finding.status === "OPEN" || finding.status === "MONITORING"
-  );
-  const datedInspections = inspectionRows.filter(
-    (inspection): inspection is InspectionRow & { inspectedOn: string } =>
-      inspection.inspectedOn !== null
-  );
-  const scored = datedInspections.filter(
-    (inspection): inspection is typeof inspection & { conditionScore: string } =>
-      inspection.conditionScore !== null
-  );
-  const conditionDelta =
-    scored[0] === undefined || scored[1] === undefined
-      ? null
-      : (Number(scored[0].conditionScore) - Number(scored[1].conditionScore)).toFixed(1);
-  const sourceDate =
-    findingRows
-      .map((finding) => finding.inspectedOn)
-      .filter((date): date is string => date !== null)
-      .sort()[0] ?? null;
-  const interventionEstimate = money(
-    row.interventionEstimatedCost,
-    row.interventionEstimatedCostCurrency
-  );
-  const sourceEstimate = money(
-    row.sourceEstimatedCost,
-    row.sourceEstimatedCostCurrency
-  );
-  const inflationAdjustedEstimate =
-    sourceEstimate === null || sourceDate === null
-      ? null
-      : adjustForConstructionPriceInflation({
-          amount: sourceEstimate.amount,
-          currency: sourceEstimate.currency,
-          sourceYear: yearOf(sourceDate),
-          asOfYear: yearOf(asOf)
-        });
-  const estimate =
-    interventionEstimate === null ||
-    row.interventionEstimatedCostSource === null ||
-    row.interventionEstimatedCostStatus === null
-      ? sourceEstimate === null
-        ? null
-        : { ...sourceEstimate, source: "SOURCE_DOCUMENT" as const, status: null }
-      : {
-          ...interventionEstimate,
-          source: row.interventionEstimatedCostSource,
-          status: row.interventionEstimatedCostStatus
-        };
-
-  return {
-    bridge: {
-      id: row.bridgeId,
-      externalStructureNumber: row.bridgeExternalStructureNumber,
-      name: row.bridgeName,
-      road: row.bridgeRoad
-    },
-    intervention: {
-      id: row.interventionId,
-      workType: row.interventionWorkType,
-      plannedYear: row.interventionPlannedYear,
-      status: row.interventionStatus,
-      estimatedCost: interventionEstimate,
-      estimatedCostSource: row.interventionEstimatedCostSource,
-      estimatedCostStatus: row.interventionEstimatedCostStatus
-    },
-    sourceRecommendation: {
-      id: row.recommendationId,
-      urgency: row.recommendationUrgency,
-      targetYear: row.recommendationTargetYear,
-      sourceEstimatedCost: sourceEstimate,
-      sourceDate,
-      inflationAdjustedEstimate
-    },
-    estimate,
-    estimateRequired: estimate === null,
-    included: row.membershipInterventionId !== null,
-    priority: deriveMaintenancePriority({
-      asOf,
-      conditionDelta,
-      dailyTraffic,
-      inspectionStatus: deriveInspectionDueStatus(datedInspections[0], asOf),
-      maximumDurability: maximum(activeFindings, "durabilityRating"),
-      maximumStability: maximum(activeFindings, "stabilityRating"),
-      maximumTrafficSafety: maximum(activeFindings, "trafficSafetyRating"),
-      recommendationSourceDate: sourceDate,
-      urgency: row.recommendationUrgency
-    })
-  };
-}
-
-function groupBy<Row>(
-  rows: readonly Row[],
-  key: (row: Row) => string
-): Map<string, Row[]> {
-  const grouped = new Map<string, Row[]>();
-  for (const row of rows) {
-    const value = key(row);
-    grouped.set(value, [...(grouped.get(value) ?? []), row]);
-  }
-  return grouped;
-}
-
-function latestTrafficByBridge(rows: readonly TrafficRow[]): Map<string, TrafficRow> {
-  const latest = new Map<string, TrafficRow>();
-  for (const row of rows) {
-    if (!latest.has(row.bridgeId)) latest.set(row.bridgeId, row);
-  }
-  return latest;
-}
-
-function maximum(
-  rows: readonly FindingRow[],
-  key: "durabilityRating" | "stabilityRating" | "trafficSafetyRating"
-): number | null {
-  const values = rows
-    .map((row) => row[key])
-    .filter((value): value is number => value !== null);
-  return values.length === 0 ? null : Math.max(...values);
-}
-
-function money(
-  amount: string | null,
-  currency: string | null
-): { amount: string; currency: string } | null {
-  return amount === null || currency === null ? null : { amount, currency };
-}
-
-function yearOf(isoDate: string): number {
-  return Number(isoDate.slice(0, 4));
 }
 
 function ensureSelectedYear(years: readonly number[], selected: number): number[] {

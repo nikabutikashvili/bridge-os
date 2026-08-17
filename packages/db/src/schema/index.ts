@@ -1,5 +1,6 @@
 export * from "./bridges.js";
 export * from "./budget-programs.js";
+export * from "./budget-scenarios.js";
 export * from "./components.js";
 export * from "./documents.js";
 export * from "./enums.js";
