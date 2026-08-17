@@ -44,7 +44,7 @@ interface TabProps<Data> {
 
 function TableFrame({ children }: { readonly children: ReactNode }): React.ReactElement {
   return (
-    <div className="overflow-hidden border border-border bg-card">
+    <div className="overflow-hidden border border-border-strong bg-card">
       {children}
     </div>
   );
@@ -271,7 +271,7 @@ export function TechnicalDataTab({
     <div className="grid min-w-0 gap-6">
       <section aria-labelledby="responsibility-heading" className="grid min-h-[300px] min-w-0 content-start gap-3">
         <SectionHeader id="responsibility-heading" title="Network and responsibility" />
-        <dl className="m-0 grid grid-cols-5 border border-border bg-card">
+        <dl className="m-0 grid grid-cols-5 border border-border-strong bg-card">
           <ContextFact label="Road" value={bridge.road} />
           <ContextFact label="Crossed feature" value={bridge.location.crossedFeature} />
           <ContextFact label="Owner" value={bridge.responsibility.owner} />
@@ -475,7 +475,7 @@ export function DocumentsTab({
           meta={`${String(citations.length)} citations`}
           title="Evidence register"
         />
-        <div className="max-h-[520px] overflow-y-auto border border-border bg-card p-3.5">
+        <div className="max-h-[520px] overflow-y-auto border border-border-strong bg-card p-3.5">
           <EvidenceList bridgeId={bridge.id} citations={citations} />
         </div>
       </section>

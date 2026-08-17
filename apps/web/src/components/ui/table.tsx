@@ -26,7 +26,7 @@ function TableHeader({
   return (
     <thead
       className={cn(
-        "sticky top-0 z-10 bg-card [&_tr]:border-b [&_tr]:border-border",
+        "sticky top-0 z-10 bg-chrome text-chrome-foreground [&_tr]:border-b [&_tr]:border-chrome",
         className
       )}
       data-slot="table-header"
@@ -71,7 +71,7 @@ function TableHead({
   return (
     <th
       className={cn(
-        "h-8 whitespace-nowrap px-3 text-left align-middle font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground",
+        "h-8 whitespace-nowrap px-3 text-left align-middle font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-chrome-foreground",
         className
       )}
       data-slot="table-head"

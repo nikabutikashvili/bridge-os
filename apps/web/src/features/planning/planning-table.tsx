@@ -430,7 +430,7 @@ function PlanningPagination({
   return (
     <nav
       aria-label="Planning pages"
-      className="flex h-8 shrink-0 items-center justify-end gap-3 border-t border-border px-3 font-mono text-[11px] text-muted-foreground"
+      className="flex h-8 shrink-0 items-center justify-end gap-3 border-t border-border-strong bg-muted px-3 font-mono text-[11px] text-foreground"
     >
       <span className="tabular-nums">
         {pagination.page} / {pagination.totalPages}

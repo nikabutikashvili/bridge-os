@@ -59,7 +59,7 @@ export function SectionHeader({
       <div className="min-w-0">
         <div className="flex min-w-0 items-baseline gap-2">
           <h2
-            className="m-0 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-foreground"
+            className="m-0 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-chrome"
             id={id}
           >
             {title}

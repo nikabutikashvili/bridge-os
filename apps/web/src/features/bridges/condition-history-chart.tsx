@@ -60,7 +60,7 @@ export function ConditionHistoryChart({
 
   if (series.length === 0) {
     return (
-      <div className="border border-border bg-card">
+      <div className="border border-border-strong bg-card">
         <EmptyState
           compact
           description="No inspection has both a source date and condition score."
@@ -79,7 +79,7 @@ export function ConditionHistoryChart({
   }));
 
   return (
-    <div className="border border-border bg-card px-4 pb-3 pt-3">
+    <div className="border border-border-strong bg-card px-4 pb-3 pt-3">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <p className="m-0 font-mono text-[11px] text-muted-foreground">
           Discrete inspections · step holds until the next recorded score · Y reversed
@@ -196,7 +196,7 @@ function ConditionTooltip({
   const tone = conditionScoreTone(point.score);
 
   return (
-    <div className="grid gap-0.5 border border-border bg-card px-2.5 py-2">
+    <div className="grid gap-0.5 border border-border-strong bg-card px-2.5 py-2">
       <strong className="font-mono text-[11px] font-medium tabular-nums text-foreground">
         {formatGermanDate(point.date)}
       </strong>

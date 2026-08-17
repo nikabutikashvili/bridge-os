@@ -23,7 +23,7 @@ export function BridgeDetailTabs({
   bridgeId
 }: BridgeDetailTabsProps): React.ReactElement {
   return (
-    <div className="sticky top-0 z-10 mt-4 border-b border-border bg-background px-4">
+    <div className="sticky top-0 z-10 mt-4 border-b border-border-strong bg-background px-4">
       <RouteTabsList aria-label="Bridge detail sections" className="border-b-0">
         {tabs.map((tab) => (
           <RouteTabsTrigger

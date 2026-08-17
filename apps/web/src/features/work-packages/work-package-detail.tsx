@@ -152,7 +152,7 @@ export function WorkPackageDetail({
           id="commercial-heading"
           title="Commercial and planning basis"
         />
-        <dl className="m-0 grid grid-cols-4 border border-border bg-card">
+        <dl className="m-0 grid grid-cols-4 border border-border-strong bg-card">
           <ContextFact
             detail={estimateSourceLabel(snapshot.commercialPlanning.estimateSource)}
             label="Planning estimate"
@@ -195,7 +195,7 @@ export function WorkPackageDetail({
           id="readiness-heading"
           title="Readiness checklist"
         />
-        <ul className="m-0 grid list-none border border-border bg-card p-0">
+        <ul className="m-0 grid list-none border border-border-strong bg-card p-0">
           {snapshot.readiness.map((item) => (
             <li
               className="grid min-h-[52px] grid-cols-[8px_minmax(0,1fr)_auto] items-center gap-3 px-3 py-2.5 [&+&]:border-t [&+&]:border-border"
@@ -239,11 +239,11 @@ function HudStat({
   return (
     <div
       className={cn(
-        "grid min-w-0 gap-1.5 border border-border bg-card px-4 py-3",
+        "grid min-w-0 gap-1.5 border border-border-strong bg-card px-4 py-3",
         tone === "warning" && "border-l-[3px] border-l-warning"
       )}
     >
-      <span className="font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+      <span className="font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-chrome">
         {label}
       </span>
       <span
@@ -268,8 +268,8 @@ function SectionBlock({
   readonly children: ReactNode;
 }): React.ReactElement {
   return (
-    <div className="min-w-0 border border-border bg-card">
-      <h3 className="m-0 flex h-9 items-center gap-1.5 border-b border-border px-3 font-mono text-[11px] font-medium uppercase tracking-[0.14em]">
+    <div className="min-w-0 border border-border-strong bg-card">
+      <h3 className="m-0 flex h-9 items-center gap-1.5 bg-chrome px-3 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-chrome-foreground">
         {title}
       </h3>
       {children}
@@ -295,13 +295,13 @@ function FactList({ children }: { readonly children: ReactNode }): React.ReactEl
 function FindingsTable({ bridgeId, findings }: { readonly bridgeId: string; readonly findings: readonly Finding[] }): React.ReactElement {
   if (findings.length === 0) {
     return (
-      <div className="border border-border bg-card">
+      <div className="border border-border-strong bg-card">
         <EmptyState compact description="No finding association was captured for this intervention." title="No linked findings" />
       </div>
     );
   }
   return (
-    <div className="overflow-auto border border-border bg-card">
+    <div className="overflow-auto border border-border-strong bg-card">
       <Table>
         <TableCaption>Findings linked to the work package scope</TableCaption>
         <TableHeader>
@@ -363,9 +363,9 @@ function FindingsTable({ bridgeId, findings }: { readonly bridgeId: string; read
 function ComponentContext({ component }: { readonly component: Component }): React.ReactElement {
   const properties = Object.entries(component.additionalProperties ?? {});
   return (
-    <article className="min-w-0 border border-border bg-card">
-      <div className="flex h-9 items-center justify-between gap-2 border-b border-border px-3">
-        <strong className="truncate font-mono text-[11px] font-medium uppercase tracking-[0.12em]">
+    <article className="min-w-0 border border-border-strong bg-card">
+      <div className="flex h-9 items-center justify-between gap-2 bg-chrome px-3">
+        <strong className="truncate font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-chrome-foreground">
           {component.name ?? labelValue(component.type)}
         </strong>
         <StatusBadge>{labelValue(component.type)}</StatusBadge>
@@ -420,7 +420,7 @@ function OperationalContext({ snapshot }: { readonly snapshot: WorkPackageSnapsh
 function InspectionContext({ snapshot }: { readonly snapshot: WorkPackageSnapshot }): React.ReactElement {
   const latest = snapshot.evidence.latestInspection;
   return (
-    <dl className="m-0 grid grid-cols-4 border border-border bg-card">
+    <dl className="m-0 grid grid-cols-4 border border-border-strong bg-card">
       <ContextFact
         detail="Linked through findings"
         label="Source inspections"
@@ -451,7 +451,7 @@ function RelatedDocuments({ bridgeId, snapshot }: { readonly bridgeId: string; r
         Related documents and media
       </h3>
       {snapshot.evidence.documents.length > 0 ? (
-        <ul className="m-0 list-none border border-border bg-card p-0">
+        <ul className="m-0 list-none border border-border-strong bg-card p-0">
           {snapshot.evidence.documents.map((document) => {
             const pages = relatedPages(snapshot, document.id);
             return (

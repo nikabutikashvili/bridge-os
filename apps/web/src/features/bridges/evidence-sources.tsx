@@ -44,7 +44,7 @@ export function EvidenceSources({
         );
         return (
           <article
-            className="grid gap-2.5 border border-border bg-card p-3.5"
+            className="grid gap-2.5 border border-border-strong bg-card p-3.5"
             key={source.evidenceId}
           >
             <header className="grid grid-cols-[18px_minmax(0,1fr)_auto] items-start gap-2">

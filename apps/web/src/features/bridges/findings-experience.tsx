@@ -62,7 +62,7 @@ export function FindingsExperience({
         {data.length === 0 ? (
           <EmptyState compact title="No findings recorded" />
         ) : (
-          <div className="overflow-hidden border border-border bg-card">
+          <div className="overflow-hidden border border-border-strong bg-card">
             <Table className="min-w-[1570px] table-fixed">
               <TableCaption>Bridge findings</TableCaption>
               <TableHeader>

@@ -44,7 +44,7 @@ export function Metric({
         variant === "tile" ? "px-4 py-2.5" : "px-4 py-1"
       )}
     >
-      <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+      <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.16em] text-chrome">
         {label}
       </dt>
       <dd

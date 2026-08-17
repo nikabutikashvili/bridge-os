@@ -138,7 +138,7 @@ export function GlobalSearch(): React.ReactElement {
 
   return (
     <div className="relative w-[min(360px,38vw)]" ref={rootRef}>
-      <label className="flex h-7 w-full items-center gap-2 border border-border-strong bg-transparent px-2 text-muted-foreground transition-colors focus-within:border-foreground">
+      <label className="flex h-7 w-full items-center gap-2 border border-white/25 bg-white/10 px-2 text-chrome-muted transition-colors focus-within:border-white/60">
         <span className="sr-only">Search bridge records</span>
         {loading ? (
           <LoaderCircle aria-hidden="true" className="shrink-0 animate-spin" size={14} />
@@ -154,7 +154,7 @@ export function GlobalSearch(): React.ReactElement {
           aria-expanded={panelOpen}
           aria-label="Search bridges, findings, and recommendations"
           autoComplete="off"
-          className="h-full min-w-0 flex-1 border-0 bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted-foreground"
+          className="h-full min-w-0 flex-1 border-0 bg-transparent text-[13px] text-chrome-foreground outline-none placeholder:text-chrome-muted"
           onChange={(event) => {
             setQuery(event.target.value);
             setActiveIndex(-1);
@@ -167,7 +167,7 @@ export function GlobalSearch(): React.ReactElement {
           type="search"
           value={query}
         />
-        <kbd className="pointer-events-none hidden h-4 shrink-0 items-center font-mono text-[10px] tracking-[0.08em] text-muted-foreground sm:inline-flex">
+        <kbd className="pointer-events-none hidden h-4 shrink-0 items-center font-mono text-[10px] tracking-[0.08em] text-chrome-muted sm:inline-flex">
           ⌘K
         </kbd>
       </label>

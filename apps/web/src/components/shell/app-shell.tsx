@@ -58,20 +58,20 @@ export function AppShell({ children }: AppShellProps): React.ReactElement {
     <div className="grid h-screen grid-cols-[196px_minmax(0,1fr)] bg-background text-foreground">
       <aside
         aria-label="Primary navigation"
-        className="flex min-h-0 min-w-0 flex-col border-r border-border"
+        className="flex min-h-0 min-w-0 flex-col border-r border-chrome bg-sidebar text-sidebar-text"
       >
         <Link
           aria-label="Bridge OS portfolio"
-          className="flex h-9 items-center gap-2.5 border-b border-border px-3"
+          className="flex h-9 items-center gap-2.5 border-b border-white/15 px-3"
           href="/bridges"
         >
           <span aria-hidden="true" className="grid size-3.5 grid-cols-2 gap-px">
-            <span className="bg-foreground" />
-            <span className="bg-foreground/35" />
-            <span className="bg-foreground/35" />
-            <span className="bg-foreground" />
+            <span className="bg-chrome-foreground" />
+            <span className="bg-chrome-foreground/35" />
+            <span className="bg-chrome-foreground/35" />
+            <span className="bg-chrome-foreground" />
           </span>
-          <span className="font-mono text-[11px] font-medium tracking-[0.18em] text-foreground">
+          <span className="font-mono text-[11px] font-medium tracking-[0.18em] text-chrome-foreground">
             BRIDGE OS
           </span>
         </Link>
@@ -89,9 +89,9 @@ export function AppShell({ children }: AppShellProps): React.ReactElement {
                     aria-current={isActive ? "page" : undefined}
                     className={cn(
                       "flex h-8 items-center gap-2.5 border-l-2 border-transparent px-3 text-[12px] text-sidebar-link transition-colors",
-                      "hover:bg-sidebar-hover hover:text-foreground",
+                      "hover:bg-sidebar-hover hover:text-chrome-foreground",
                       isActive
-                        ? "border-l-foreground bg-sidebar-active text-foreground"
+                        ? "border-l-chrome-foreground bg-sidebar-active text-chrome-foreground"
                         : undefined
                     )}
                     href={href}
@@ -107,25 +107,25 @@ export function AppShell({ children }: AppShellProps): React.ReactElement {
       </aside>
 
       <div className="grid min-h-0 min-w-0 grid-rows-[36px_minmax(0,1fr)]">
-        <header className="flex h-9 items-center justify-between gap-4 border-b border-border px-3">
+        <header className="flex h-9 items-center justify-between gap-4 border-b border-chrome bg-chrome px-3 text-chrome-foreground">
           <nav
             aria-label="Breadcrumb"
-            className="flex min-w-0 items-center gap-2 font-mono text-[11px] tracking-[0.08em] text-muted-foreground"
+            className="flex min-w-0 items-center gap-2 font-mono text-[11px] tracking-[0.08em] text-chrome-muted"
           >
-            <Link className="hover:text-foreground" href="/bridges">
+            <Link className="hover:text-chrome-foreground" href="/bridges">
               BRIDGE OS
             </Link>
-            <span aria-hidden="true" className="text-border-strong">
+            <span aria-hidden="true" className="text-white/25">
               /
             </span>
-            <span aria-current="page" className="truncate text-foreground">
+            <span aria-current="page" className="truncate text-chrome-foreground">
               {(breadcrumbLabel ?? activeItem).toUpperCase()}
             </span>
           </nav>
 
           <div className="flex min-w-0 items-center justify-end gap-3">
             <GlobalSearch />
-            <span className="font-mono text-[10px] tracking-[0.18em] text-muted-foreground">
+            <span className="font-mono text-[10px] tracking-[0.18em] text-chrome-muted">
               DEMO
             </span>
           </div>

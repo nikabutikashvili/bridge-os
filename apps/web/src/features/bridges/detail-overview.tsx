@@ -112,7 +112,7 @@ function CurrentSvd({
           return (
             <dl
               className={cn(
-                "m-0 grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-end gap-3 border border-border bg-card px-4 py-3",
+                "m-0 grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-end gap-3 border border-border-strong bg-card px-4 py-3",
                 signal === "critical" && "border-l-[3px] border-l-critical",
                 signal === "warning" && "border-l-[3px] border-l-warning"
               )}
@@ -179,7 +179,7 @@ function CurrentActions({
         title="Current actions"
       />
       {active.length === 0 ? (
-        <div className="border border-border bg-card">
+        <div className="border border-border-strong bg-card">
           <EmptyState
             compact
             description="There are no recommendations in an active workflow state."
@@ -187,7 +187,7 @@ function CurrentActions({
           />
         </div>
       ) : (
-        <ol className="m-0 max-h-[420px] list-none overflow-y-auto border border-border bg-card p-0">
+        <ol className="m-0 max-h-[420px] list-none overflow-y-auto border border-border-strong bg-card p-0">
           {active.map((recommendation) => {
             const urgencyTerm = urgencyGermanTerm(recommendation.urgency);
             return (
@@ -267,7 +267,7 @@ function AssetContext({
   return (
     <section aria-labelledby="asset-context-heading" className="grid min-w-0 content-start gap-3">
       <SectionHeader id="asset-context-heading" title="Asset context" />
-      <dl className="m-0 grid grid-cols-5 border border-border bg-card">
+      <dl className="m-0 grid grid-cols-5 border border-border-strong bg-card">
         <ContextFact label="Construction year" value={structure?.constructionYear} />
         <ContextFact label="Structure type" value={structure?.structureType} />
         <ContextFact label="Structural system" value={structure?.structuralSystem} />
@@ -312,11 +312,11 @@ function AssetTimeline({
         title="Asset timeline"
       />
       {events.length === 0 ? (
-        <div className="border border-border bg-card">
+        <div className="border border-border-strong bg-card">
           <EmptyState compact title="No dated inspection or work history" />
         </div>
       ) : (
-        <div className="border border-border bg-card px-4 pt-3.5">
+        <div className="border border-border-strong bg-card px-4 pt-3.5">
           <Timeline label="Bridge inspection and work history">
             {events.map((event) => (
               <TimelineItem

@@ -87,12 +87,12 @@ function HudStat({
   return (
     <div
       className={cn(
-        "grid min-w-0 gap-1.5 border border-border bg-card px-4 py-3",
+        "grid min-w-0 gap-1.5 border border-border-strong bg-card px-4 py-3",
         tone === "critical" && "border-l-[3px] border-l-critical",
         tone === "warning" && "border-l-[3px] border-l-warning"
       )}
     >
-      <span className="font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+      <span className="font-mono text-[11px] font-medium uppercase tracking-[0.16em] text-chrome">
         {label}
       </span>
       <span

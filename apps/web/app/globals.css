@@ -2,8 +2,8 @@
 @import "tw-animate-css";
 
 /*
- * Industrial object-workspace tokens. Color is signal, not decoration:
- * white/steel for structure, amber/red only when a value is abnormal.
+ * Industrial object-workspace tokens. Structure uses slate chrome;
+ * amber/red/green remain signal colors for abnormal or confirmed values.
  *
  * Type: Geist Sans for UI, Geist Mono for every quantitative value.
  *   Object title    12px mono uppercase tracking-[0.16em]
@@ -35,6 +35,9 @@
   --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-chrome: var(--chrome);
+  --color-chrome-foreground: var(--chrome-foreground);
+  --color-chrome-muted: var(--chrome-muted);
 
   --color-surface: var(--surface);
   --color-surface-subtle: var(--surface-subtle);
@@ -77,64 +80,67 @@
 :root {
   color-scheme: light;
 
-  --background: #f3f3f1;
-  --foreground: #161616;
+  --background: #e7eaee;
+  --foreground: #1a1f24;
   --card: #ffffff;
-  --card-foreground: #161616;
+  --card-foreground: #1a1f24;
   --popover: #ffffff;
-  --popover-foreground: #161616;
-  --primary: #161616;
-  --primary-foreground: #f3f3f1;
-  --secondary: #e8e8e4;
-  --secondary-foreground: #161616;
-  --muted: #e8e8e4;
-  --muted-foreground: #4f545c;
-  --accent-foreground: #161616;
+  --popover-foreground: #1a1f24;
+  --primary: #2a4056;
+  --primary-foreground: #f3f6f8;
+  --secondary: #dce3ea;
+  --secondary-foreground: #1a1f24;
+  --muted: #dce3ea;
+  --muted-foreground: #3a424a;
+  --accent-foreground: #1a1f24;
   --destructive: #c43c32;
   --destructive-foreground: #ffffff;
-  --input: #c4c4be;
-  --ring: #161616;
+  --input: #8e959c;
+  --ring: #2a4056;
   --radius: 0.125rem;
 
-  --bg: #f3f3f1;
+  --bg: #e7eaee;
   --surface: #ffffff;
-  --surface-subtle: #ecece8;
-  --surface-muted: #e8e8e4;
-  --text: #161616;
-  --text-muted: #4f545c;
-  --text-subtle: #6a6f76;
-  --border: #d8d8d2;
-  --border-strong: #c4c4be;
-  --sidebar: #f3f3f1;
-  --sidebar-hover: #ecece8;
-  --sidebar-active: #e4e4de;
-  --sidebar-text: #161616;
-  --sidebar-muted: #6a6f76;
-  --sidebar-link: #4f545c;
-  --accent: #161616;
-  --accent-strong: #161616;
-  --accent-line: #d8d8d2;
-  --accent-tint: #ecece8;
-  --accent-selection: #d4dde6;
-  --focus: #161616;
-  --success: #1f7a4d;
-  --success-bg: rgb(31 122 77 / 10%);
-  --warning: #8a6508;
-  --warning-bg: rgb(138 101 8 / 10%);
-  --warning-border: rgb(138 101 8 / 24%);
-  --warning-border-strong: #8a6508;
-  --warning-text-strong: #8a6508;
+  --surface-subtle: #eef2f5;
+  --surface-muted: #dce3ea;
+  --text: #1a1f24;
+  --text-muted: #3a424a;
+  --text-subtle: #4e565e;
+  --border: #b4bcc4;
+  --border-strong: #7e8790;
+  --chrome: #2a4056;
+  --chrome-foreground: #f3f6f8;
+  --chrome-muted: #b7c4d0;
+  --sidebar: #2a4056;
+  --sidebar-hover: rgb(255 255 255 / 8%);
+  --sidebar-active: rgb(255 255 255 / 14%);
+  --sidebar-text: #f3f6f8;
+  --sidebar-muted: #b7c4d0;
+  --sidebar-link: #d5dee6;
+  --accent: #2a4056;
+  --accent-strong: #2a4056;
+  --accent-line: #b4bcc4;
+  --accent-tint: #dce3ea;
+  --accent-selection: #c5d4e3;
+  --focus: #2a4056;
+  --success: #176b44;
+  --success-bg: rgb(23 107 68 / 16%);
+  --warning: #9a6200;
+  --warning-bg: rgb(154 98 0 / 16%);
+  --warning-border: rgb(154 98 0 / 36%);
+  --warning-border-strong: #9a6200;
+  --warning-text-strong: #9a6200;
   --warning-text-soft: #6f5614;
   --critical: #c43c32;
-  --critical-bg: rgb(196 60 50 / 10%);
-  --critical-border: rgb(196 60 50 / 24%);
+  --critical-bg: rgb(196 60 50 / 16%);
+  --critical-border: rgb(196 60 50 / 36%);
   --critical-text-soft: #9a3c36;
-  --info: #215f86;
-  --info-bg: rgb(33 95 134 / 10%);
-  --info-border-soft: rgb(33 95 134 / 24%);
-  --success-border-soft: rgb(31 122 77 / 24%);
-  --row-hover: rgb(22 22 22 / 4%);
-  --panel-border: #d8d8d2;
+  --info: #1a5a82;
+  --info-bg: rgb(26 90 130 / 16%);
+  --info-border-soft: rgb(26 90 130 / 36%);
+  --success-border-soft: rgb(23 107 68 / 36%);
+  --row-hover: rgb(42 64 86 / 6%);
+  --panel-border: #b4bcc4;
   --radius-pill: 2px;
   --shadow-xs: none;
   --shadow-sm: none;

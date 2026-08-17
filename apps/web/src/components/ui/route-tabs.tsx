@@ -36,8 +36,8 @@ export function RouteTabsList({
       className={cn(
         "flex min-w-0 items-stretch gap-1 overflow-x-auto",
         variant === "underline"
-          ? "border-b border-border"
-          : "border border-b-0 border-border bg-card",
+          ? "border-b border-border-strong"
+          : "border border-b-0 border-border-strong bg-card",
         sticky ? "sticky top-0 z-10 bg-background" : undefined,
         className
       )}
@@ -64,7 +64,7 @@ export function RouteTabsTrigger({
       className={cn(
         "inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap border-b-2 border-transparent px-3 text-[12px] font-medium text-muted-foreground transition-colors",
         "hover:text-foreground",
-        isActive ? "border-b-foreground text-foreground" : undefined
+        isActive ? "border-b-chrome text-chrome" : undefined
       )}
       href={href}
     >
@@ -75,7 +75,7 @@ export function RouteTabsTrigger({
 
 export function RouteTabsCount({ children }: { readonly children: ReactNode }): React.ReactElement {
   return (
-    <span className="inline-flex h-4 min-w-4 items-center justify-center bg-muted px-1 font-mono text-[10px] tabular-nums text-muted-foreground">
+    <span className="inline-flex h-4 min-w-4 items-center justify-center bg-chrome px-1 font-mono text-[10px] tabular-nums text-chrome-foreground">
       {children}
     </span>
   );

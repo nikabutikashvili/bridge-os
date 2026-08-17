@@ -26,7 +26,7 @@ export default async function PortfolioPage({
     <div className="flex min-h-0 flex-1 flex-col">
       <header className="flex h-9 shrink-0 items-center justify-between gap-4 px-4">
         <div className="flex min-w-0 items-baseline gap-3">
-          <h1 className="m-0 font-mono text-[12px] font-medium tracking-[0.16em] text-foreground">
+          <h1 className="m-0 font-mono text-[12px] font-medium tracking-[0.16em] text-chrome">
             OBJECT SET / BRIDGES
           </h1>
           <p className="m-0 font-mono text-[11px] tabular-nums text-muted-foreground">
@@ -42,16 +42,16 @@ export default async function PortfolioPage({
 
       <section
         aria-labelledby="inventory-heading"
-        className="mx-4 mb-4 mt-4 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border border-border bg-card"
+        className="mx-4 mb-4 mt-4 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border border-border-strong bg-card"
       >
-        <header className="flex h-9 shrink-0 items-center justify-between gap-4 border-b border-border px-3">
+        <header className="flex h-9 shrink-0 items-center justify-between gap-4 bg-chrome px-3 text-chrome-foreground">
           <h2
-            className="m-0 font-mono text-[11px] font-medium tracking-[0.14em] text-foreground"
+            className="m-0 font-mono text-[11px] font-medium tracking-[0.14em] text-chrome-foreground"
             id="inventory-heading"
           >
             STRUCTURES
           </h2>
-          <p className="m-0 font-mono text-[11px] tabular-nums text-muted-foreground">
+          <p className="m-0 font-mono text-[11px] tabular-nums text-chrome-muted">
             {String(portfolio.pagination.totalItems)} matching
           </p>
         </header>
