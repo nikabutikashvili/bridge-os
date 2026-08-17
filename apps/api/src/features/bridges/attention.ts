@@ -16,6 +16,7 @@ interface BridgeAttentionInput {
   readonly openFindings: number;
   readonly openRecommendations: number;
   readonly hasEnvironmentalExposure: boolean;
+  readonly hasHighNetworkConsequence: boolean;
 }
 
 interface BridgeAttention {
@@ -44,6 +45,9 @@ export function deriveBridgeAttention(
   }
   if (input.hasEnvironmentalExposure) {
     reasons.push("ENVIRONMENTAL_EXPOSURE");
+  }
+  if (input.hasHighNetworkConsequence) {
+    reasons.push("NETWORK_CRITICALITY");
   }
   if (input.conditionTrend === "DETERIORATING") {
     reasons.push("DETERIORATING_CONDITION");
@@ -78,7 +82,8 @@ function attentionLevel(input: BridgeAttentionInput): BridgeAttentionLevel {
   }
   if (
     (input.maximumStability ?? 0) >= 2 ||
-    (input.maximumTrafficSafety ?? 0) >= 2
+    (input.maximumTrafficSafety ?? 0) >= 2 ||
+    input.hasHighNetworkConsequence
   ) {
     return "HIGH";
   }

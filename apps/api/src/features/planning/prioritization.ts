@@ -1,5 +1,6 @@
 import type {
   InspectionDueStatus,
+  NetworkCriticalityBand,
   PlanningPriority,
   PlanningPriorityLevel,
   PlanningPriorityReasonCode
@@ -8,12 +9,17 @@ import type {
 export interface MaintenancePriorityInput {
   readonly asOf: string;
   readonly conditionDelta: string | null;
-  readonly dailyTraffic: number | null;
   readonly hasEnvironmentalExposure: boolean;
   readonly inspectionStatus: InspectionDueStatus;
   readonly maximumDurability: number | null;
   readonly maximumStability: number | null;
   readonly maximumTrafficSafety: number | null;
+  readonly networkBand: NetworkCriticalityBand | null;
+  readonly extraVehicleKmPerDay: number | null;
+  readonly additionalDistanceKm: string | null;
+  readonly dailyTraffic: number | null;
+  readonly heavyVehicleDaily: number | null;
+  readonly alternativeCrossingCount: number | null;
   readonly recommendationSourceDate: string | null;
   readonly urgency: string | null;
 }
@@ -43,7 +49,7 @@ const reasonOrder: Record<PlanningPriorityReasonCode, number> = {
   LONG_UNRESOLVED: 8,
   INSPECTION_DUE_SOON: 9,
   MEDIUM_TERM_URGENCY: 10,
-  HIGH_TRAFFIC: 11,
+  NETWORK_CRITICALITY: 11,
   HIGH_ENVIRONMENTAL_EXPOSURE: 12
 };
 
@@ -64,7 +70,7 @@ export function deriveMaintenancePriority(
   addAgeReason(reasons, input.recommendationSourceDate, input.asOf);
   addInspectionReason(reasons, input.inspectionStatus);
   addConditionReason(reasons, input.conditionDelta);
-  addTrafficReason(reasons, input.dailyTraffic);
+  addNetworkReason(reasons, input);
   addEnvironmentalReason(reasons, input.hasEnvironmentalExposure);
 
   reasons.sort((left, right) => {
@@ -206,18 +212,41 @@ function addConditionReason(
   });
 }
 
-function addTrafficReason(
+function addNetworkReason(
   reasons: PriorityReasonDefinition[],
-  dailyTraffic: number | null
+  input: MaintenancePriorityInput
 ): void {
-  if (dailyTraffic === null || dailyTraffic < 40_000) {
+  if (input.networkBand === null || input.networkBand === "LOW") {
     return;
   }
+  const parts = [
+    input.dailyTraffic === null
+      ? null
+      : `${input.dailyTraffic.toLocaleString("en-US")} vehicles/day`,
+    input.heavyVehicleDaily === null
+      ? null
+      : `${input.heavyVehicleDaily.toLocaleString("en-US")} HGV/day`,
+    input.additionalDistanceKm === null ? null : `+${input.additionalDistanceKm} km detour`,
+    input.alternativeCrossingCount === null
+      ? null
+      : input.alternativeCrossingCount === 0
+        ? "no alternative crossing"
+        : `${String(input.alternativeCrossingCount)} alternative crossings`,
+    input.extraVehicleKmPerDay === null
+      ? null
+      : `${Math.round(input.extraVehicleKmPerDay).toLocaleString("en-US")} extra vehicle-km/day if closed`
+  ].filter((part): part is string => part !== null);
   reasons.push({
-    code: "HIGH_TRAFFIC",
-    severity: "MEDIUM",
-    label: "High traffic importance",
-    detail: `The latest observation records ${dailyTraffic.toLocaleString("en-US")} vehicles per day.`
+    code: "NETWORK_CRITICALITY",
+    severity: input.networkBand === "HIGH" ? "HIGH" : "MEDIUM",
+    label:
+      input.networkBand === "HIGH"
+        ? "High network consequence"
+        : "Moderate network consequence",
+    detail:
+      parts.length === 0
+        ? "Seeded network metrics place this structure above the low-consequence band."
+        : parts.join(", ") + "."
   });
 }
 

@@ -19,6 +19,7 @@ export interface BastTrafficFixtureEntry {
   readonly longitude: string | null;
   readonly observationYear: number;
   readonly dailyTraffic: number;
+  readonly heavyVehicleDaily: number;
   readonly truckSharePercent: string;
   readonly sourceDescription: string;
 }
@@ -32,6 +33,7 @@ export const bastTrafficFixture: readonly BastTrafficFixtureEntry[] = [
     longitude: "6.552642",
     observationYear: 2024,
     dailyTraffic: 44_291,
+    heavyVehicleDaily: 4_562,
     truckSharePercent: "10.30",
     sourceDescription:
       "BASt Dauerzählstelle „Rheinberg“ (A57), ca. 1.9 km vom Bauwerk entfernt " +
@@ -45,6 +47,7 @@ export const bastTrafficFixture: readonly BastTrafficFixtureEntry[] = [
     longitude: "7.319164",
     observationYear: 2024,
     dailyTraffic: 50_593,
+    heavyVehicleDaily: 6_122,
     truckSharePercent: "12.10",
     sourceDescription:
       "BASt Dauerzählstelle „Engelskirchen“ (A4), ca. 3.8 km vom Bauwerk entfernt " +
@@ -58,6 +61,7 @@ export const bastTrafficFixture: readonly BastTrafficFixtureEntry[] = [
     longitude: "7.469194",
     observationYear: 2024,
     dailyTraffic: 50_593,
+    heavyVehicleDaily: 6_122,
     truckSharePercent: "12.10",
     sourceDescription:
       "BASt Dauerzählstelle „Engelskirchen“ (A4), ca. 6.9 km vom Bauwerk entfernt " +
@@ -71,6 +75,7 @@ export const bastTrafficFixture: readonly BastTrafficFixtureEntry[] = [
     longitude: "7.367591",
     observationYear: 2024,
     dailyTraffic: 50_593,
+    heavyVehicleDaily: 6_122,
     truckSharePercent: "12.10",
     sourceDescription:
       "BASt Dauerzählstelle „Engelskirchen“ (A4), ca. 0.5 km vom Bauwerk entfernt " +
@@ -84,6 +89,7 @@ export const bastTrafficFixture: readonly BastTrafficFixtureEntry[] = [
     longitude: null,
     observationYear: 2024,
     dailyTraffic: 38_225,
+    heavyVehicleDaily: 5_504,
     truckSharePercent: "14.40",
     sourceDescription:
       "BASt Dauerzählstelle „Eckenhagen“ (A4), ca. 5.2 km vom Bauwerk entfernt " +

@@ -139,3 +139,22 @@ export const trafficObservationSourceEnum = pgEnum("traffic_observation_source",
 export const environmentalMetricSourceEnum = pgEnum("environmental_metric_source", [
   "OPEN_METEO"
 ]);
+
+export const networkMetricSourceEnum = pgEnum("network_metric_source", [
+  "OSM_ROUTED",
+  "MANUAL_FIXTURE",
+  "SIB_ASB",
+  "BAST_NETWORK"
+]);
+
+export const networkRoadClassEnum = pgEnum("network_road_class", [
+  "AUTOBAHN",
+  "BUNDESSTRASSE",
+  "LANDESSTRASSE",
+  "OTHER"
+]);
+
+export const networkTrafficAppliesToEnum = pgEnum("network_traffic_applies_to", [
+  "CARRIED",
+  "CROSSED"
+]);

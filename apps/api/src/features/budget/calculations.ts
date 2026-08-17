@@ -9,12 +9,34 @@ const priorityOrder = {
   LOW: 1
 } as const;
 
+const networkOrder = {
+  HIGH: 3,
+  MEDIUM: 2,
+  LOW: 1
+} as const;
+
+function networkBandOrder(band: "LOW" | "MEDIUM" | "HIGH" | undefined): number {
+  return band === undefined ? 0 : networkOrder[band];
+}
+
 export function orderBudgetItems(items: readonly BudgetItem[]): BudgetItem[] {
   return [...items].sort((left, right) => {
     const priorityDifference =
       priorityOrder[right.priority.level] - priorityOrder[left.priority.level];
     if (priorityDifference !== 0) {
       return priorityDifference;
+    }
+    const networkDifference =
+      networkBandOrder(right.networkCriticality?.band) -
+      networkBandOrder(left.networkCriticality?.band);
+    if (networkDifference !== 0) {
+      return networkDifference;
+    }
+    const extraKmDifference =
+      (right.networkCriticality?.extraVehicleKmPerDay ?? 0) -
+      (left.networkCriticality?.extraVehicleKmPerDay ?? 0);
+    if (extraKmDifference !== 0) {
+      return extraKmDifference;
     }
     return (
       left.intervention.workType.localeCompare(right.intervention.workType) ||

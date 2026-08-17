@@ -112,7 +112,13 @@ describe("bridge portfolio API contracts", () => {
             partialStructureCount: 1,
             structureType: "Straßenbrücke"
           },
-          traffic: null
+          traffic: null,
+          network: {
+            additionalDistanceKm: "9.5",
+            alternativeCrossingCount: 2,
+            band: "MEDIUM",
+            extraVehicleKmPerDay: 397_841
+          }
         }
       ],
       pagination: { page: 1, pageSize: 25, totalItems: 1, totalPages: 1 },

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { isoDateSchema, uuidSchema, yearSchema } from "../domain/common.js";
+import { networkCriticalityBandSchema } from "../domain/network.js";
 import {
   interventionEstimateSourceSchema,
   interventionEstimateStatusSchema,
@@ -75,7 +76,14 @@ export const budgetItemSchema = z
     estimate: budgetEstimateSchema.nullable(),
     estimateRequired: z.boolean(),
     included: z.boolean(),
-    priority: planningPrioritySchema
+    priority: planningPrioritySchema,
+    networkCriticality: z
+      .object({
+        band: networkCriticalityBandSchema,
+        extraVehicleKmPerDay: z.number().nonnegative().nullable()
+      })
+      .strict()
+      .nullable()
   })
   .strict();
 

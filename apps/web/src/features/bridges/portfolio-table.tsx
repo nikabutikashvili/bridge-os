@@ -39,6 +39,7 @@ import {
   inspectionDueLabel,
   inspectionDueTone,
   inspectionTypeGermanTerm,
+  networkBandLabel,
   trafficSourceLabel,
   trafficSourceTitle,
   urgencyLabel
@@ -190,7 +191,7 @@ function PortfolioRow({ bridge }: { readonly bridge: BridgePortfolioItem }): Rea
         </span>
       </TableCell>
       <TableCell className="text-right">
-        <TrafficCell traffic={bridge.traffic} />
+        <TrafficCell network={bridge.network} traffic={bridge.traffic} />
       </TableCell>
       <TableCell>
         {bridge.attention.highestRecommendationUrgency ? (
@@ -229,27 +230,39 @@ function PortfolioRow({ bridge }: { readonly bridge: BridgePortfolioItem }): Rea
 }
 
 function TrafficCell({
+  network,
   traffic
 }: {
+  readonly network: BridgePortfolioItem["network"];
   readonly traffic: BridgePortfolioItem["traffic"];
 }): React.ReactElement {
-  if (traffic?.dailyTraffic == null) {
+  if (traffic?.dailyTraffic == null && network?.additionalDistanceKm == null) {
     return <span className="font-mono text-muted-foreground">—</span>;
   }
   return (
     <>
-      <strong className="block font-mono font-medium tabular-nums">
-        {formatMeasurement(traffic.dailyTraffic, "", 0).trim()}
-      </strong>
-      <span
-        className="block font-mono text-[11px] text-muted-foreground"
-        title={trafficSourceTitle(traffic.source)}
-      >
-        {traffic.observationYear}
-        {traffic.truckSharePercent ? ` · ${traffic.truckSharePercent}%` : ""}
-        {" · "}
-        {trafficSourceLabel(traffic.source)}
-      </span>
+      {traffic?.dailyTraffic == null ? null : (
+        <>
+          <strong className="block font-mono font-medium tabular-nums">
+            {formatMeasurement(traffic.dailyTraffic, "", 0).trim()}
+          </strong>
+          <span
+            className="block font-mono text-[11px] text-muted-foreground"
+            title={trafficSourceTitle(traffic.source)}
+          >
+            {traffic.observationYear}
+            {traffic.truckSharePercent ? ` · ${traffic.truckSharePercent}%` : ""}
+            {" · "}
+            {trafficSourceLabel(traffic.source)}
+          </span>
+        </>
+      )}
+      {network?.additionalDistanceKm ? (
+        <span className="block font-mono text-[11px] text-muted-foreground">
+          +{network.additionalDistanceKm} km
+          {network.band ? ` · ${networkBandLabel(network.band)}` : ""}
+        </span>
+      ) : null}
     </>
   );
 }
@@ -341,6 +354,7 @@ const shortReasonLabels: Record<BridgeAttentionReason, string> = {
   DETERIORATING_CONDITION: "Deteriorating",
   DURABILITY_FINDING: "Durability 2+",
   ENVIRONMENTAL_EXPOSURE: "Climate watch",
+  NETWORK_CRITICALITY: "Network impact",
   INSPECTION_DUE_SOON: "Due soon",
   MEDIUM_OR_HIGHER_RECOMMENDATION: "Work open",
   MISSING_CRITICAL_DATA: "Data gap",

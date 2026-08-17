@@ -712,11 +712,14 @@ function normalizeTrafficObservation(
   if (observationYear === null) {
     return null;
   }
+  const dailyTraffic = normalizeInteger(observation.dailyTraffic.value);
+  const truckSharePercent = normalizeDecimal(observation.truckSharePercent.value);
   const values = {
     observationYear,
     observedOn: normalizeDate(observation.observedOn.value),
-    dailyTraffic: normalizeInteger(observation.dailyTraffic.value),
-    truckSharePercent: normalizeDecimal(observation.truckSharePercent.value),
+    dailyTraffic,
+    heavyVehicleDaily: derivedHeavyVehicleDaily(dailyTraffic, truckSharePercent),
+    truckSharePercent,
     source: "DOCUMENT" as const,
     sourceDescription: normalizeNullableString(
       observation.sourceDescription.value
@@ -735,6 +738,16 @@ function normalizeTrafficObservation(
     ]),
     values
   };
+}
+
+function derivedHeavyVehicleDaily(
+  dailyTraffic: number | null,
+  truckSharePercent: string | null
+): number | null {
+  if (dailyTraffic === null || truckSharePercent === null) {
+    return null;
+  }
+  return Math.round((dailyTraffic * Number(truckSharePercent)) / 100);
 }
 
 function fieldEvidence(

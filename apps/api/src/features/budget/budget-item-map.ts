@@ -1,6 +1,7 @@
-import type { BudgetItem } from "@bridge-os/contracts";
+import type { BudgetItem, NetworkRoadClass } from "@bridge-os/contracts";
 
 import { hasHighEnvironmentalExposure } from "../bridges/climate-exposure.js";
+import { networkPriorityInput } from "../bridges/network-criticality.js";
 import { deriveInspectionDueStatus } from "../planning/inspection-due.js";
 import { deriveMaintenancePriority } from "../planning/prioritization.js";
 import { adjustForConstructionPriceInflation } from "./inflation-adjustment.js";
@@ -50,12 +51,25 @@ export interface BudgetItemEnvironmentRow {
   readonly deicingDays: number | null;
 }
 
+export interface BudgetItemNetworkRow {
+  readonly additionalDistanceKm: string | null;
+  readonly alternativeCrossingCount: number | null;
+  readonly roadClass: NetworkRoadClass;
+}
+
+export interface BudgetItemTrafficRow {
+  readonly dailyTraffic: number | null;
+  readonly heavyVehicleDaily: number | null;
+  readonly truckSharePercent: string | null;
+}
+
 export function mapBudgetItem(
   row: BudgetItemSourceRow,
   findingRows: readonly BudgetItemFindingRow[],
   inspectionRows: readonly BudgetItemInspectionRow[],
-  dailyTraffic: number | null,
+  traffic: BudgetItemTrafficRow | null,
   environment: BudgetItemEnvironmentRow | null,
+  network: BudgetItemNetworkRow | null,
   asOf: string
 ): BudgetItem {
   const activeFindings = findingRows.filter(
@@ -107,6 +121,7 @@ export function mapBudgetItem(
           source: row.interventionEstimatedCostSource,
           status: row.interventionEstimatedCostStatus
         };
+  const networkPriority = networkPriorityInput(network, traffic);
 
   return {
     bridge: {
@@ -135,10 +150,17 @@ export function mapBudgetItem(
     estimate,
     estimateRequired: estimate === null,
     included: row.membershipInterventionId !== null,
+    networkCriticality:
+      networkPriority.networkBand === null
+        ? null
+        : {
+            band: networkPriority.networkBand,
+            extraVehicleKmPerDay: networkPriority.extraVehicleKmPerDay
+          },
     priority: deriveMaintenancePriority({
       asOf,
       conditionDelta,
-      dailyTraffic,
+      ...networkPriority,
       hasEnvironmentalExposure: hasHighEnvironmentalExposure({
         freezeThawDays: environment?.freezeThawDays ?? null,
         heavyRainDays20: environment?.heavyRainDays20 ?? null,

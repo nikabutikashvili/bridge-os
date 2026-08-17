@@ -57,13 +57,37 @@ describe("budget calculations", () => {
       uuid("low")
     ]);
   });
+
+  it("breaks equal priority by network band then extra vehicle-km", () => {
+    const ordered = orderBudgetItems([
+      item("low-volume", "HIGH", "1.00", "Concrete repair", {
+        band: "MEDIUM",
+        extraVehicleKmPerDay: 100_000
+      }),
+      item("valley", "HIGH", "1.00", "Concrete repair", {
+        band: "HIGH",
+        extraVehicleKmPerDay: 1_500_000
+      }),
+      item("urban", "HIGH", "1.00", "Concrete repair", {
+        band: "HIGH",
+        extraVehicleKmPerDay: 2_000_000
+      })
+    ]);
+
+    expect(ordered.map((entry) => entry.intervention.id)).toEqual([
+      uuid("urban"),
+      uuid("valley"),
+      uuid("low-volume")
+    ]);
+  });
 });
 
 function item(
   key: string,
   level: BudgetItem["priority"]["level"],
   amount: string | null,
-  workType = "Concrete repair"
+  workType = "Concrete repair",
+  networkCriticality: BudgetItem["networkCriticality"] = null
 ): BudgetItem {
   const id = uuid(key);
   return {
@@ -102,6 +126,7 @@ function item(
           },
     estimateRequired: amount === null,
     included: true,
+    networkCriticality,
     priority: {
       level,
       policyVersion: "maintenance-priority-v1",

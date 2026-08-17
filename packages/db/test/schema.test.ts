@@ -21,6 +21,7 @@ import {
   findings,
   historicalWorks,
   inspections,
+  networkMetrics,
   partialStructures,
   plannedInterventions,
   recommendationFindings,
@@ -52,6 +53,7 @@ describe("database schema", () => {
       historicalWorks,
       trafficObservations,
       environmentalMetrics,
+      networkMetrics,
       workPackages,
       documents,
       documentProcessingRuns,
@@ -81,6 +83,7 @@ describe("database schema", () => {
       "historical_works",
       "traffic_observations",
       "environmental_metrics",
+      "network_metrics",
       "work_packages",
       "documents",
       "document_processing_runs",
@@ -245,6 +248,22 @@ describe("database schema", () => {
         "environmental_metrics_year_range",
         "environmental_metrics_monthly_precip_shape",
         "environmental_metrics_monthly_freeze_thaw_shape"
+      ])
+    );
+  });
+
+  it("stores one closure-impact snapshot per bridge", () => {
+    const config = getTableConfig(networkMetrics);
+
+    expect(config.indexes.map((index) => index.config.name)).toContain(
+      "network_metrics_bridge_unique"
+    );
+    expect(config.foreignKeys).toHaveLength(1);
+    expect(config.checks.map((constraint) => constraint.name)).toEqual(
+      expect.arrayContaining([
+        "network_metrics_year_range",
+        "network_metrics_distances_non_negative",
+        "network_metrics_formula_version_not_blank"
       ])
     );
   });

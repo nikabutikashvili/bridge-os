@@ -28,6 +28,7 @@ import {
   findings,
   historicalWorks,
   inspections,
+  networkMetrics,
   partialStructures,
   recommendationFindings,
   recommendations,
@@ -44,6 +45,11 @@ import {
   DAMAGE_MECHANISM_POLICY_VERSION,
   deriveDamageMechanisms
 } from "./damage-mechanisms.js";
+import {
+  deriveNetworkCriticality,
+  hasHighNetworkConsequence,
+  mapBridgeNetwork
+} from "./network-criticality.js";
 import type { BridgePhotoFile, BridgePortfolioReader } from "./bridge-reader.js";
 import { bridgePhotoUrl } from "./bridge-photo.js";
 import { buildDocumentSourceUrl } from "./source-url.js";
@@ -83,11 +89,16 @@ interface PortfolioRow extends Record<string, unknown> {
   trafficObservationYear: number | null;
   trafficObservedOn: string | null;
   trafficDailyTraffic: number | null;
+  trafficHeavyVehicleDaily: number | null;
   trafficTruckSharePercent: string | null;
   trafficSource: "DOCUMENT" | "EXTERNAL_ENRICHED" | null;
   freezeThawDays: number | null;
   heavyRainDays20: number | null;
   deicingDays: number | null;
+  networkAdditionalDistanceKm: string | null;
+  networkAlternativeCrossingCount: number | null;
+  networkRoadClass: "AUTOBAHN" | "BUNDESSTRASSE" | "LANDESSTRASSE" | "OTHER" | null;
+  extraVehicleKm: string | null;
   hasPhoto: boolean;
 }
 
@@ -193,11 +204,16 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
           p.traffic_observation_year as "trafficObservationYear",
           p.traffic_observed_on as "trafficObservedOn",
           p.traffic_daily_traffic as "trafficDailyTraffic",
+          p.traffic_heavy_vehicle_daily as "trafficHeavyVehicleDaily",
           p.traffic_truck_share_percent as "trafficTruckSharePercent",
           p.traffic_source as "trafficSource",
           p.freeze_thaw_days as "freezeThawDays",
           p.heavy_rain_days_20 as "heavyRainDays20",
           p.deicing_days as "deicingDays",
+          p.network_additional_distance_km as "networkAdditionalDistanceKm",
+          p.network_alternative_crossing_count as "networkAlternativeCrossingCount",
+          p.network_road_class as "networkRoadClass",
+          p.extra_vehicle_km as "extraVehicleKm",
           exists (
             select 1
             from documents d
@@ -267,6 +283,7 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
       componentRows,
       trafficRows,
       environmentRows,
+      networkRows,
       mechanismFindingRows,
       portfolioItem,
       evidenceRows
@@ -338,6 +355,7 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
           observationYear: trafficObservations.observationYear,
           observedOn: trafficObservations.observedOn,
           dailyTraffic: trafficObservations.dailyTraffic,
+          heavyVehicleDaily: trafficObservations.heavyVehicleDaily,
           truckSharePercent: trafficObservations.truckSharePercent,
           source: trafficObservations.source,
           sourceDescription: trafficObservations.sourceDescription
@@ -351,6 +369,11 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
         .from(environmentalMetrics)
         .where(eq(environmentalMetrics.bridgeId, id))
         .orderBy(desc(environmentalMetrics.observationYear)),
+      this.database
+        .select()
+        .from(networkMetrics)
+        .where(eq(networkMetrics.bridgeId, id))
+        .limit(1),
       this.database
         .select({
           id: findings.id,
@@ -445,6 +468,7 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
                 observationYear: latestTraffic.observationYear,
                 observedOn: latestTraffic.observedOn,
                 dailyTraffic: latestTraffic.dailyTraffic,
+                heavyVehicleDaily: latestTraffic.heavyVehicleDaily,
                 truckSharePercent: latestTraffic.truckSharePercent,
                 source: latestTraffic.source,
                 sourceDescription: latestTraffic.sourceDescription,
@@ -458,7 +482,8 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
           components: componentRows,
           findings: mechanismFindingRows,
           rows: environmentRows
-        })
+        }),
+        network: mapLoadedNetwork(networkRows[0], latestTraffic ?? null)
       },
       asOf
     });
@@ -789,6 +814,7 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
           date: trafficObservations.observedOn,
           observationYear: trafficObservations.observationYear,
           dailyTraffic: trafficObservations.dailyTraffic,
+          heavyVehicleDaily: trafficObservations.heavyVehicleDaily,
           truckSharePercent: trafficObservations.truckSharePercent,
           source: trafficObservations.source,
           sourceDescription: trafficObservations.sourceDescription
@@ -848,6 +874,7 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
         evidence: evidenceByEvent.get(row.id) ?? [],
         observationYear: row.observationYear,
         dailyTraffic: row.dailyTraffic,
+        heavyVehicleDaily: row.heavyVehicleDaily,
         truckSharePercent: row.truckSharePercent,
         source: row.source,
         sourceDescription: row.sourceDescription
@@ -968,11 +995,16 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
         p.traffic_observation_year as "trafficObservationYear",
         p.traffic_observed_on as "trafficObservedOn",
         p.traffic_daily_traffic as "trafficDailyTraffic",
+        p.traffic_heavy_vehicle_daily as "trafficHeavyVehicleDaily",
         p.traffic_truck_share_percent as "trafficTruckSharePercent",
         p.traffic_source as "trafficSource",
         p.freeze_thaw_days as "freezeThawDays",
         p.heavy_rain_days_20 as "heavyRainDays20",
         p.deicing_days as "deicingDays",
+        p.network_additional_distance_km as "networkAdditionalDistanceKm",
+        p.network_alternative_crossing_count as "networkAlternativeCrossingCount",
+        p.network_road_class as "networkRoadClass",
+        p.extra_vehicle_km as "extraVehicleKm",
         exists (
           select 1
           from documents d
@@ -1176,6 +1208,7 @@ function portfolioCtes(asOf: string): SQL {
         t.observation_year,
         t.observed_on::text as observed_on,
         t.daily_traffic,
+        t.heavy_vehicle_daily,
         t.truck_share_percent,
         t.source
       from traffic_observations t
@@ -1189,6 +1222,15 @@ function portfolioCtes(asOf: string): SQL {
         e.deicing_days
       from environmental_metrics e
       order by e.bridge_id, e.observation_year desc
+    ),
+    latest_network as (
+      select distinct on (n.bridge_id)
+        n.bridge_id,
+        n.additional_distance_km,
+        n.alternative_crossing_count,
+        n.road_class
+      from network_metrics n
+      order by n.bridge_id, n.observation_year desc
     ),
     active_recommendations as (
       select
@@ -1271,11 +1313,72 @@ function portfolioCtes(asOf: string): SQL {
         lt.observation_year as traffic_observation_year,
         lt.observed_on as traffic_observed_on,
         lt.daily_traffic as traffic_daily_traffic,
+        lt.heavy_vehicle_daily as traffic_heavy_vehicle_daily,
         lt.truck_share_percent as traffic_truck_share_percent,
         lt.source as traffic_source,
         le.freeze_thaw_days,
         le.heavy_rain_days_20,
-        le.deicing_days
+        le.deicing_days,
+        ln.additional_distance_km as network_additional_distance_km,
+        ln.alternative_crossing_count as network_alternative_crossing_count,
+        ln.road_class as network_road_class,
+        (coalesce(ln.additional_distance_km, 0) * coalesce(lt.daily_traffic, 0)) as extra_vehicle_km,
+        (
+          case
+            when coalesce(lt.daily_traffic, 0) >= 50000 then 3
+            when coalesce(lt.daily_traffic, 0) >= 30000 then 2
+            when coalesce(lt.daily_traffic, 0) >= 10000 then 1
+            else 0
+          end
+          + case
+            when coalesce(
+              lt.heavy_vehicle_daily,
+              case
+                when lt.daily_traffic is not null and lt.truck_share_percent is not null
+                  then round(lt.daily_traffic * lt.truck_share_percent / 100.0)::int
+              end,
+              0
+            ) >= 8000 then 3
+            when coalesce(
+              lt.heavy_vehicle_daily,
+              case
+                when lt.daily_traffic is not null and lt.truck_share_percent is not null
+                  then round(lt.daily_traffic * lt.truck_share_percent / 100.0)::int
+              end,
+              0
+            ) >= 6000 then 2
+            when coalesce(
+              lt.heavy_vehicle_daily,
+              case
+                when lt.daily_traffic is not null and lt.truck_share_percent is not null
+                  then round(lt.daily_traffic * lt.truck_share_percent / 100.0)::int
+              end,
+              0
+            ) >= 3000 then 1
+            else 0
+          end
+          + case
+            when coalesce(ln.additional_distance_km, 0) >= 30 then 3
+            when coalesce(ln.additional_distance_km, 0) >= 15 then 2
+            when coalesce(ln.additional_distance_km, 0) >= 5 then 1
+            else 0
+          end
+          + case
+            when ln.alternative_crossing_count is null then 0
+            when ln.alternative_crossing_count = 0 then 2
+            when ln.alternative_crossing_count = 1 then 1
+            else 0
+          end
+          + case when ln.road_class = 'AUTOBAHN' then 1 else 0 end
+        ) as network_points,
+        (
+          coalesce(fs.maximum_durability, 0) >= 2
+          or coalesce(fs.maximum_stability, 0) >= 2
+          or coalesce(fs.maximum_traffic_safety, 0) >= 2
+          or coalesce(hi.condition_trend, 'UNKNOWN') = 'DETERIORATING'
+          or coalesce(hr.urgency_rank, 0) >= 2
+          or coalesce(hi.condition_score, 0) >= 2.5
+        ) as network_concern
       from bridges b
       left join structure_summary ss on ss.bridge_id = b.id
       left join inspection_summary ins on ins.bridge_id = b.id
@@ -1285,6 +1388,7 @@ function portfolioCtes(asOf: string): SQL {
       left join headline_recommendation hr on hr.bridge_id = b.id
       left join latest_traffic lt on lt.bridge_id = b.id
       left join latest_environment le on le.bridge_id = b.id
+      left join latest_network ln on ln.bridge_id = b.id
     ),
     portfolio as (
       select
@@ -1298,10 +1402,19 @@ function portfolioCtes(asOf: string): SQL {
           when greatest(
             coalesce(pb.maximum_stability, 0),
             coalesce(pb.maximum_traffic_safety, 0)
-          ) >= 2 then 4
+          ) >= 2
+            or (pb.network_points >= 8 and pb.network_concern) then 4
           when pb.inspection_status in ('DUE_SOON', 'UNKNOWN')
             or pb.condition_score is null
             or coalesce(pb.maximum_durability, 0) >= 2
+            or (
+              coalesce(pb.maximum_durability, 0) >= 2
+              and (
+                coalesce(pb.freeze_thaw_days, 0) >= 40
+                or coalesce(pb.heavy_rain_days_20, 0) >= 8
+                or coalesce(pb.deicing_days, 0) >= 25
+              )
+            )
             or pb.condition_trend = 'DETERIORATING'
             or pb.highest_recommendation_urgency_rank >= 2 then 3
           when pb.open_findings > 0 or pb.open_recommendations > 0 then 2
@@ -1365,10 +1478,24 @@ function portfolioOrderBy(query: BridgePortfolioQuery): SQL {
     name: sql`lower(p.name)`
   } satisfies Record<BridgePortfolioQuery["sort"], SQL>;
   const direction = query.direction === "asc" ? sql`asc` : sql`desc`;
+  if (query.sort === "attention") {
+    return sql`${fieldBySort.attention} ${direction} nulls last, p.extra_vehicle_km desc nulls last`;
+  }
   return sql`${fieldBySort[query.sort]} ${direction} nulls last`;
 }
 
 function mapPortfolioRow(row: PortfolioRow) {
+  const networkAssessment =
+    row.networkRoadClass === null
+      ? null
+      : deriveNetworkCriticality({
+          additionalDistanceKm: row.networkAdditionalDistanceKm,
+          alternativeCrossingCount: row.networkAlternativeCrossingCount,
+          dailyTraffic: row.trafficDailyTraffic,
+          heavyVehicleDaily: row.trafficHeavyVehicleDaily,
+          roadClass: row.networkRoadClass,
+          truckSharePercent: row.trafficTruckSharePercent
+        });
   const attention = deriveBridgeAttention({
     conditionScore: row.conditionScore,
     conditionTrend: row.conditionTrend,
@@ -1384,6 +1511,15 @@ function mapPortfolioRow(row: PortfolioRow) {
       heavyRainDays20: row.heavyRainDays20,
       deicingDays: row.deicingDays,
       maximumDurability: row.maximumDurability
+    }),
+    hasHighNetworkConsequence: hasHighNetworkConsequence({
+      conditionScore: row.conditionScore,
+      conditionTrend: row.conditionTrend,
+      highestRecommendationUrgencyRank: row.highestRecommendationUrgencyRank,
+      maximumDurability: row.maximumDurability,
+      maximumStability: row.maximumStability,
+      maximumTrafficSafety: row.maximumTrafficSafety,
+      networkBand: networkAssessment?.band ?? null
     })
   });
 
@@ -1419,8 +1555,18 @@ function mapPortfolioRow(row: PortfolioRow) {
             observationYear: row.trafficObservationYear,
             observedOn: row.trafficObservedOn,
             dailyTraffic: row.trafficDailyTraffic,
+            heavyVehicleDaily: row.trafficHeavyVehicleDaily,
             truckSharePercent: row.trafficTruckSharePercent,
             source: row.trafficSource
+          },
+    network:
+      networkAssessment === null
+        ? null
+        : {
+            band: networkAssessment.band,
+            additionalDistanceKm: row.networkAdditionalDistanceKm,
+            extraVehicleKmPerDay: networkAssessment.extraVehicleKmPerDay,
+            alternativeCrossingCount: row.networkAlternativeCrossingCount
           },
     photoUrl: row.hasPhoto ? bridgePhotoUrl(row.id) : null,
     attention: {
@@ -1534,6 +1680,38 @@ function mapBridgeEnvironment(input: {
       findings: input.findings
     })
   };
+}
+
+function mapLoadedNetwork(
+  row: typeof networkMetrics.$inferSelect | undefined,
+  traffic: {
+    readonly dailyTraffic: number | null;
+    readonly heavyVehicleDaily: number | null;
+    readonly truckSharePercent: string | null;
+  } | null
+) {
+  if (row === undefined) {
+    return null;
+  }
+  return mapBridgeNetwork({
+    additionalDistanceKm: row.additionalDistanceKm,
+    alternativeCrossingCount: row.alternativeCrossingCount,
+    carriedRoad: row.carriedRoad,
+    closureDetourKm: row.closureDetourKm,
+    dailyTraffic: traffic?.dailyTraffic ?? null,
+    formulaVersion: row.formulaVersion,
+    heavyVehicleDaily: traffic?.heavyVehicleDaily ?? null,
+    latitude: row.latitude,
+    longitude: row.longitude,
+    normalTripKm: row.normalTripKm,
+    observationYear: row.observationYear,
+    onStrategicNetwork: row.onStrategicNetwork,
+    roadClass: row.roadClass,
+    source: row.source,
+    sourceDescription: row.sourceDescription,
+    trafficAppliesTo: row.trafficAppliesTo,
+    truckSharePercent: traffic?.truckSharePercent ?? null
+  });
 }
 
 function asNumberArray(value: unknown): number[] {

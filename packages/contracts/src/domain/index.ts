@@ -6,6 +6,7 @@ export * from "./environment.js";
 export * from "./finding.js";
 export * from "./historical-work.js";
 export * from "./inspection.js";
+export * from "./network.js";
 export * from "./planned-intervention.js";
 export * from "./provenance.js";
 export * from "./recommendation.js";

@@ -17,6 +17,7 @@ import {
   plannedInterventions,
   recommendationFindings,
   recommendations,
+  networkMetrics,
   trafficObservations,
   workPackages,
   type BridgeDatabase
@@ -25,6 +26,10 @@ import { and, desc, eq, ne, sql, type SQL } from "drizzle-orm";
 
 import { deriveInspectionDueStatus } from "../planning/inspection-due.js";
 import { buildDocumentSourceUrl } from "../bridges/source-url.js";
+import {
+  describeTrafficManagementRequirements,
+  resolveHeavyVehicleDaily
+} from "../bridges/network-criticality.js";
 import {
   generateWorkPackage,
   summarizeReadiness,
@@ -295,6 +300,7 @@ export class PostgresWorkPackageService implements WorkPackageService {
               observationYear: trafficObservations.observationYear,
               observedOn: trafficObservations.observedOn,
               dailyTraffic: trafficObservations.dailyTraffic,
+              heavyVehicleDaily: trafficObservations.heavyVehicleDaily,
               truckSharePercent: trafficObservations.truckSharePercent
             })
             .from(trafficObservations)
@@ -304,6 +310,16 @@ export class PostgresWorkPackageService implements WorkPackageService {
               desc(trafficObservations.observedOn),
               desc(trafficObservations.id)
             )
+            .limit(1);
+      const networkRows = await transaction
+            .select({
+              additionalDistanceKm: networkMetrics.additionalDistanceKm,
+              alternativeCrossingCount: networkMetrics.alternativeCrossingCount,
+              closureDetourKm: networkMetrics.closureDetourKm,
+              normalTripKm: networkMetrics.normalTripKm
+            })
+            .from(networkMetrics)
+            .where(eq(networkMetrics.bridgeId, base.bridgeId))
             .limit(1);
       const documentRows = await transaction
             .select({
@@ -396,6 +412,7 @@ export class PostgresWorkPackageService implements WorkPackageService {
           findingRows,
           latestInspection: latestInspectionRows[0],
           traffic: trafficRows[0],
+          network: networkRows[0],
           documentRows,
           evidenceRows: evidenceResult.rows,
           generatedAt
@@ -520,6 +537,7 @@ function generationInput(context: {
   readonly findingRows: readonly FindingContextRow[];
   readonly latestInspection: LatestInspectionRow | undefined;
   readonly traffic: TrafficRow | undefined;
+  readonly network: NetworkRow | undefined;
   readonly documentRows: readonly DocumentRow[];
   readonly evidenceRows: readonly EvidenceRow[];
   readonly generatedAt: string;
@@ -637,6 +655,7 @@ function generationInput(context: {
             observationYear: context.traffic.observationYear,
             observedOn: context.traffic.observedOn,
             dailyTraffic: context.traffic.dailyTraffic,
+            heavyVehicleDaily: context.traffic.heavyVehicleDaily,
             truckSharePercent: context.traffic.truckSharePercent
           },
     citations: context.evidenceRows.map(mapEvidence),
@@ -664,7 +683,20 @@ function generationInput(context: {
     },
     inspectionAccessEquipment: null,
     knownConstraints: [],
-    trafficManagementRequirements: null
+    trafficManagementRequirements:
+      context.network === undefined
+        ? null
+        : describeTrafficManagementRequirements({
+            additionalDistanceKm: context.network.additionalDistanceKm,
+            alternativeCrossingCount: context.network.alternativeCrossingCount,
+            closureDetourKm: context.network.closureDetourKm,
+            heavyVehicleDaily: resolveHeavyVehicleDaily({
+              dailyTraffic: context.traffic?.dailyTraffic ?? null,
+              heavyVehicleDaily: context.traffic?.heavyVehicleDaily ?? null,
+              truckSharePercent: context.traffic?.truckSharePercent ?? null
+            }),
+            normalTripKm: context.network.normalTripKm
+          })
   };
 }
 
@@ -710,7 +742,15 @@ interface TrafficRow {
   readonly observationYear: number;
   readonly observedOn: string | null;
   readonly dailyTraffic: number | null;
+  readonly heavyVehicleDaily: number | null;
   readonly truckSharePercent: string | null;
+}
+
+interface NetworkRow {
+  readonly additionalDistanceKm: string | null;
+  readonly alternativeCrossingCount: number | null;
+  readonly closureDetourKm: string | null;
+  readonly normalTripKm: string | null;
 }
 
 interface DocumentRow {

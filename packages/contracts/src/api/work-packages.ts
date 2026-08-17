@@ -189,6 +189,7 @@ export const workPackageSnapshotSchema = z
             observationYear: yearSchema,
             observedOn: isoDateSchema.nullable(),
             dailyTraffic: z.number().int().nonnegative().nullable(),
+            heavyVehicleDaily: z.number().int().nonnegative().nullable(),
             truckSharePercent: nonNegativeDecimalSchema.nullable()
           })
           .strict()

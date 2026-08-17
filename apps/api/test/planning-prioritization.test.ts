@@ -8,12 +8,17 @@ import {
 const baseline: MaintenancePriorityInput = {
   asOf: "2026-08-15",
   conditionDelta: null,
-  dailyTraffic: null,
   hasEnvironmentalExposure: false,
   inspectionStatus: "CURRENT",
   maximumDurability: null,
   maximumStability: null,
   maximumTrafficSafety: null,
+  networkBand: null,
+  extraVehicleKmPerDay: null,
+  additionalDistanceKm: null,
+  dailyTraffic: null,
+  heavyVehicleDaily: null,
+  alternativeCrossingCount: null,
   recommendationSourceDate: null,
   urgency: null
 };
@@ -112,13 +117,36 @@ describe("deriveMaintenancePriority", () => {
     ).toEqual([]);
   });
 
-  it("uses a documented traffic threshold", () => {
+  it("uses network criticality instead of a raw DTV cliff", () => {
     expect(
-      deriveMaintenancePriority({ ...baseline, dailyTraffic: 39_999 }).reasons
+      deriveMaintenancePriority({
+        ...baseline,
+        dailyTraffic: 41_878,
+        networkBand: null
+      }).reasons
     ).toEqual([]);
     expect(
-      deriveMaintenancePriority({ ...baseline, dailyTraffic: 41_878 }).reasons[0]
-    ).toMatchObject({ code: "HIGH_TRAFFIC", severity: "MEDIUM" });
+      deriveMaintenancePriority({
+        ...baseline,
+        additionalDistanceKm: "9.5",
+        alternativeCrossingCount: 2,
+        dailyTraffic: 41_878,
+        extraVehicleKmPerDay: 397_841,
+        heavyVehicleDaily: 3_769,
+        networkBand: "MEDIUM"
+      }).reasons[0]
+    ).toMatchObject({ code: "NETWORK_CRITICALITY", severity: "MEDIUM" });
+    expect(
+      deriveMaintenancePriority({
+        ...baseline,
+        additionalDistanceKm: "41.0",
+        alternativeCrossingCount: 0,
+        dailyTraffic: 38_225,
+        extraVehicleKmPerDay: 1_567_225,
+        heavyVehicleDaily: 5_504,
+        networkBand: "HIGH"
+      }).reasons[0]
+    ).toMatchObject({ code: "NETWORK_CRITICALITY", severity: "HIGH" });
   });
 
   it("adds climate exposure when durability damage already exists", () => {
@@ -134,9 +162,14 @@ describe("deriveMaintenancePriority", () => {
     const result = deriveMaintenancePriority({
       ...baseline,
       conditionDelta: "0.2",
+      additionalDistanceKm: "32.0",
+      alternativeCrossingCount: 0,
       dailyTraffic: 50_000,
+      extraVehicleKmPerDay: 1_600_000,
+      heavyVehicleDaily: 6_000,
       hasEnvironmentalExposure: true,
       inspectionStatus: "OVERDUE",
+      networkBand: "HIGH",
       maximumDurability: 3,
       maximumStability: 3,
       maximumTrafficSafety: 3,
@@ -153,7 +186,7 @@ describe("deriveMaintenancePriority", () => {
       "DURABILITY_RATING",
       "CONDITION_DETERIORATING",
       "LONG_UNRESOLVED",
-      "HIGH_TRAFFIC",
+      "NETWORK_CRITICALITY",
       "HIGH_ENVIRONMENTAL_EXPOSURE"
     ]);
   });

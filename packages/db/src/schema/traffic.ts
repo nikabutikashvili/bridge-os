@@ -25,6 +25,7 @@ export const trafficObservations = pgTable(
     observationYear: smallint("observation_year").notNull(),
     observedOn: date("observed_on"),
     dailyTraffic: integer("daily_traffic"),
+    heavyVehicleDaily: integer("heavy_vehicle_daily"),
     truckSharePercent: numeric("truck_share_percent", { precision: 5, scale: 2 }),
     source: trafficObservationSourceEnum("source").notNull().default("DOCUMENT"),
     sourceDescription: text("source_description"),
@@ -43,6 +44,10 @@ export const trafficObservations = pgTable(
     check(
       "traffic_observations_non_negative_daily_traffic",
       sql`${table.dailyTraffic} is null or ${table.dailyTraffic} >= 0`
+    ),
+    check(
+      "traffic_observations_non_negative_heavy_vehicle_daily",
+      sql`${table.heavyVehicleDaily} is null or ${table.heavyVehicleDaily} >= 0`
     ),
     check(
       "traffic_observations_truck_share_range",

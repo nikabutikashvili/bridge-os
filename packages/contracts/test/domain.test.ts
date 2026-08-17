@@ -4,6 +4,7 @@ import {
   bridgeDataOriginSchema,
   createDocumentSchema,
   createEnvironmentalMetricSchema,
+  createNetworkMetricSchema,
   createFindingSchema,
   createHistoricalWorkSchema,
   createInspectionSchema,
@@ -180,7 +181,9 @@ describe("historical and traffic contracts", () => {
       observationYear: 2025,
       observedOn: "2024-08-01",
       dailyTraffic: 42_000,
+      heavyVehicleDaily: 5_964,
       truckSharePercent: "14.20",
+      source: "DOCUMENT",
       sourceDescription: null
     });
 
@@ -228,6 +231,30 @@ describe("environmental metric contracts", () => {
         monthlyFreezeThawDays: null
       }).success
     ).toBe(false);
+  });
+});
+
+describe("network metric contracts", () => {
+  it("stores a closure-impact snapshot with road class and distances", () => {
+    expect(
+      createNetworkMetricSchema.safeParse({
+        bridgeId,
+        observationYear: 2024,
+        latitude: "51.558719",
+        longitude: "6.552642",
+        carriedRoad: "A57",
+        roadClass: "AUTOBAHN",
+        trafficAppliesTo: "CARRIED",
+        normalTripKm: "6.8",
+        closureDetourKm: "16.3",
+        additionalDistanceKm: "9.5",
+        alternativeCrossingCount: 2,
+        onStrategicNetwork: true,
+        source: "OSM_ROUTED",
+        sourceDescription: "Offline OSM route with the crossing excluded.",
+        formulaVersion: "closure-impact-v1"
+      }).success
+    ).toBe(true);
   });
 });
 

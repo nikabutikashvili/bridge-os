@@ -405,6 +405,14 @@ function OperationalContext({ snapshot }: { readonly snapshot: WorkPackageSnapsh
       <FactList>
         <FactRow label="Daily traffic" value={context.traffic?.dailyTraffic === null || context.traffic === null ? null : new Intl.NumberFormat("de-DE").format(context.traffic.dailyTraffic)} />
         <FactRow label="Truck share" value={context.traffic === null ? null : formatPercentage(context.traffic.truckSharePercent)} />
+        <FactRow
+          label="HGV / day"
+          value={
+            context.traffic?.heavyVehicleDaily == null
+              ? null
+              : new Intl.NumberFormat("de-DE").format(context.traffic.heavyVehicleDaily)
+          }
+        />
         <FactRow label="Traffic observation" value={context.traffic?.observedOn ? formatGermanDate(context.traffic.observedOn) : context.traffic?.observationYear ?? null} />
         <FactRow label="Inspection / access equipment" value={context.inspectionAccessEquipment} />
         <FactRow label="Traffic-management requirements" value={context.trafficManagementRequirements} />

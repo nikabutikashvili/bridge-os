@@ -127,8 +127,14 @@ describeDatabase("PostgresBridgePortfolioReader", () => {
     });
     expect(detail?.data.latestTraffic).toMatchObject({
       dailyTraffic: 41_878,
+      heavyVehicleDaily: 3_769,
       observationYear: 2015,
       truckSharePercent: "9.00"
+    });
+    expect(detail?.data.network).toMatchObject({
+      policyVersion: "network-criticality-v1",
+      roadClass: "AUTOBAHN",
+      assessment: { band: "MEDIUM" }
     });
     expect(detail?.data.environment).toMatchObject({
       observationYear: 2025,

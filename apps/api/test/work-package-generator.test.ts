@@ -156,6 +156,7 @@ function input(): WorkPackageGenerationInput {
       observationYear: 2015,
       observedOn: "2015-01-01",
       dailyTraffic: 41878,
+      heavyVehicleDaily: 3769,
       truckSharePercent: "9.00"
     },
     citations: [

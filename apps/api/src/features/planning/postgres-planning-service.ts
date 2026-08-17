@@ -14,6 +14,7 @@ import {
   environmentalMetrics,
   findings,
   inspections,
+  networkMetrics,
   plannedInterventions,
   recommendationFindings,
   recommendations,
@@ -30,6 +31,7 @@ import {
 } from "drizzle-orm";
 
 import { hasHighEnvironmentalExposure } from "../bridges/climate-exposure.js";
+import { networkPriorityInput } from "../bridges/network-criticality.js";
 import { adjustForConstructionPriceInflation } from "../budget/inflation-adjustment.js";
 import { deriveInspectionDueStatus } from "./inspection-due.js";
 import { deriveMaintenancePriority } from "./prioritization.js";
@@ -61,6 +63,7 @@ type TrafficRow = Awaited<ReturnType<PostgresPlanningService["loadTrafficRows"]>
 type EnvironmentRow = Awaited<
   ReturnType<PostgresPlanningService["loadEnvironmentRows"]>
 >[number];
+type NetworkRow = Awaited<ReturnType<PostgresPlanningService["loadNetworkRows"]>>[number];
 
 interface InspectionContext {
   readonly conditionDelta: string | null;
@@ -103,19 +106,22 @@ export class PostgresPlanningService implements PlanningService {
     const partialStructureIds = [
       ...new Set(baseRows.map((row) => row.partialStructureId))
     ];
-    const [findingRows, inspectionRows, trafficRows, environmentRows] = await Promise.all([
+    const [findingRows, inspectionRows, trafficRows, environmentRows, networkRows] =
+      await Promise.all([
       this.loadFindingRows(recommendationIds),
       this.loadInspectionRows(partialStructureIds),
       this.loadTrafficRows(bridgeIds),
-      this.loadEnvironmentRows(bridgeIds)
+      this.loadEnvironmentRows(bridgeIds),
+      this.loadNetworkRows(bridgeIds)
     ]);
     const findingsByRecommendation = groupFindings(findingRows);
     const inspectionByPartialStructure = buildInspectionContext(
       inspectionRows,
       asOf
     );
-    const trafficByBridge = latestTrafficByBridge(trafficRows);
-    const environmentByBridge = latestEnvironmentByBridge(environmentRows);
+    const trafficByBridge = latestByBridge(trafficRows);
+    const environmentByBridge = latestByBridge(environmentRows);
+    const networkByBridge = latestByBridge(networkRows);
 
     const items = baseRows.map((row) =>
       mapPlanningItem(
@@ -125,8 +131,9 @@ export class PostgresPlanningService implements PlanningService {
           conditionDelta: null,
           status: "UNKNOWN"
         },
-        trafficByBridge.get(row.bridgeId)?.dailyTraffic ?? null,
+        trafficByBridge.get(row.bridgeId) ?? null,
         environmentByBridge.get(row.bridgeId) ?? null,
+        networkByBridge.get(row.bridgeId) ?? null,
         asOf
       )
     );
@@ -342,7 +349,9 @@ export class PostgresPlanningService implements PlanningService {
       .select({
         bridgeId: trafficObservations.bridgeId,
         observationYear: trafficObservations.observationYear,
-        dailyTraffic: trafficObservations.dailyTraffic
+        dailyTraffic: trafficObservations.dailyTraffic,
+        heavyVehicleDaily: trafficObservations.heavyVehicleDaily,
+        truckSharePercent: trafficObservations.truckSharePercent
       })
       .from(trafficObservations)
       .where(inArray(trafficObservations.bridgeId, bridgeIds))
@@ -366,6 +375,18 @@ export class PostgresPlanningService implements PlanningService {
       .orderBy(desc(environmentalMetrics.observationYear), desc(environmentalMetrics.id));
   }
 
+  private loadNetworkRows(bridgeIds: string[]) {
+    return this.database
+      .select({
+        bridgeId: networkMetrics.bridgeId,
+        additionalDistanceKm: networkMetrics.additionalDistanceKm,
+        alternativeCrossingCount: networkMetrics.alternativeCrossingCount,
+        roadClass: networkMetrics.roadClass
+      })
+      .from(networkMetrics)
+      .where(inArray(networkMetrics.bridgeId, bridgeIds));
+  }
+
   private currentDate(): string {
     return this.clock().toISOString().slice(0, 10);
   }
@@ -375,8 +396,9 @@ function mapPlanningItem(
   row: BaseRow,
   findingRows: readonly FindingRow[],
   inspection: InspectionContext,
-  dailyTraffic: number | null,
+  traffic: TrafficRow | null,
   environment: EnvironmentRow | null,
+  network: NetworkRow | null,
   asOf: string
 ): PlanningItem {
   const activeFindingRows = findingRows.filter(
@@ -399,10 +421,11 @@ function mapPlanningItem(
           sourceYear: yearOf(sourceDate),
           asOfYear: yearOf(asOf)
         });
+  const networkPriority = networkPriorityInput(network, traffic);
   const priority = deriveMaintenancePriority({
     asOf,
     conditionDelta: inspection.conditionDelta,
-    dailyTraffic,
+    ...networkPriority,
     hasEnvironmentalExposure: hasHighEnvironmentalExposure({
       freezeThawDays: environment?.freezeThawDays ?? null,
       heavyRainDays20: environment?.heavyRainDays20 ?? null,
@@ -522,20 +545,10 @@ function buildInspectionContext(
   );
 }
 
-function latestTrafficByBridge(rows: readonly TrafficRow[]): Map<string, TrafficRow> {
-  const result = new Map<string, TrafficRow>();
-  for (const row of rows) {
-    if (!result.has(row.bridgeId)) {
-      result.set(row.bridgeId, row);
-    }
-  }
-  return result;
-}
-
-function latestEnvironmentByBridge(
-  rows: readonly EnvironmentRow[]
-): Map<string, EnvironmentRow> {
-  const result = new Map<string, EnvironmentRow>();
+function latestByBridge<Row extends { readonly bridgeId: string }>(
+  rows: readonly Row[]
+): Map<string, Row> {
+  const result = new Map<string, Row>();
   for (const row of rows) {
     if (!result.has(row.bridgeId)) {
       result.set(row.bridgeId, row);

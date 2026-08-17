@@ -3,7 +3,10 @@ import type {
   BridgeAttentionReason,
   DamageMechanismBand,
   DamageMechanismKind,
-  InspectionDueStatus
+  InspectionDueStatus,
+  NetworkCriticalityBand,
+  NetworkMetricSource,
+  NetworkRoadClass
 } from "@bridge-os/contracts";
 
 export type StatusTone = "critical" | "info" | "neutral" | "success" | "warning";
@@ -31,7 +34,8 @@ export function attentionReasonLabel(reason: BridgeAttentionReason): string {
     OPEN_RECOMMENDATION: "An unresolved recommendation remains open",
     OVERDUE_INSPECTION: "Inspection is overdue",
     STABILITY_FINDING: "Structural-safety finding rated 2 or higher",
-    TRAFFIC_SAFETY_FINDING: "Traffic-safety finding rated 2 or higher"
+    TRAFFIC_SAFETY_FINDING: "Traffic-safety finding rated 2 or higher",
+    NETWORK_CRITICALITY: "High network consequence if this crossing is lost"
   };
   return labels[reason];
 }
@@ -183,4 +187,34 @@ export function damageMechanismBandTone(band: DamageMechanismBand): StatusTone {
   if (band === "HIGH") return "warning";
   if (band === "MEDIUM") return "info";
   return "neutral";
+}
+
+export function networkBandLabel(band: NetworkCriticalityBand): string {
+  return band.charAt(0) + band.slice(1).toLowerCase();
+}
+
+export function networkBandTone(band: NetworkCriticalityBand): StatusTone {
+  if (band === "HIGH") return "warning";
+  if (band === "MEDIUM") return "info";
+  return "neutral";
+}
+
+export function networkRoadClassLabel(roadClass: NetworkRoadClass): string {
+  const labels: Record<NetworkRoadClass, string> = {
+    AUTOBAHN: "Autobahn",
+    BUNDESSTRASSE: "Bundesstraße",
+    LANDESSTRASSE: "Landesstraße",
+    OTHER: "Other road"
+  };
+  return labels[roadClass];
+}
+
+export function networkSourceLabel(source: NetworkMetricSource): string {
+  const labels: Record<NetworkMetricSource, string> = {
+    OSM_ROUTED: "OSM routed snapshot",
+    MANUAL_FIXTURE: "Manual fixture",
+    SIB_ASB: "SIB / ASB-ING",
+    BAST_NETWORK: "BASt network"
+  };
+  return labels[source];
 }

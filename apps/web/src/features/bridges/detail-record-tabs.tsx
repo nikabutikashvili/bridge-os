@@ -304,6 +304,15 @@ export function TechnicalDataTab({
               : {})}
           />
           <ContextFact label="Truck share" value={formatPercentage(bridge.latestTraffic?.truckSharePercent)} />
+          <ContextFact
+            label="HGV / day"
+            value={
+              bridge.latestTraffic?.heavyVehicleDaily === null ||
+              bridge.latestTraffic?.heavyVehicleDaily === undefined
+                ? null
+                : formatMeasurement(bridge.latestTraffic.heavyVehicleDaily, "", 0).trim()
+            }
+          />
         </dl>
       </section>
 

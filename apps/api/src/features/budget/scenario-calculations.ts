@@ -245,6 +245,7 @@ function toBudgetItem(item: BudgetScenarioItem): BudgetItem {
     estimate: item.estimate,
     estimateRequired: item.estimateRequired,
     included: false,
+    networkCriticality: item.networkCriticality,
     priority: item.priority
   };
 }

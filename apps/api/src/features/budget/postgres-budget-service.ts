@@ -12,6 +12,7 @@ import {
   environmentalMetrics,
   findings,
   inspections,
+  networkMetrics,
   plannedInterventions,
   recommendationFindings,
   recommendations,
@@ -71,11 +72,13 @@ export class PostgresBudgetService implements BudgetService {
       ...new Set(baseRows.map((row) => row.partialStructureId))
     ];
     const bridgeIds = [...new Set(baseRows.map((row) => row.bridgeId))];
-    const [findingRows, inspectionRows, trafficRows, environmentRows] = await Promise.all([
+    const [findingRows, inspectionRows, trafficRows, environmentRows, networkRows] =
+      await Promise.all([
       this.loadFindingRows(recommendationIds),
       this.loadInspectionRows(partialStructureIds),
       this.loadTrafficRows(bridgeIds),
-      this.loadEnvironmentRows(bridgeIds)
+      this.loadEnvironmentRows(bridgeIds),
+      this.loadNetworkRows(bridgeIds)
     ]);
     const findingsByRecommendation = groupBy(
       findingRows,
@@ -87,14 +90,16 @@ export class PostgresBudgetService implements BudgetService {
     );
     const trafficByBridge = latestTrafficByBridge(trafficRows);
     const environmentByBridge = latestTrafficByBridge(environmentRows);
+    const networkByBridge = latestTrafficByBridge(networkRows);
     const data = orderBudgetItems(
       baseRows.map((row) =>
         mapBudgetItem(
           row,
           findingsByRecommendation.get(row.recommendationId) ?? [],
           inspectionsByStructure.get(row.partialStructureId) ?? [],
-          trafficByBridge.get(row.bridgeId)?.dailyTraffic ?? null,
+          trafficByBridge.get(row.bridgeId) ?? null,
           environmentByBridge.get(row.bridgeId) ?? null,
+          networkByBridge.get(row.bridgeId) ?? null,
           asOf
         )
       )
@@ -297,6 +302,8 @@ export class PostgresBudgetService implements BudgetService {
       .select({
         bridgeId: trafficObservations.bridgeId,
         dailyTraffic: trafficObservations.dailyTraffic,
+        heavyVehicleDaily: trafficObservations.heavyVehicleDaily,
+        truckSharePercent: trafficObservations.truckSharePercent,
         observationYear: trafficObservations.observationYear
       })
       .from(trafficObservations)
@@ -316,6 +323,18 @@ export class PostgresBudgetService implements BudgetService {
       .from(environmentalMetrics)
       .where(inArray(environmentalMetrics.bridgeId, bridgeIds))
       .orderBy(desc(environmentalMetrics.observationYear), desc(environmentalMetrics.id));
+  }
+
+  private loadNetworkRows(bridgeIds: string[]) {
+    return this.database
+      .select({
+        bridgeId: networkMetrics.bridgeId,
+        additionalDistanceKm: networkMetrics.additionalDistanceKm,
+        alternativeCrossingCount: networkMetrics.alternativeCrossingCount,
+        roadClass: networkMetrics.roadClass
+      })
+      .from(networkMetrics)
+      .where(inArray(networkMetrics.bridgeId, bridgeIds));
   }
 
   private async loadAvailableYears(): Promise<number[]> {

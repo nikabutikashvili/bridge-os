@@ -10,6 +10,7 @@ const trafficObservationFieldsSchema = z.object({
   observationYear: z.number().int().min(1900).max(2200),
   observedOn: isoDateSchema.nullable(),
   dailyTraffic: z.number().int().nonnegative().nullable(),
+  heavyVehicleDaily: z.number().int().nonnegative().nullable(),
   truckSharePercent: nonNegativeDecimalSchema
     .refine((value) => Number(value) <= 100, "Truck share cannot exceed 100 percent")
     .nullable(),

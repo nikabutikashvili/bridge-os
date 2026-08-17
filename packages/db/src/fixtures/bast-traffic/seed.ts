@@ -27,7 +27,8 @@ export async function seedBastTrafficFixture(database: BridgeDatabase): Promise<
       await transaction.execute(sql`
         insert into traffic_observations (
           id, bridge_id, observation_year, observed_on, daily_traffic,
-          truck_share_percent, source, source_description, created_at, updated_at
+          heavy_vehicle_daily, truck_share_percent, source, source_description,
+          created_at, updated_at
         )
         select
           ${entry.id}::uuid,
@@ -35,6 +36,7 @@ export async function seedBastTrafficFixture(database: BridgeDatabase): Promise<
           ${entry.observationYear},
           null,
           ${entry.dailyTraffic},
+          ${entry.heavyVehicleDaily},
           ${entry.truckSharePercent},
           'EXTERNAL_ENRICHED'::traffic_observation_source,
           ${entry.sourceDescription},
@@ -46,6 +48,7 @@ export async function seedBastTrafficFixture(database: BridgeDatabase): Promise<
           bridge_id = excluded.bridge_id,
           observation_year = excluded.observation_year,
           daily_traffic = excluded.daily_traffic,
+          heavy_vehicle_daily = excluded.heavy_vehicle_daily,
           truck_share_percent = excluded.truck_share_percent,
           source = excluded.source,
           source_description = excluded.source_description,

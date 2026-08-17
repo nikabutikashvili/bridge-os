@@ -223,6 +223,7 @@ function scenarioItem(
             status: "DRAFT"
           },
     estimateRequired: amount === null,
+    networkCriticality: null,
     priority: {
       level: "MEDIUM",
       policyVersion: "maintenance-priority-v1",

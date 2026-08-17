@@ -21,6 +21,7 @@ import {
 import { ConditionHistoryChart } from "./condition-history-chart";
 import { currentRecommendations, relevantTimelineEvents } from "./detail-model";
 import { EnvironmentPanel } from "./environment-panel";
+import { NetworkPanel } from "./network-panel";
 import {
   inspectionTypeGermanTerm,
   inspectionTypeLabel,
@@ -64,6 +65,7 @@ export function DetailOverview({
         <CurrentSvd bridge={bridge} />
       </div>
 
+      <NetworkPanel network={bridge.network} />
       <EnvironmentPanel bridgeId={bridge.id} environment={bridge.environment} />
 
       <CurrentActions
@@ -298,6 +300,14 @@ function AssetContext({
         <ContextFact
           label="Truck share"
           value={formatPercentage(traffic?.truckSharePercent)}
+        />
+        <ContextFact
+          label="HGV / day"
+          value={
+            traffic?.heavyVehicleDaily === null || traffic?.heavyVehicleDaily === undefined
+              ? null
+              : formatMeasurement(traffic.heavyVehicleDaily, "", 0).trim()
+          }
         />
         <ContextFact label="Responsible authority" value={bridge.responsibility.responsibleAuthority} />
       </dl>

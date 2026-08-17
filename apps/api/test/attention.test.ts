@@ -12,7 +12,8 @@ const currentBridge = {
   maximumTrafficSafety: 0,
   openFindings: 0,
   openRecommendations: 0,
-  hasEnvironmentalExposure: false
+  hasEnvironmentalExposure: false,
+  hasHighNetworkConsequence: false
 };
 
 describe("deriveBridgeAttention", () => {
@@ -80,7 +81,27 @@ describe("deriveBridgeAttention", () => {
     });
   });
 
-  it("keeps resolved and current structures routine", () => {
+  it("raises a damaged high-consequence structure to high without inventing critical", () => {
+    expect(
+      deriveBridgeAttention({
+        ...currentBridge,
+        conditionScore: "3.0",
+        hasHighNetworkConsequence: true
+      })
+    ).toEqual({
+      level: "HIGH",
+      reasons: ["NETWORK_CRITICALITY"]
+    });
+    expect(
+      deriveBridgeAttention({
+        ...currentBridge,
+        hasHighNetworkConsequence: true,
+        maximumStability: 3
+      }).level
+    ).toBe("CRITICAL");
+  });
+
+  it("keeps a healthy high-volume structure routine", () => {
     expect(deriveBridgeAttention(currentBridge)).toEqual({
       level: "ROUTINE",
       reasons: []
