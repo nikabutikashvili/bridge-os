@@ -6,7 +6,7 @@ import {
   extractionMethodSchema,
   provenanceKindSchema
 } from "../domain/provenance.js";
-import { nonNegativeDecimalSchema, uuidSchema } from "../domain/common.js";
+import { nonNegativeDecimalSchema, uuidSchema, yearSchema } from "../domain/common.js";
 
 export const errorEnvelopeSchema = z
   .object({
@@ -61,5 +61,23 @@ export const moneySchema = z
   })
   .strict();
 
+/**
+ * A construction-price-index projection of a historical cost estimate onto a
+ * later year. Always a supplementary, clearly-labelled approximation of the
+ * original `moneySchema` figure it accompanies — never a replacement for it.
+ */
+export const inflationAdjustedEstimateSchema = z
+  .object({
+    amount: nonNegativeDecimalSchema,
+    currency: z.string().regex(/^[A-Z]{3}$/),
+    sourceYear: yearSchema,
+    asOfYear: yearSchema,
+    indexName: z.string().min(1),
+    indexBaseYear: yearSchema,
+    extrapolated: z.boolean()
+  })
+  .strict();
+
 export type ErrorEnvelope = z.infer<typeof errorEnvelopeSchema>;
 export type EvidenceCitation = z.infer<typeof evidenceCitationSchema>;
+export type InflationAdjustedEstimate = z.infer<typeof inflationAdjustedEstimateSchema>;

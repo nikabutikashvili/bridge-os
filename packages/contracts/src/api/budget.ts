@@ -7,7 +7,7 @@ import {
   plannedInterventionStatusSchema
 } from "../domain/planned-intervention.js";
 import { planningPrioritySchema } from "./planning.js";
-import { moneySchema } from "./common.js";
+import { inflationAdjustedEstimateSchema, moneySchema } from "./common.js";
 
 export const budgetQuerySchema = z
   .object({ year: z.coerce.number().int().min(1700).max(2200) })
@@ -67,7 +67,9 @@ export const budgetItemSchema = z
         id: uuidSchema,
         urgency: z.string().min(1).nullable(),
         targetYear: yearSchema.nullable(),
-        sourceEstimatedCost: moneySchema.nullable()
+        sourceEstimatedCost: moneySchema.nullable(),
+        sourceDate: isoDateSchema.nullable(),
+        inflationAdjustedEstimate: inflationAdjustedEstimateSchema.nullable()
       })
       .strict(),
     estimate: budgetEstimateSchema.nullable(),

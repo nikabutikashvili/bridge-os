@@ -1,6 +1,6 @@
 import type { BudgetItem, BudgetResponse } from "@bridge-os/contracts";
 
-type Money = NonNullable<BudgetResponse["program"]["approvedBudget"]>;
+export type Money = NonNullable<BudgetResponse["program"]["approvedBudget"]>;
 
 const priorityOrder = {
   CRITICAL: 4,
@@ -100,7 +100,7 @@ function countFunded(
   return funded;
 }
 
-function toMinorUnits(value: string): bigint {
+export function toMinorUnits(value: string): bigint {
   const match = /^(\d+)(?:\.(\d{1,2}))?$/u.exec(value);
   if (match?.[1] === undefined) {
     throw new RangeError(`Expected a non-negative amount with at most two decimals: ${value}`);
@@ -108,7 +108,7 @@ function toMinorUnits(value: string): bigint {
   return BigInt(match[1]) * 100n + BigInt((match[2] ?? "").padEnd(2, "0"));
 }
 
-function money(amount: bigint, currency: string): Money {
+export function money(amount: bigint, currency: string): Money {
   const whole = amount / 100n;
   const fraction = (amount % 100n).toString().padStart(2, "0");
   return { amount: `${String(whole)}.${fraction}`, currency };

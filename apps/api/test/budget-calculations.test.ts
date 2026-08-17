@@ -87,7 +87,9 @@ function item(
       id: "00000000-0000-4000-8000-000000000098",
       urgency: "MITTELFRISTIG",
       targetYear: 2026,
-      sourceEstimatedCost: null
+      sourceEstimatedCost: null,
+      sourceDate: null,
+      inflationAdjustedEstimate: null
     },
     estimate:
       amount === null

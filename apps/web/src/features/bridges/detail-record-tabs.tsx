@@ -9,7 +9,11 @@ import { FileText } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { ConditionBadge, StatusBadge } from "../../components/ui/data-display";
+import {
+  ConditionBadge,
+  InflationAdjustedEstimate,
+  StatusBadge
+} from "../../components/ui/data-display";
 import { EmptyState } from "../../components/ui/feedback";
 import { SectionHeader } from "../../components/ui/headings";
 import {
@@ -204,6 +208,7 @@ export function RecommendationsTab({
                           recommendation.sourceEstimatedCost.currency
                         )
                       : <Missing />}
+                    <InflationAdjustedEstimate adjustment={recommendation.inflationAdjustedEstimate} />
                   </TableCell>
                   <TableCell className="align-top">
                     <Primary>{recommendation.plannedYear ?? "Not planned"}</Primary>

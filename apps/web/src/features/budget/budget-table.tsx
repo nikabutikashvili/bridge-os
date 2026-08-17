@@ -14,7 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-import { StatusBadge } from "../../components/ui/data-display";
+import { InflationAdjustedEstimate, StatusBadge } from "../../components/ui/data-display";
 import { EmptyState } from "../../components/ui/feedback";
 import {
   Table,
@@ -205,6 +205,7 @@ function BudgetRow({
           {estimateBasis(item)}
         </span>
         {sourceComparison(item)}
+        <InflationAdjustedEstimate adjustment={item.sourceRecommendation.inflationAdjustedEstimate} />
       </TableCell>
       <TableCell>
         <StatusBadge tone={statusTone(item.intervention.status)}>

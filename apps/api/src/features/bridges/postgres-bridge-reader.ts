@@ -36,6 +36,7 @@ import {
 } from "@bridge-os/db";
 import { and, desc, eq, isNotNull, sql, type SQL } from "drizzle-orm";
 
+import { adjustForConstructionPriceInflation } from "../budget/inflation-adjustment.js";
 import { deriveBridgeAttention } from "./attention.js";
 import type { BridgePhotoFile, BridgePortfolioReader } from "./bridge-reader.js";
 import { bridgePhotoUrl } from "./bridge-photo.js";
@@ -126,6 +127,7 @@ interface RecommendationFindingRow {
   defectType: string | null;
   description: string | null;
   status: "OPEN" | "MONITORING" | "RESOLVED" | "DISMISSED" | null;
+  inspectedOn: string | null;
 }
 
 type Clock = () => Date;
@@ -634,10 +636,12 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
           sourceIdentifier: findings.sourceIdentifier,
           defectType: findings.defectType,
           description: findings.description,
-          status: findings.status
+          status: findings.status,
+          inspectedOn: inspections.inspectedOn
         })
         .from(recommendationFindings)
         .innerJoin(findings, eq(findings.id, recommendationFindings.findingId))
+        .innerJoin(inspections, eq(inspections.id, findings.inspectionId))
         .where(eq(recommendationFindings.bridgeId, id)),
       this.loadRecommendationEvidence(id)
     ]);
@@ -648,35 +652,53 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
 
     const findingsByRecommendation = groupRecommendationFindings(findingLinks);
     const evidenceByRecommendation = groupEvidence(evidenceRows);
+    const sourceDateByRecommendation = groupEarliestInspectionDate(findingLinks);
+    const asOfYear = this.clock().getUTCFullYear();
 
     return bridgeRecommendationsResponseSchema.parse({
-      data: rows.map((row) => ({
-        id: row.id,
-        partialStructure: {
-          id: row.partialStructureId,
-          externalNumber: row.partialStructureExternalNumber,
-          name: row.partialStructureName
-        },
-        workType: row.workType,
-        description: row.description,
-        urgency: row.urgency,
-        quantity:
-          row.quantity === null || row.unit === null
-            ? null
-            : { value: row.quantity, unit: row.unit },
-        sourceEstimatedCost:
+      data: rows.map((row) => {
+        const sourceEstimatedCost =
           row.sourceEstimatedCost === null || row.sourceEstimatedCostCurrency === null
             ? null
             : {
                 amount: row.sourceEstimatedCost,
                 currency: row.sourceEstimatedCostCurrency
-              },
-        targetYear: row.targetYear,
-        plannedYear: row.plannedYear,
-        status: row.status,
-        linkedFindings: findingsByRecommendation.get(row.id) ?? [],
-        evidence: evidenceByRecommendation.get(row.id) ?? []
-      }))
+              };
+        const sourceDate = sourceDateByRecommendation.get(row.id) ?? null;
+        const inflationAdjustedEstimate =
+          sourceEstimatedCost === null || sourceDate === null
+            ? null
+            : adjustForConstructionPriceInflation({
+                amount: sourceEstimatedCost.amount,
+                currency: sourceEstimatedCost.currency,
+                sourceYear: Number(sourceDate.slice(0, 4)),
+                asOfYear
+              });
+
+        return {
+          id: row.id,
+          partialStructure: {
+            id: row.partialStructureId,
+            externalNumber: row.partialStructureExternalNumber,
+            name: row.partialStructureName
+          },
+          workType: row.workType,
+          description: row.description,
+          urgency: row.urgency,
+          quantity:
+            row.quantity === null || row.unit === null
+              ? null
+              : { value: row.quantity, unit: row.unit },
+          sourceEstimatedCost,
+          sourceDate,
+          inflationAdjustedEstimate,
+          targetYear: row.targetYear,
+          plannedYear: row.plannedYear,
+          status: row.status,
+          linkedFindings: findingsByRecommendation.get(row.id) ?? [],
+          evidence: evidenceByRecommendation.get(row.id) ?? []
+        };
+      })
     });
   }
 
@@ -1456,6 +1478,20 @@ function groupRecommendationFindings(
       status: row.status
     });
     grouped.set(row.recommendationId, linked);
+  }
+  return grouped;
+}
+
+function groupEarliestInspectionDate(
+  rows: RecommendationFindingRow[]
+): Map<string, string> {
+  const grouped = new Map<string, string>();
+  for (const row of rows) {
+    if (row.inspectedOn === null) continue;
+    const earliest = grouped.get(row.recommendationId);
+    if (earliest === undefined || row.inspectedOn < earliest) {
+      grouped.set(row.recommendationId, row.inspectedOn);
+    }
   }
   return grouped;
 }

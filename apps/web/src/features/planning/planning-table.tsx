@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { StatusBadge } from "../../components/ui/data-display";
+import { InflationAdjustedEstimate, StatusBadge } from "../../components/ui/data-display";
 import { DetailPanel } from "../../components/ui/detail-panel";
 import { EmptyState } from "../../components/ui/feedback";
 import {
@@ -169,6 +169,9 @@ function PlanningRow({
       </TableCell>
       <TableCell className="text-right">
         <span className="block font-mono tabular-nums">{formatMoney(estimatedCost)}</span>
+        {plan === null ? (
+          <InflationAdjustedEstimate adjustment={recommendation.inflationAdjustedEstimate} />
+        ) : null}
         <span className="block text-[11px] text-muted-foreground">
           {formatQuantity(quantity)}
         </span>
@@ -398,6 +401,7 @@ function PlanInterventionForm({
               step="0.01"
               type="number"
             />
+            <InflationAdjustedEstimate adjustment={recommendation.inflationAdjustedEstimate} />
           </div>
         </fieldset>
         <p className="m-0 text-[12px] leading-4 text-muted-foreground">

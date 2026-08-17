@@ -94,6 +94,8 @@ function recommendation(
     plannedYear: null,
     quantity: null,
     sourceEstimatedCost: null,
+    sourceDate: null,
+    inflationAdjustedEstimate: null,
     status,
     targetYear: null,
     urgency: null,

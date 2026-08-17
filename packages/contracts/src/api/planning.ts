@@ -13,7 +13,7 @@ import {
   plannedInterventionStatusSchema
 } from "../domain/planned-intervention.js";
 import { recommendationStatusSchema } from "../domain/recommendation.js";
-import { moneySchema, quantitySchema } from "./common.js";
+import { inflationAdjustedEstimateSchema, moneySchema, quantitySchema } from "./common.js";
 
 export const planningViewSchema = z.enum([
   "recommended-unplanned",
@@ -97,7 +97,8 @@ const planningRecommendationSchema = z
     quantity: quantitySchema.nullable(),
     sourceEstimatedCost: moneySchema.nullable(),
     status: recommendationStatusSchema.nullable(),
-    sourceDate: isoDateSchema.nullable()
+    sourceDate: isoDateSchema.nullable(),
+    inflationAdjustedEstimate: inflationAdjustedEstimateSchema.nullable()
   })
   .strict();
 

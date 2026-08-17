@@ -23,6 +23,7 @@ import { and, asc, desc, eq, inArray } from "drizzle-orm";
 import { deriveInspectionDueStatus } from "../planning/inspection-due.js";
 import { deriveMaintenancePriority } from "../planning/prioritization.js";
 import { orderBudgetItems, summarizeBudget } from "./calculations.js";
+import { adjustForConstructionPriceInflation } from "./inflation-adjustment.js";
 import type {
   BudgetService,
   UpdateBudgetMembershipResult
@@ -351,6 +352,15 @@ function mapBudgetItem(
     row.sourceEstimatedCost,
     row.sourceEstimatedCostCurrency
   );
+  const inflationAdjustedEstimate =
+    sourceEstimate === null || sourceDate === null
+      ? null
+      : adjustForConstructionPriceInflation({
+          amount: sourceEstimate.amount,
+          currency: sourceEstimate.currency,
+          sourceYear: yearOf(sourceDate),
+          asOfYear: yearOf(asOf)
+        });
   const estimate =
     interventionEstimate === null ||
     row.interventionEstimatedCostSource === null ||
@@ -384,7 +394,9 @@ function mapBudgetItem(
       id: row.recommendationId,
       urgency: row.recommendationUrgency,
       targetYear: row.recommendationTargetYear,
-      sourceEstimatedCost: sourceEstimate
+      sourceEstimatedCost: sourceEstimate,
+      sourceDate,
+      inflationAdjustedEstimate
     },
     estimate,
     estimateRequired: estimate === null,
@@ -438,6 +450,10 @@ function money(
   currency: string | null
 ): { amount: string; currency: string } | null {
   return amount === null || currency === null ? null : { amount, currency };
+}
+
+function yearOf(isoDate: string): number {
+  return Number(isoDate.slice(0, 4));
 }
 
 function ensureSelectedYear(years: readonly number[], selected: number): number[] {

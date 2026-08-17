@@ -13,7 +13,12 @@ import { documentStatusSchema } from "../domain/document.js";
 import { findingStatusSchema } from "../domain/finding.js";
 import { inspectionTypeSchema } from "../domain/inspection.js";
 import { recommendationStatusSchema } from "../domain/recommendation.js";
-import { evidenceCitationSchema, moneySchema, quantitySchema } from "./common.js";
+import {
+  evidenceCitationSchema,
+  inflationAdjustedEstimateSchema,
+  moneySchema,
+  quantitySchema
+} from "./common.js";
 
 export const inspectionDueStatusSchema = z.enum([
   "OVERDUE",
@@ -434,6 +439,8 @@ export const bridgeRecommendationsResponseSchema = z
           urgency: z.string().min(1).nullable(),
           quantity: quantitySchema.nullable(),
           sourceEstimatedCost: moneySchema.nullable(),
+          sourceDate: isoDateSchema.nullable(),
+          inflationAdjustedEstimate: inflationAdjustedEstimateSchema.nullable(),
           targetYear: yearSchema.nullable(),
           plannedYear: yearSchema.nullable(),
           status: recommendationStatusSchema.nullable(),

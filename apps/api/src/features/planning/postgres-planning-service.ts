@@ -28,6 +28,7 @@ import {
   sql
 } from "drizzle-orm";
 
+import { adjustForConstructionPriceInflation } from "../budget/inflation-adjustment.js";
 import { deriveInspectionDueStatus } from "./inspection-due.js";
 import { deriveMaintenancePriority } from "./prioritization.js";
 import type {
@@ -362,6 +363,19 @@ function mapPlanningItem(
     .map((finding) => finding.inspectedOn)
     .filter((date): date is string => date !== null)
     .sort()[0] ?? null;
+  const sourceEstimatedCost = money(
+    row.sourceEstimatedCost,
+    row.sourceEstimatedCostCurrency
+  );
+  const inflationAdjustedEstimate =
+    sourceEstimatedCost === null || sourceDate === null
+      ? null
+      : adjustForConstructionPriceInflation({
+          amount: sourceEstimatedCost.amount,
+          currency: sourceEstimatedCost.currency,
+          sourceYear: yearOf(sourceDate),
+          asOfYear: yearOf(asOf)
+        });
   const priority = deriveMaintenancePriority({
     asOf,
     conditionDelta: inspection.conditionDelta,
@@ -389,12 +403,10 @@ function mapPlanningItem(
       urgency: row.recommendationUrgency,
       targetYear: row.recommendationTargetYear,
       quantity: pair(row.recommendationQuantity, row.recommendationUnit),
-      sourceEstimatedCost: money(
-        row.sourceEstimatedCost,
-        row.sourceEstimatedCostCurrency
-      ),
+      sourceEstimatedCost,
       status: row.recommendationStatus,
-      sourceDate
+      sourceDate,
+      inflationAdjustedEstimate
     },
     plannedIntervention:
       row.interventionId === null ||
@@ -513,6 +525,10 @@ function money(
   currency: string | null
 ): { amount: string; currency: string } | null {
   return amount === null || currency === null ? null : { amount, currency };
+}
+
+function yearOf(isoDate: string): number {
+  return Number(isoDate.slice(0, 4));
 }
 
 function itemView(item: PlanningItem): PlanningView {

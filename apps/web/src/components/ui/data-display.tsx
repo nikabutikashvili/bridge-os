@@ -1,8 +1,8 @@
-import { FileText, FunctionSquare, type LucideIcon } from "lucide-react";
+import { FileText, FunctionSquare, TrendingUp, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { formatConditionScore } from "../../lib/formatters";
+import { formatConditionScore, formatCurrency } from "../../lib/formatters";
 import { cn } from "@/lib/utils";
 import { Badge } from "./badge";
 
@@ -187,6 +187,45 @@ export function ProvenanceLink({
         <span className="shrink-0 border-l border-border pl-1.5 text-text-subtle">Derived</span>
       ) : null}
     </Link>
+  );
+}
+
+interface InflationAdjustment {
+  readonly amount: string;
+  readonly currency: string;
+  readonly sourceYear: number;
+  readonly asOfYear: number;
+  readonly indexName: string;
+  readonly extrapolated: boolean;
+}
+
+interface InflationAdjustedEstimateProps {
+  readonly adjustment: InflationAdjustment | null;
+}
+
+/**
+ * A supplementary, always-visible line next to a source-document cost
+ * estimate: what that figure would cost today per the construction price
+ * index. Deliberately never replaces the source amount, and its title
+ * attribute spells out that it is a projection, not a new appraisal.
+ */
+export function InflationAdjustedEstimate({
+  adjustment
+}: InflationAdjustedEstimateProps): React.ReactElement | null {
+  if (adjustment === null) {
+    return null;
+  }
+
+  const explanation = `Estimate only: ${String(adjustment.sourceYear)} cost scaled to ${String(adjustment.asOfYear)} using the ${adjustment.indexName}${adjustment.extrapolated ? " (index years extrapolated beyond the published range)" : ""}. Not a new appraisal.`;
+
+  return (
+    <span
+      className="mt-0.5 flex items-center gap-1 font-mono text-[11px] tabular-nums text-info"
+      title={explanation}
+    >
+      <TrendingUp aria-hidden="true" size={12} strokeWidth={1.8} />
+      ≈ {formatCurrency(adjustment.amount, adjustment.currency)} in {adjustment.asOfYear} (est.)
+    </span>
   );
 }
 
