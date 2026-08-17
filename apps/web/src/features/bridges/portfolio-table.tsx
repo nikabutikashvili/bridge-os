@@ -340,6 +340,7 @@ function PortfolioPagination({
 const shortReasonLabels: Record<BridgeAttentionReason, string> = {
   DETERIORATING_CONDITION: "Deteriorating",
   DURABILITY_FINDING: "Durability 2+",
+  ENVIRONMENTAL_EXPOSURE: "Climate watch",
   INSPECTION_DUE_SOON: "Due soon",
   MEDIUM_OR_HIGHER_RECOMMENDATION: "Work open",
   MISSING_CRITICAL_DATA: "Data gap",

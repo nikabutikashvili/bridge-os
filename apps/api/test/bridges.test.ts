@@ -303,6 +303,7 @@ const bridgeDetail: BridgeDetailResponse = {
       status: "UNKNOWN"
     },
     latestTraffic: null,
+    environment: null,
     photoUrl: null,
     location: {
       countryCode: "DE",

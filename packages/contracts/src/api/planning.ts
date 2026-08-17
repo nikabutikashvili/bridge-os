@@ -51,7 +51,8 @@ export const planningPriorityReasonCodeSchema = z.enum([
   "INSPECTION_OVERDUE",
   "INSPECTION_DUE_SOON",
   "CONDITION_DETERIORATING",
-  "HIGH_TRAFFIC"
+  "HIGH_TRAFFIC",
+  "HIGH_ENVIRONMENTAL_EXPOSURE"
 ]);
 
 export const planningPriorityReasonSchema = z

@@ -16,6 +16,7 @@ import {
   documentPages,
   documentProcessingRuns,
   documents,
+  environmentalMetrics,
   findingEvidence,
   findings,
   historicalWorks,
@@ -50,6 +51,7 @@ describe("database schema", () => {
       recommendationFindings,
       historicalWorks,
       trafficObservations,
+      environmentalMetrics,
       workPackages,
       documents,
       documentProcessingRuns,
@@ -78,6 +80,7 @@ describe("database schema", () => {
       "recommendation_findings",
       "historical_works",
       "traffic_observations",
+      "environmental_metrics",
       "work_packages",
       "documents",
       "document_processing_runs",
@@ -227,6 +230,22 @@ describe("database schema", () => {
     );
     expect(sourceEvidenceConfig.checks.map((constraint) => constraint.name)).toContain(
       "source_evidence_review_state"
+    );
+  });
+
+  it("stores one climate snapshot per bridge and observation year", () => {
+    const config = getTableConfig(environmentalMetrics);
+
+    expect(config.indexes.map((index) => index.config.name)).toContain(
+      "environmental_metrics_bridge_year_unique"
+    );
+    expect(config.foreignKeys).toHaveLength(1);
+    expect(config.checks.map((constraint) => constraint.name)).toEqual(
+      expect.arrayContaining([
+        "environmental_metrics_year_range",
+        "environmental_metrics_monthly_precip_shape",
+        "environmental_metrics_monthly_freeze_thaw_shape"
+      ])
     );
   });
 });

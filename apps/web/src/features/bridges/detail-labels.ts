@@ -1,6 +1,8 @@
 import type {
   BridgeAttentionLevel,
   BridgeAttentionReason,
+  DamageMechanismBand,
+  DamageMechanismKind,
   InspectionDueStatus
 } from "@bridge-os/contracts";
 
@@ -21,6 +23,7 @@ export function attentionReasonLabel(reason: BridgeAttentionReason): string {
   const labels: Record<BridgeAttentionReason, string> = {
     DETERIORATING_CONDITION: "Condition has deteriorated since the prior inspection",
     DURABILITY_FINDING: "Durability finding rated 2 or higher",
+    ENVIRONMENTAL_EXPOSURE: "Climate exposure is accelerating recorded durability damage",
     INSPECTION_DUE_SOON: "Inspection due within 180 days",
     MEDIUM_OR_HIGHER_RECOMMENDATION: "Medium-term or more urgent work remains open",
     MISSING_CRITICAL_DATA: "Critical inspection or condition data is missing",
@@ -160,4 +163,24 @@ export function trafficSourceTone(
   source: "DOCUMENT" | "EXTERNAL_ENRICHED" | null | undefined
 ): StatusTone {
   return source === "EXTERNAL_ENRICHED" ? "info" : "neutral";
+}
+
+export function damageMechanismKindLabel(kind: DamageMechanismKind): string {
+  const labels: Record<DamageMechanismKind, string> = {
+    RC_CORROSION: "RC corrosion progression",
+    STEEL_CORROSION: "Steel corrosion",
+    WATER_INGRESS: "Water-ingress watch",
+    SCOUR: "Scour watch"
+  };
+  return labels[kind];
+}
+
+export function damageMechanismBandLabel(band: DamageMechanismBand): string {
+  return band.charAt(0) + band.slice(1).toLowerCase();
+}
+
+export function damageMechanismBandTone(band: DamageMechanismBand): StatusTone {
+  if (band === "HIGH") return "warning";
+  if (band === "MEDIUM") return "info";
+  return "neutral";
 }

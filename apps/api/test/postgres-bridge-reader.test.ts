@@ -86,6 +86,7 @@ describeDatabase("PostgresBridgePortfolioReader", () => {
       reasons: [
         "TRAFFIC_SAFETY_FINDING",
         "DURABILITY_FINDING",
+        "ENVIRONMENTAL_EXPOSURE",
         "DETERIORATING_CONDITION",
         "MEDIUM_OR_HIGHER_RECOMMENDATION"
       ]
@@ -128,6 +129,30 @@ describeDatabase("PostgresBridgePortfolioReader", () => {
       dailyTraffic: 41_878,
       observationYear: 2015,
       truckSharePercent: "9.00"
+    });
+    expect(detail?.data.environment).toMatchObject({
+      observationYear: 2025,
+      source: "OPEN_METEO",
+      policyVersion: "damage-mechanism-v1"
+    });
+    expect(detail?.data.environment?.mechanisms.map((mechanism) => mechanism.kind)).toEqual([
+      "RC_CORROSION",
+      "STEEL_CORROSION",
+      "WATER_INGRESS",
+      "SCOUR"
+    ]);
+    expect(
+      Object.fromEntries(
+        (detail?.data.environment?.mechanisms ?? []).map((mechanism) => [
+          mechanism.kind,
+          mechanism.band
+        ])
+      )
+    ).toEqual({
+      RC_CORROSION: "HIGH",
+      STEEL_CORROSION: "HIGH",
+      WATER_INGRESS: "HIGH",
+      SCOUR: "LOW"
     });
     expect(detail?.data.attention).toMatchObject({
       level: "HIGH",

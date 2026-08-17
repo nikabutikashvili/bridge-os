@@ -13,6 +13,7 @@ import { documentStatusSchema } from "../domain/document.js";
 import { findingStatusSchema } from "../domain/finding.js";
 import { inspectionTypeSchema } from "../domain/inspection.js";
 import { recommendationStatusSchema } from "../domain/recommendation.js";
+import { bridgeEnvironmentSchema } from "../domain/environment.js";
 import { trafficObservationSourceSchema } from "../domain/traffic.js";
 import {
   evidenceCitationSchema,
@@ -134,7 +135,8 @@ export const bridgeAttentionReasonSchema = z.enum([
   "MEDIUM_OR_HIGHER_RECOMMENDATION",
   "OPEN_RECOMMENDATION",
   "OPEN_FINDING",
-  "MISSING_CRITICAL_DATA"
+  "MISSING_CRITICAL_DATA",
+  "ENVIRONMENTAL_EXPOSURE"
 ]);
 
 export const bridgeInspectionSummarySchema = z
@@ -327,7 +329,8 @@ export const bridgeDetailResponseSchema = z
             evidence: z.array(evidenceCitationSchema)
           })
           .strict()
-          .nullable()
+          .nullable(),
+        environment: bridgeEnvironmentSchema.nullable()
       })
       .strict(),
     asOf: isoDateSchema

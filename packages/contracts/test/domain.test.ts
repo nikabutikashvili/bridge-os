@@ -2,11 +2,12 @@ import { describe, expect, it } from "vitest";
 
 import {
   bridgeDataOriginSchema,
-  createPlannedInterventionSchema,
   createDocumentSchema,
+  createEnvironmentalMetricSchema,
   createFindingSchema,
   createHistoricalWorkSchema,
   createInspectionSchema,
+  createPlannedInterventionSchema,
   createRecommendationSchema,
   createSourceEvidenceSchema,
   createTrafficObservationSchema,
@@ -184,6 +185,49 @@ describe("historical and traffic contracts", () => {
     });
 
     expect(result.success).toBe(false);
+  });
+});
+
+describe("environmental metric contracts", () => {
+  it("requires twelve monthly values when climate series are present", () => {
+    const base = {
+      bridgeId,
+      observationYear: 2025,
+      latitude: "51.558719",
+      longitude: "6.552642",
+      gridLatitude: "51.564144",
+      gridLongitude: "6.533575",
+      elevationM: "27.0",
+      freezeThawDays: 53,
+      frostDays: 54,
+      iceDays: 1,
+      wetDryCycles: 48,
+      meanRelativeHumidityPercent: "78.1",
+      precipitationHours: 1435,
+      heavyRainDays20: 3,
+      heavyRainDays30: 0,
+      annualPrecipMm: "738.5",
+      deicingDays: 30,
+      source: "OPEN_METEO" as const,
+      sourceDescription: "Open-Meteo Historical Weather (ERA5-land)",
+      formulaVersion: "weather-metrics-v1"
+    };
+
+    expect(
+      createEnvironmentalMetricSchema.safeParse({
+        ...base,
+        monthlyPrecipMm: null,
+        monthlyFreezeThawDays: null
+      }).success
+    ).toBe(true);
+
+    expect(
+      createEnvironmentalMetricSchema.safeParse({
+        ...base,
+        monthlyPrecipMm: [1, 2, 3],
+        monthlyFreezeThawDays: null
+      }).success
+    ).toBe(false);
   });
 });
 

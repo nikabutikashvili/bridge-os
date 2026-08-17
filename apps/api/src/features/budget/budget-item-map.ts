@@ -1,5 +1,6 @@
 import type { BudgetItem } from "@bridge-os/contracts";
 
+import { hasHighEnvironmentalExposure } from "../bridges/climate-exposure.js";
 import { deriveInspectionDueStatus } from "../planning/inspection-due.js";
 import { deriveMaintenancePriority } from "../planning/prioritization.js";
 import { adjustForConstructionPriceInflation } from "./inflation-adjustment.js";
@@ -43,11 +44,18 @@ export interface BudgetItemInspectionRow {
   readonly cycleMonths: number | null;
 }
 
+export interface BudgetItemEnvironmentRow {
+  readonly freezeThawDays: number | null;
+  readonly heavyRainDays20: number | null;
+  readonly deicingDays: number | null;
+}
+
 export function mapBudgetItem(
   row: BudgetItemSourceRow,
   findingRows: readonly BudgetItemFindingRow[],
   inspectionRows: readonly BudgetItemInspectionRow[],
   dailyTraffic: number | null,
+  environment: BudgetItemEnvironmentRow | null,
   asOf: string
 ): BudgetItem {
   const activeFindings = findingRows.filter(
@@ -131,6 +139,12 @@ export function mapBudgetItem(
       asOf,
       conditionDelta,
       dailyTraffic,
+      hasEnvironmentalExposure: hasHighEnvironmentalExposure({
+        freezeThawDays: environment?.freezeThawDays ?? null,
+        heavyRainDays20: environment?.heavyRainDays20 ?? null,
+        deicingDays: environment?.deicingDays ?? null,
+        maximumDurability: maximum(activeFindings, "durabilityRating")
+      }),
       inspectionStatus: deriveInspectionDueStatus(datedInspections[0], asOf),
       maximumDurability: maximum(activeFindings, "durabilityRating"),
       maximumStability: maximum(activeFindings, "stabilityRating"),

@@ -20,6 +20,7 @@ import {
 } from "../../lib/formatters";
 import { ConditionHistoryChart } from "./condition-history-chart";
 import { currentRecommendations, relevantTimelineEvents } from "./detail-model";
+import { EnvironmentPanel } from "./environment-panel";
 import {
   inspectionTypeGermanTerm,
   inspectionTypeLabel,
@@ -62,6 +63,8 @@ export function DetailOverview({
         </section>
         <CurrentSvd bridge={bridge} />
       </div>
+
+      <EnvironmentPanel bridgeId={bridge.id} environment={bridge.environment} />
 
       <CurrentActions
         bridgeId={bridge.id}

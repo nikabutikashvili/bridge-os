@@ -11,6 +11,7 @@ import {
 } from "@bridge-os/contracts";
 import {
   bridges,
+  environmentalMetrics,
   findings,
   inspections,
   plannedInterventions,
@@ -28,6 +29,7 @@ import {
   sql
 } from "drizzle-orm";
 
+import { hasHighEnvironmentalExposure } from "../bridges/climate-exposure.js";
 import { adjustForConstructionPriceInflation } from "../budget/inflation-adjustment.js";
 import { deriveInspectionDueStatus } from "./inspection-due.js";
 import { deriveMaintenancePriority } from "./prioritization.js";
@@ -56,6 +58,9 @@ type InspectionRow = Awaited<
   ReturnType<PostgresPlanningService["loadInspectionRows"]>
 >[number];
 type TrafficRow = Awaited<ReturnType<PostgresPlanningService["loadTrafficRows"]>>[number];
+type EnvironmentRow = Awaited<
+  ReturnType<PostgresPlanningService["loadEnvironmentRows"]>
+>[number];
 
 interface InspectionContext {
   readonly conditionDelta: string | null;
@@ -98,10 +103,11 @@ export class PostgresPlanningService implements PlanningService {
     const partialStructureIds = [
       ...new Set(baseRows.map((row) => row.partialStructureId))
     ];
-    const [findingRows, inspectionRows, trafficRows] = await Promise.all([
+    const [findingRows, inspectionRows, trafficRows, environmentRows] = await Promise.all([
       this.loadFindingRows(recommendationIds),
       this.loadInspectionRows(partialStructureIds),
-      this.loadTrafficRows(bridgeIds)
+      this.loadTrafficRows(bridgeIds),
+      this.loadEnvironmentRows(bridgeIds)
     ]);
     const findingsByRecommendation = groupFindings(findingRows);
     const inspectionByPartialStructure = buildInspectionContext(
@@ -109,6 +115,7 @@ export class PostgresPlanningService implements PlanningService {
       asOf
     );
     const trafficByBridge = latestTrafficByBridge(trafficRows);
+    const environmentByBridge = latestEnvironmentByBridge(environmentRows);
 
     const items = baseRows.map((row) =>
       mapPlanningItem(
@@ -119,6 +126,7 @@ export class PostgresPlanningService implements PlanningService {
           status: "UNKNOWN"
         },
         trafficByBridge.get(row.bridgeId)?.dailyTraffic ?? null,
+        environmentByBridge.get(row.bridgeId) ?? null,
         asOf
       )
     );
@@ -344,6 +352,20 @@ export class PostgresPlanningService implements PlanningService {
       );
   }
 
+  private loadEnvironmentRows(bridgeIds: string[]) {
+    return this.database
+      .select({
+        bridgeId: environmentalMetrics.bridgeId,
+        observationYear: environmentalMetrics.observationYear,
+        freezeThawDays: environmentalMetrics.freezeThawDays,
+        heavyRainDays20: environmentalMetrics.heavyRainDays20,
+        deicingDays: environmentalMetrics.deicingDays
+      })
+      .from(environmentalMetrics)
+      .where(inArray(environmentalMetrics.bridgeId, bridgeIds))
+      .orderBy(desc(environmentalMetrics.observationYear), desc(environmentalMetrics.id));
+  }
+
   private currentDate(): string {
     return this.clock().toISOString().slice(0, 10);
   }
@@ -354,6 +376,7 @@ function mapPlanningItem(
   findingRows: readonly FindingRow[],
   inspection: InspectionContext,
   dailyTraffic: number | null,
+  environment: EnvironmentRow | null,
   asOf: string
 ): PlanningItem {
   const activeFindingRows = findingRows.filter(
@@ -380,6 +403,12 @@ function mapPlanningItem(
     asOf,
     conditionDelta: inspection.conditionDelta,
     dailyTraffic,
+    hasEnvironmentalExposure: hasHighEnvironmentalExposure({
+      freezeThawDays: environment?.freezeThawDays ?? null,
+      heavyRainDays20: environment?.heavyRainDays20 ?? null,
+      deicingDays: environment?.deicingDays ?? null,
+      maximumDurability: maximum(activeFindingRows, "durabilityRating")
+    }),
     inspectionStatus: inspection.status,
     maximumDurability: maximum(activeFindingRows, "durabilityRating"),
     maximumStability: maximum(activeFindingRows, "stabilityRating"),
@@ -495,6 +524,18 @@ function buildInspectionContext(
 
 function latestTrafficByBridge(rows: readonly TrafficRow[]): Map<string, TrafficRow> {
   const result = new Map<string, TrafficRow>();
+  for (const row of rows) {
+    if (!result.has(row.bridgeId)) {
+      result.set(row.bridgeId, row);
+    }
+  }
+  return result;
+}
+
+function latestEnvironmentByBridge(
+  rows: readonly EnvironmentRow[]
+): Map<string, EnvironmentRow> {
+  const result = new Map<string, EnvironmentRow>();
   for (const row of rows) {
     if (!result.has(row.bridgeId)) {
       result.set(row.bridgeId, row);

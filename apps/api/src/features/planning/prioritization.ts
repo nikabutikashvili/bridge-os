@@ -9,6 +9,7 @@ export interface MaintenancePriorityInput {
   readonly asOf: string;
   readonly conditionDelta: string | null;
   readonly dailyTraffic: number | null;
+  readonly hasEnvironmentalExposure: boolean;
   readonly inspectionStatus: InspectionDueStatus;
   readonly maximumDurability: number | null;
   readonly maximumStability: number | null;
@@ -42,7 +43,8 @@ const reasonOrder: Record<PlanningPriorityReasonCode, number> = {
   LONG_UNRESOLVED: 8,
   INSPECTION_DUE_SOON: 9,
   MEDIUM_TERM_URGENCY: 10,
-  HIGH_TRAFFIC: 11
+  HIGH_TRAFFIC: 11,
+  HIGH_ENVIRONMENTAL_EXPOSURE: 12
 };
 
 export function deriveMaintenancePriority(
@@ -63,6 +65,7 @@ export function deriveMaintenancePriority(
   addInspectionReason(reasons, input.inspectionStatus);
   addConditionReason(reasons, input.conditionDelta);
   addTrafficReason(reasons, input.dailyTraffic);
+  addEnvironmentalReason(reasons, input.hasEnvironmentalExposure);
 
   reasons.sort((left, right) => {
     const severityDifference =
@@ -215,6 +218,22 @@ function addTrafficReason(
     severity: "MEDIUM",
     label: "High traffic importance",
     detail: `The latest observation records ${dailyTraffic.toLocaleString("en-US")} vehicles per day.`
+  });
+}
+
+function addEnvironmentalReason(
+  reasons: PriorityReasonDefinition[],
+  hasEnvironmentalExposure: boolean
+): void {
+  if (!hasEnvironmentalExposure) {
+    return;
+  }
+  reasons.push({
+    code: "HIGH_ENVIRONMENTAL_EXPOSURE",
+    severity: "MEDIUM",
+    label: "Climate-driven damage watch",
+    detail:
+      "Open durability damage coincides with freeze/thaw, heavy rain, or de-icing exposure from the seeded climate record."
   });
 }
 

@@ -9,6 +9,7 @@ const baseline: MaintenancePriorityInput = {
   asOf: "2026-08-15",
   conditionDelta: null,
   dailyTraffic: null,
+  hasEnvironmentalExposure: false,
   inspectionStatus: "CURRENT",
   maximumDurability: null,
   maximumStability: null,
@@ -120,11 +121,21 @@ describe("deriveMaintenancePriority", () => {
     ).toMatchObject({ code: "HIGH_TRAFFIC", severity: "MEDIUM" });
   });
 
+  it("adds climate exposure when durability damage already exists", () => {
+    expect(
+      deriveMaintenancePriority({ ...baseline, hasEnvironmentalExposure: true }).reasons[0]
+    ).toMatchObject({
+      code: "HIGH_ENVIRONMENTAL_EXPOSURE",
+      severity: "MEDIUM"
+    });
+  });
+
   it("orders all reasons by severity and deterministic policy order", () => {
     const result = deriveMaintenancePriority({
       ...baseline,
       conditionDelta: "0.2",
       dailyTraffic: 50_000,
+      hasEnvironmentalExposure: true,
       inspectionStatus: "OVERDUE",
       maximumDurability: 3,
       maximumStability: 3,
@@ -142,7 +153,8 @@ describe("deriveMaintenancePriority", () => {
       "DURABILITY_RATING",
       "CONDITION_DETERIORATING",
       "LONG_UNRESOLVED",
-      "HIGH_TRAFFIC"
+      "HIGH_TRAFFIC",
+      "HIGH_ENVIRONMENTAL_EXPOSURE"
     ]);
   });
 });

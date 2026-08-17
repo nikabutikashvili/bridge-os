@@ -135,3 +135,7 @@ export const trafficObservationSourceEnum = pgEnum("traffic_observation_source",
   "DOCUMENT",
   "EXTERNAL_ENRICHED"
 ]);
+
+export const environmentalMetricSourceEnum = pgEnum("environmental_metric_source", [
+  "OPEN_METEO"
+]);

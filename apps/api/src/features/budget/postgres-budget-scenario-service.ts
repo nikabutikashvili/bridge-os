@@ -17,6 +17,7 @@ import {
   budgetScenarioAssignments,
   budgetScenarioEnvelopes,
   budgetScenarios,
+  environmentalMetrics,
   findings,
   inspections,
   plannedInterventions,
@@ -555,10 +556,11 @@ export class PostgresBudgetScenarioService implements BudgetScenarioService {
       ...new Set(baseRows.map((row) => row.partialStructureId))
     ];
     const bridgeIds = [...new Set(baseRows.map((row) => row.bridgeId))];
-    const [findingRows, inspectionRows, trafficRows] = await Promise.all([
+    const [findingRows, inspectionRows, trafficRows, environmentRows] = await Promise.all([
       this.loadFindingRows(recommendationIds),
       this.loadInspectionRows(partialStructureIds),
-      this.loadTrafficRows(bridgeIds)
+      this.loadTrafficRows(bridgeIds),
+      this.loadEnvironmentRows(bridgeIds)
     ]);
     const findingsByRecommendation = groupBy(
       findingRows,
@@ -569,12 +571,14 @@ export class PostgresBudgetScenarioService implements BudgetScenarioService {
       (row) => row.partialStructureId
     );
     const trafficByBridge = latestTrafficByBridge(trafficRows);
+    const environmentByBridge = latestTrafficByBridge(environmentRows);
     return baseRows.map((row) =>
       mapBudgetItem(
         row,
         findingsByRecommendation.get(row.recommendationId) ?? [],
         inspectionsByStructure.get(row.partialStructureId) ?? [],
         trafficByBridge.get(row.bridgeId)?.dailyTraffic ?? null,
+        environmentByBridge.get(row.bridgeId) ?? null,
         asOf
       )
     );
@@ -672,6 +676,20 @@ export class PostgresBudgetScenarioService implements BudgetScenarioService {
         desc(trafficObservations.observationYear),
         desc(trafficObservations.id)
       );
+  }
+
+  private loadEnvironmentRows(bridgeIds: string[]) {
+    return this.database
+      .select({
+        bridgeId: environmentalMetrics.bridgeId,
+        freezeThawDays: environmentalMetrics.freezeThawDays,
+        heavyRainDays20: environmentalMetrics.heavyRainDays20,
+        deicingDays: environmentalMetrics.deicingDays,
+        observationYear: environmentalMetrics.observationYear
+      })
+      .from(environmentalMetrics)
+      .where(inArray(environmentalMetrics.bridgeId, bridgeIds))
+      .orderBy(desc(environmentalMetrics.observationYear), desc(environmentalMetrics.id));
   }
 
   private currentDate(): string {

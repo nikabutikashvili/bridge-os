@@ -58,7 +58,8 @@ describeDatabase("PostgresPlanningService", () => {
         "CONDITION_DETERIORATING",
         "MEDIUM_TERM_URGENCY",
         "LONG_UNRESOLVED",
-        "HIGH_TRAFFIC"
+        "HIGH_TRAFFIC",
+        "HIGH_ENVIRONMENTAL_EXPOSURE"
       ])
     );
   });

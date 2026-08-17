@@ -15,6 +15,7 @@ interface BridgeAttentionInput {
   readonly maximumTrafficSafety: number | null;
   readonly openFindings: number;
   readonly openRecommendations: number;
+  readonly hasEnvironmentalExposure: boolean;
 }
 
 interface BridgeAttention {
@@ -40,6 +41,9 @@ export function deriveBridgeAttention(
   }
   if ((input.maximumDurability ?? 0) >= 2) {
     reasons.push("DURABILITY_FINDING");
+  }
+  if (input.hasEnvironmentalExposure) {
+    reasons.push("ENVIRONMENTAL_EXPOSURE");
   }
   if (input.conditionTrend === "DETERIORATING") {
     reasons.push("DETERIORATING_CONDITION");
@@ -83,6 +87,7 @@ function attentionLevel(input: BridgeAttentionInput): BridgeAttentionLevel {
     input.inspectionStatus === "UNKNOWN" ||
     input.conditionScore === null ||
     (input.maximumDurability ?? 0) >= 2 ||
+    input.hasEnvironmentalExposure ||
     input.conditionTrend === "DETERIORATING" ||
     input.highestRecommendationUrgencyRank >= 2
   ) {

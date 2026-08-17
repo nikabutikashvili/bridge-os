@@ -24,6 +24,7 @@ import {
   bridges,
   components,
   documents,
+  environmentalMetrics,
   findings,
   historicalWorks,
   inspections,
@@ -38,6 +39,11 @@ import { and, desc, eq, isNotNull, sql, type SQL } from "drizzle-orm";
 
 import { adjustForConstructionPriceInflation } from "../budget/inflation-adjustment.js";
 import { deriveBridgeAttention } from "./attention.js";
+import { hasHighEnvironmentalExposure } from "./climate-exposure.js";
+import {
+  DAMAGE_MECHANISM_POLICY_VERSION,
+  deriveDamageMechanisms
+} from "./damage-mechanisms.js";
 import type { BridgePhotoFile, BridgePortfolioReader } from "./bridge-reader.js";
 import { bridgePhotoUrl } from "./bridge-photo.js";
 import { buildDocumentSourceUrl } from "./source-url.js";
@@ -79,6 +85,9 @@ interface PortfolioRow extends Record<string, unknown> {
   trafficDailyTraffic: number | null;
   trafficTruckSharePercent: string | null;
   trafficSource: "DOCUMENT" | "EXTERNAL_ENRICHED" | null;
+  freezeThawDays: number | null;
+  heavyRainDays20: number | null;
+  deicingDays: number | null;
   hasPhoto: boolean;
 }
 
@@ -186,6 +195,9 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
           p.traffic_daily_traffic as "trafficDailyTraffic",
           p.traffic_truck_share_percent as "trafficTruckSharePercent",
           p.traffic_source as "trafficSource",
+          p.freeze_thaw_days as "freezeThawDays",
+          p.heavy_rain_days_20 as "heavyRainDays20",
+          p.deicing_days as "deicingDays",
           exists (
             select 1
             from documents d
@@ -254,6 +266,8 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
       partialStructureRows,
       componentRows,
       trafficRows,
+      environmentRows,
+      mechanismFindingRows,
       portfolioItem,
       evidenceRows
     ] = await Promise.all([
@@ -332,6 +346,25 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
         .where(eq(trafficObservations.bridgeId, id))
         .orderBy(sql`${trafficObservations.observationYear} desc`, sql`${trafficObservations.observedOn} desc nulls last`)
         .limit(1),
+      this.database
+        .select()
+        .from(environmentalMetrics)
+        .where(eq(environmentalMetrics.bridgeId, id))
+        .orderBy(desc(environmentalMetrics.observationYear)),
+      this.database
+        .select({
+          id: findings.id,
+          defectType: findings.defectType,
+          description: findings.description,
+          sourceIdentifier: findings.sourceIdentifier,
+          durabilityRating: findings.durabilityRating,
+          status: findings.status,
+          componentType: components.type,
+          componentMaterial: components.material
+        })
+        .from(findings)
+        .leftJoin(components, eq(components.id, findings.componentId))
+        .where(eq(findings.bridgeId, id)),
       this.getPortfolioItem(id, asOf),
       this.loadBridgeOverviewEvidence(id)
     ]);
@@ -343,6 +376,7 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
 
     const evidenceByEntity = groupEvidence(evidenceRows);
     const latestTraffic = trafficRows[0];
+    const asOfYear = Number(asOf.slice(0, 4));
 
     return bridgeDetailResponseSchema.parse({
       data: {
@@ -415,7 +449,16 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
                 source: latestTraffic.source,
                 sourceDescription: latestTraffic.sourceDescription,
                 evidence: evidenceByEntity.get(latestTraffic.id) ?? []
-              }
+              },
+        environment: mapBridgeEnvironment({
+          asOfYear,
+          constructionYear: partialStructureRows[0]?.constructionYear ?? null,
+          crossedFeature: bridge.crossedFeature,
+          dailyTraffic: latestTraffic?.dailyTraffic ?? null,
+          components: componentRows,
+          findings: mechanismFindingRows,
+          rows: environmentRows
+        })
       },
       asOf
     });
@@ -927,6 +970,9 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
         p.traffic_daily_traffic as "trafficDailyTraffic",
         p.traffic_truck_share_percent as "trafficTruckSharePercent",
         p.traffic_source as "trafficSource",
+        p.freeze_thaw_days as "freezeThawDays",
+        p.heavy_rain_days_20 as "heavyRainDays20",
+        p.deicing_days as "deicingDays",
         exists (
           select 1
           from documents d
@@ -1135,6 +1181,15 @@ function portfolioCtes(asOf: string): SQL {
       from traffic_observations t
       order by t.bridge_id, t.observation_year desc, t.observed_on desc nulls last
     ),
+    latest_environment as (
+      select distinct on (e.bridge_id)
+        e.bridge_id,
+        e.freeze_thaw_days,
+        e.heavy_rain_days_20,
+        e.deicing_days
+      from environmental_metrics e
+      order by e.bridge_id, e.observation_year desc
+    ),
     active_recommendations as (
       select
         r.*,
@@ -1217,7 +1272,10 @@ function portfolioCtes(asOf: string): SQL {
         lt.observed_on as traffic_observed_on,
         lt.daily_traffic as traffic_daily_traffic,
         lt.truck_share_percent as traffic_truck_share_percent,
-        lt.source as traffic_source
+        lt.source as traffic_source,
+        le.freeze_thaw_days,
+        le.heavy_rain_days_20,
+        le.deicing_days
       from bridges b
       left join structure_summary ss on ss.bridge_id = b.id
       left join inspection_summary ins on ins.bridge_id = b.id
@@ -1226,6 +1284,7 @@ function portfolioCtes(asOf: string): SQL {
       left join recommendation_summary rs on rs.bridge_id = b.id
       left join headline_recommendation hr on hr.bridge_id = b.id
       left join latest_traffic lt on lt.bridge_id = b.id
+      left join latest_environment le on le.bridge_id = b.id
     ),
     portfolio as (
       select
@@ -1319,7 +1378,13 @@ function mapPortfolioRow(row: PortfolioRow) {
     maximumStability: row.maximumStability,
     maximumTrafficSafety: row.maximumTrafficSafety,
     openFindings: row.openFindings,
-    openRecommendations: row.openRecommendations
+    openRecommendations: row.openRecommendations,
+    hasEnvironmentalExposure: hasHighEnvironmentalExposure({
+      freezeThawDays: row.freezeThawDays,
+      heavyRainDays20: row.heavyRainDays20,
+      deicingDays: row.deicingDays,
+      maximumDurability: row.maximumDurability
+    })
   });
 
   return {
@@ -1380,6 +1445,105 @@ function mapPortfolioRow(row: PortfolioRow) {
       }
     }
   };
+}
+
+function mapBridgeEnvironment(input: {
+  readonly asOfYear: number;
+  readonly constructionYear: number | null;
+  readonly crossedFeature: string | null;
+  readonly dailyTraffic: number | null;
+  readonly components: readonly {
+    readonly type: string | null;
+    readonly material: string | null;
+    readonly constructionYear: number | null;
+    readonly installYear: number | null;
+  }[];
+  readonly findings: readonly {
+    readonly id: string;
+    readonly defectType: string | null;
+    readonly description: string | null;
+    readonly sourceIdentifier: string | null;
+    readonly durabilityRating: number | null;
+    readonly status: "OPEN" | "MONITORING" | "RESOLVED" | "DISMISSED" | null;
+    readonly componentType: string | null;
+    readonly componentMaterial: string | null;
+  }[];
+  readonly rows: readonly (typeof environmentalMetrics.$inferSelect)[];
+}) {
+  const current = input.rows[0];
+  if (current === undefined) {
+    return null;
+  }
+  const previous = input.rows[1];
+  const monthlyPrecip = asNumberArray(current.monthlyPrecipMm);
+  const monthlyFreezeThaw = asNumberArray(current.monthlyFreezeThawDays);
+
+  return {
+    observationYear: current.observationYear,
+    source: current.source,
+    sourceDescription: current.sourceDescription,
+    formulaVersion: current.formulaVersion,
+    policyVersion: DAMAGE_MECHANISM_POLICY_VERSION,
+    location: {
+      latitude: current.latitude,
+      longitude: current.longitude,
+      gridLatitude: current.gridLatitude,
+      gridLongitude: current.gridLongitude,
+      elevationM: current.elevationM
+    },
+    metrics: {
+      freezeThawDays: current.freezeThawDays,
+      frostDays: current.frostDays,
+      iceDays: current.iceDays,
+      wetDryCycles: current.wetDryCycles,
+      meanRelativeHumidityPercent: current.meanRelativeHumidityPercent,
+      precipitationHours: current.precipitationHours,
+      heavyRainDays20: current.heavyRainDays20,
+      heavyRainDays30: current.heavyRainDays30,
+      annualPrecipMm: current.annualPrecipMm,
+      deicingDays: current.deicingDays
+    },
+    monthly: monthlyPrecip.map((precipMm, index) => ({
+      month: index + 1,
+      precipMm: precipMm.toFixed(1),
+      freezeThawDays: monthlyFreezeThaw[index] ?? 0
+    })),
+    previousYear:
+      previous === undefined
+        ? null
+        : {
+            observationYear: previous.observationYear,
+            freezeThawDays: previous.freezeThawDays,
+            heavyRainDays20: previous.heavyRainDays20,
+            annualPrecipMm: previous.annualPrecipMm
+          },
+    mechanisms: deriveDamageMechanisms({
+      asOfYear: input.asOfYear,
+      climate: {
+        freezeThawDays: current.freezeThawDays,
+        wetDryCycles: current.wetDryCycles,
+        meanRelativeHumidityPercent: current.meanRelativeHumidityPercent,
+        precipitationHours: current.precipitationHours,
+        heavyRainDays20: current.heavyRainDays20,
+        deicingDays: current.deicingDays
+      },
+      constructionYear: input.constructionYear,
+      crossedFeature: input.crossedFeature,
+      dailyTraffic: input.dailyTraffic,
+      components: input.components,
+      findings: input.findings
+    })
+  };
+}
+
+function asNumberArray(value: unknown): number[] {
+  if (!Array.isArray(value) || value.length !== 12) {
+    return [];
+  }
+  return value.map((item) => {
+    const numeric = Number(item);
+    return Number.isFinite(numeric) ? numeric : 0;
+  });
 }
 
 function evidenceSelectColumns(

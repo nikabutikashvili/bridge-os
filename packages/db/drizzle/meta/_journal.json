@@ -99,6 +99,13 @@
       "when": 1786964253372,
       "tag": "0013_traffic_observation_source",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1786967349048,
+      "tag": "0014_environmental_metrics",
+      "breakpoints": true
     }
   ]
 }

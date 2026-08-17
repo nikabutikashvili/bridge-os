@@ -11,7 +11,8 @@ const currentBridge = {
   maximumStability: 0,
   maximumTrafficSafety: 0,
   openFindings: 0,
-  openRecommendations: 0
+  openRecommendations: 0,
+  hasEnvironmentalExposure: false
 };
 
 describe("deriveBridgeAttention", () => {
@@ -64,6 +65,19 @@ describe("deriveBridgeAttention", () => {
         inspectionStatus: "UNKNOWN"
       })
     ).toEqual({ level: "MEDIUM", reasons: ["MISSING_CRITICAL_DATA"] });
+  });
+
+  it("adds climate exposure beside durability when both are present", () => {
+    expect(
+      deriveBridgeAttention({
+        ...currentBridge,
+        hasEnvironmentalExposure: true,
+        maximumDurability: 2
+      })
+    ).toEqual({
+      level: "MEDIUM",
+      reasons: ["DURABILITY_FINDING", "ENVIRONMENTAL_EXPOSURE"]
+    });
   });
 
   it("keeps resolved and current structures routine", () => {

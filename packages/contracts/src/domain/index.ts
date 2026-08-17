@@ -2,6 +2,7 @@ export * from "./bridge.js";
 export * from "./common.js";
 export * from "./component.js";
 export * from "./document.js";
+export * from "./environment.js";
 export * from "./finding.js";
 export * from "./historical-work.js";
 export * from "./inspection.js";

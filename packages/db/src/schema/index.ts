@@ -4,6 +4,7 @@ export * from "./budget-scenarios.js";
 export * from "./components.js";
 export * from "./documents.js";
 export * from "./enums.js";
+export * from "./environment.js";
 export * from "./findings.js";
 export * from "./historical-work.js";
 export * from "./inspections.js";
