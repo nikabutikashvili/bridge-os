@@ -1,0 +1,2 @@
+CREATE TYPE "public"."traffic_observation_source" AS ENUM('DOCUMENT', 'EXTERNAL_ENRICHED');--> statement-breakpoint
+ALTER TABLE "traffic_observations" ADD COLUMN "source" "traffic_observation_source" DEFAULT 'DOCUMENT' NOT NULL;

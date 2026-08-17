@@ -130,3 +130,8 @@ export const evidenceReviewStateEnum = pgEnum("evidence_review_state", [
 ]);
 
 export const provenanceKindEnum = pgEnum("provenance_kind", ["SOURCE_FACT", "DERIVED"]);
+
+export const trafficObservationSourceEnum = pgEnum("traffic_observation_source", [
+  "DOCUMENT",
+  "EXTERNAL_ENRICHED"
+]);

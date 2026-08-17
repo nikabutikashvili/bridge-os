@@ -36,6 +36,8 @@ import {
   inspectionTypeLabel,
   recordStatusLabel,
   recordStatusTone,
+  trafficSourceLabel,
+  trafficSourceTitle,
   urgencyGermanTerm,
   urgencyLabel
 } from "./detail-labels";
@@ -294,6 +296,12 @@ export function TechnicalDataTab({
                 ? null
                 : formatMeasurement(bridge.latestTraffic.dailyTraffic, "vehicles/day", 0)
             }
+            {...(bridge.latestTraffic
+              ? {
+                  detail: trafficSourceLabel(bridge.latestTraffic.source),
+                  detailTitle: trafficSourceTitle(bridge.latestTraffic.source)
+                }
+              : {})}
           />
           <ContextFact label="Truck share" value={formatPercentage(bridge.latestTraffic?.truckSharePercent)} />
         </dl>
@@ -489,9 +497,13 @@ export function DocumentsTab({
 }
 
 function ContextFact({
+  detail,
+  detailTitle,
   label,
   value
 }: {
+  readonly detail?: string;
+  readonly detailTitle?: string;
   readonly label: string;
   readonly value: number | string | null | undefined;
 }): React.ReactElement {
@@ -499,6 +511,11 @@ function ContextFact({
     <div className="min-h-[70px] border-l border-border p-3.5 [&:nth-child(5n+1)]:border-l-0 [&:nth-child(n+6)]:border-t">
       <dt className="font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">{label}</dt>
       <dd className="m-0 mt-1 overflow-hidden text-ellipsis text-[13px] leading-5">{value ?? "Not recorded"}</dd>
+      {detail ? (
+        <dd className="m-0 mt-0.5 text-[11px] leading-4 text-muted-foreground" title={detailTitle}>
+          {detail}
+        </dd>
+      ) : null}
     </div>
   );
 }

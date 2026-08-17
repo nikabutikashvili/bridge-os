@@ -39,6 +39,8 @@ import {
   inspectionDueLabel,
   inspectionDueTone,
   inspectionTypeGermanTerm,
+  trafficSourceLabel,
+  trafficSourceTitle,
   urgencyLabel
 } from "./detail-labels";
 import { portfolioHref } from "./portfolio-query";
@@ -239,9 +241,14 @@ function TrafficCell({
       <strong className="block font-mono font-medium tabular-nums">
         {formatMeasurement(traffic.dailyTraffic, "", 0).trim()}
       </strong>
-      <span className="block font-mono text-[11px] text-muted-foreground">
+      <span
+        className="block font-mono text-[11px] text-muted-foreground"
+        title={trafficSourceTitle(traffic.source)}
+      >
         {traffic.observationYear}
         {traffic.truckSharePercent ? ` · ${traffic.truckSharePercent}%` : ""}
+        {" · "}
+        {trafficSourceLabel(traffic.source)}
       </span>
     </>
   );

@@ -83,14 +83,17 @@ export function relevantTimelineEvents(
   history: BridgeHistoryResponse["data"]
 ): Extract<
     BridgeHistoryResponse["data"][number],
-    { readonly kind: "HISTORICAL_WORK" | "INSPECTION" }
+    { readonly kind: "HISTORICAL_WORK" | "INSPECTION" | "TRAFFIC_OBSERVATION" }
   >[] {
   return history.filter(
     (
       event
     ): event is Extract<
       BridgeHistoryResponse["data"][number],
-      { readonly kind: "HISTORICAL_WORK" | "INSPECTION" }
-    > => event.kind === "INSPECTION" || event.kind === "HISTORICAL_WORK"
+      { readonly kind: "HISTORICAL_WORK" | "INSPECTION" | "TRAFFIC_OBSERVATION" }
+    > =>
+      event.kind === "INSPECTION" ||
+      event.kind === "HISTORICAL_WORK" ||
+      event.kind === "TRAFFIC_OBSERVATION"
   );
 }

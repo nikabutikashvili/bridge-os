@@ -141,3 +141,23 @@ export function ratingTone(rating: number | null): StatusTone {
   if (rating === 2) return "warning";
   return "success";
 }
+
+export function trafficSourceLabel(
+  source: "DOCUMENT" | "EXTERNAL_ENRICHED" | null | undefined
+): string {
+  return source === "EXTERNAL_ENRICHED" ? "BASt" : "Bauwerksbuch";
+}
+
+export function trafficSourceTitle(
+  source: "DOCUMENT" | "EXTERNAL_ENRICHED" | null | undefined
+): string {
+  return source === "EXTERNAL_ENRICHED"
+    ? "Automated traffic count from BASt's public counting-station data"
+    : "Recorded in the bridge's Bauwerksbuch inspection document";
+}
+
+export function trafficSourceTone(
+  source: "DOCUMENT" | "EXTERNAL_ENRICHED" | null | undefined
+): StatusTone {
+  return source === "EXTERNAL_ENRICHED" ? "info" : "neutral";
+}

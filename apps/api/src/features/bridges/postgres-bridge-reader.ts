@@ -78,6 +78,7 @@ interface PortfolioRow extends Record<string, unknown> {
   trafficObservedOn: string | null;
   trafficDailyTraffic: number | null;
   trafficTruckSharePercent: string | null;
+  trafficSource: "DOCUMENT" | "EXTERNAL_ENRICHED" | null;
   hasPhoto: boolean;
 }
 
@@ -184,6 +185,7 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
           p.traffic_observed_on as "trafficObservedOn",
           p.traffic_daily_traffic as "trafficDailyTraffic",
           p.traffic_truck_share_percent as "trafficTruckSharePercent",
+          p.traffic_source as "trafficSource",
           exists (
             select 1
             from documents d
@@ -322,7 +324,9 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
           observationYear: trafficObservations.observationYear,
           observedOn: trafficObservations.observedOn,
           dailyTraffic: trafficObservations.dailyTraffic,
-          truckSharePercent: trafficObservations.truckSharePercent
+          truckSharePercent: trafficObservations.truckSharePercent,
+          source: trafficObservations.source,
+          sourceDescription: trafficObservations.sourceDescription
         })
         .from(trafficObservations)
         .where(eq(trafficObservations.bridgeId, id))
@@ -408,6 +412,8 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
                 observedOn: latestTraffic.observedOn,
                 dailyTraffic: latestTraffic.dailyTraffic,
                 truckSharePercent: latestTraffic.truckSharePercent,
+                source: latestTraffic.source,
+                sourceDescription: latestTraffic.sourceDescription,
                 evidence: evidenceByEntity.get(latestTraffic.id) ?? []
               }
       },
@@ -740,7 +746,9 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
           date: trafficObservations.observedOn,
           observationYear: trafficObservations.observationYear,
           dailyTraffic: trafficObservations.dailyTraffic,
-          truckSharePercent: trafficObservations.truckSharePercent
+          truckSharePercent: trafficObservations.truckSharePercent,
+          source: trafficObservations.source,
+          sourceDescription: trafficObservations.sourceDescription
         })
         .from(trafficObservations)
         .where(eq(trafficObservations.bridgeId, id)),
@@ -797,7 +805,9 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
         evidence: evidenceByEvent.get(row.id) ?? [],
         observationYear: row.observationYear,
         dailyTraffic: row.dailyTraffic,
-        truckSharePercent: row.truckSharePercent
+        truckSharePercent: row.truckSharePercent,
+        source: row.source,
+        sourceDescription: row.sourceDescription
       }))
     ];
 
@@ -916,6 +926,7 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
         p.traffic_observed_on as "trafficObservedOn",
         p.traffic_daily_traffic as "trafficDailyTraffic",
         p.traffic_truck_share_percent as "trafficTruckSharePercent",
+        p.traffic_source as "trafficSource",
         exists (
           select 1
           from documents d
@@ -1119,7 +1130,8 @@ function portfolioCtes(asOf: string): SQL {
         t.observation_year,
         t.observed_on::text as observed_on,
         t.daily_traffic,
-        t.truck_share_percent
+        t.truck_share_percent,
+        t.source
       from traffic_observations t
       order by t.bridge_id, t.observation_year desc, t.observed_on desc nulls last
     ),
@@ -1204,7 +1216,8 @@ function portfolioCtes(asOf: string): SQL {
         lt.observation_year as traffic_observation_year,
         lt.observed_on as traffic_observed_on,
         lt.daily_traffic as traffic_daily_traffic,
-        lt.truck_share_percent as traffic_truck_share_percent
+        lt.truck_share_percent as traffic_truck_share_percent,
+        lt.source as traffic_source
       from bridges b
       left join structure_summary ss on ss.bridge_id = b.id
       left join inspection_summary ins on ins.bridge_id = b.id
@@ -1335,13 +1348,14 @@ function mapPortfolioRow(row: PortfolioRow) {
       status: row.inspectionStatus
     },
     traffic:
-      row.trafficObservationYear === null
+      row.trafficObservationYear === null || row.trafficSource === null
         ? null
         : {
             observationYear: row.trafficObservationYear,
             observedOn: row.trafficObservedOn,
             dailyTraffic: row.trafficDailyTraffic,
-            truckSharePercent: row.trafficTruckSharePercent
+            truckSharePercent: row.trafficTruckSharePercent,
+            source: row.trafficSource
           },
     photoUrl: row.hasPhoto ? bridgePhotoUrl(row.id) : null,
     attention: {

@@ -13,6 +13,7 @@ import {
 
 import { bridges } from "./bridges.js";
 import { auditColumns } from "./common.js";
+import { trafficObservationSourceEnum } from "./enums.js";
 
 export const trafficObservations = pgTable(
   "traffic_observations",
@@ -25,6 +26,7 @@ export const trafficObservations = pgTable(
     observedOn: date("observed_on"),
     dailyTraffic: integer("daily_traffic"),
     truckSharePercent: numeric("truck_share_percent", { precision: 5, scale: 2 }),
+    source: trafficObservationSourceEnum("source").notNull().default("DOCUMENT"),
     sourceDescription: text("source_description"),
     ...auditColumns()
   },

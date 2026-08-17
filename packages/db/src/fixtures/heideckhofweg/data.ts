@@ -707,6 +707,7 @@ export const heideckhofwegFixture = {
       observedOn: "2015-01-01",
       dailyTraffic: 41878,
       truckSharePercent: "9.00",
+      source: "DOCUMENT",
       sourceDescription: "Straßenverkehrszählung 2015 (Demo fixture)",
       createdAt: fixtureTimestamp,
       updatedAt: fixtureTimestamp

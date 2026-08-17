@@ -1,4 +1,5 @@
 import type { BridgeDatabase } from "./connection.js";
+import { bastTrafficFixture, seedBastTrafficFixture } from "./fixtures/bast-traffic/index.js";
 import {
   heideckhofwegFixtureSummary,
   seedHeideckhofwegFixture
@@ -6,8 +7,10 @@ import {
 
 export async function seedDevelopmentFixtures(database: BridgeDatabase): Promise<void> {
   await seedHeideckhofwegFixture(database);
+  await seedBastTrafficFixture(database);
 }
 
 export const developmentFixtureSummary = {
-  heideckhofweg: heideckhofwegFixtureSummary
+  heideckhofweg: heideckhofwegFixtureSummary,
+  bastTraffic: { trafficObservations: bastTrafficFixture.length }
 } as const;

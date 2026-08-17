@@ -717,6 +717,7 @@ function normalizeTrafficObservation(
     observedOn: normalizeDate(observation.observedOn.value),
     dailyTraffic: normalizeInteger(observation.dailyTraffic.value),
     truckSharePercent: normalizeDecimal(observation.truckSharePercent.value),
+    source: "DOCUMENT" as const,
     sourceDescription: normalizeNullableString(
       observation.sourceDescription.value
     )

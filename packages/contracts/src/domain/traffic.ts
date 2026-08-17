@@ -2,6 +2,9 @@ import { z } from "zod";
 
 import { entityAuditSchema, isoDateSchema, nonNegativeDecimalSchema, uuidSchema } from "./common.js";
 
+export const trafficObservationSourceSchema = z.enum(["DOCUMENT", "EXTERNAL_ENRICHED"]);
+export type TrafficObservationSource = z.infer<typeof trafficObservationSourceSchema>;
+
 const trafficObservationFieldsSchema = z.object({
   bridgeId: uuidSchema,
   observationYear: z.number().int().min(1900).max(2200),
@@ -10,6 +13,7 @@ const trafficObservationFieldsSchema = z.object({
   truckSharePercent: nonNegativeDecimalSchema
     .refine((value) => Number(value) <= 100, "Truck share cannot exceed 100 percent")
     .nullable(),
+  source: trafficObservationSourceSchema,
   sourceDescription: z.string().min(1).nullable()
 });
 

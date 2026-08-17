@@ -4,7 +4,7 @@ import type {
   BridgeInspectionsResponse,
   BridgeRecommendationsResponse
 } from "@bridge-os/contracts";
-import { Wrench } from "lucide-react";
+import { Gauge, Wrench } from "lucide-react";
 import Link from "next/link";
 
 import { ConditionBadge, StatusBadge } from "../../components/ui/data-display";
@@ -27,6 +27,9 @@ import {
   ratingTone,
   recordStatusLabel,
   recordStatusTone,
+  trafficSourceLabel,
+  trafficSourceTitle,
+  trafficSourceTone,
   urgencyGermanTerm,
   urgencyLabel
 } from "./detail-labels";
@@ -283,7 +286,10 @@ function AssetContext({
               : formatMeasurement(traffic.dailyTraffic, "vehicles/day", 0)
           }
           {...(traffic
-            ? { detail: `Observation ${String(traffic.observationYear)}` }
+            ? {
+                detail: `Observation ${String(traffic.observationYear)} · ${trafficSourceLabel(traffic.source)}`,
+                detailTitle: trafficSourceTitle(traffic.source)
+              }
             : {})}
         />
         <ContextFact
@@ -325,6 +331,10 @@ function AssetTimeline({
                 meta={
                   event.kind === "INSPECTION" ? (
                     <ConditionBadge score={event.conditionScore} />
+                  ) : event.kind === "TRAFFIC_OBSERVATION" ? (
+                    <StatusBadge title={trafficSourceTitle(event.source)} tone={trafficSourceTone(event.source)}>
+                      {trafficSourceLabel(event.source)}
+                    </StatusBadge>
                   ) : (
                     <span className="inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.08em]">
                       <Wrench size={12} /> Work
@@ -343,7 +353,20 @@ function AssetTimeline({
                   >
                     {event.kind === "INSPECTION"
                       ? inspectionTypeLabel(event.inspectionType)
-                      : event.reason ?? event.workType ?? "Work context not recorded"}
+                      : event.kind === "TRAFFIC_OBSERVATION"
+                        ? (
+                            <span className="inline-flex items-center gap-1">
+                              <Gauge size={12} />
+                              {event.dailyTraffic === null
+                                ? "Traffic volume not recorded"
+                                : `${formatMeasurement(event.dailyTraffic, "vehicles/day", 0)}${
+                                    event.truckSharePercent
+                                      ? ` · ${event.truckSharePercent}% trucks`
+                                      : ""
+                                  }`}
+                            </span>
+                          )
+                        : (event.reason ?? event.workType ?? "Work context not recorded")}
                   </span>
                 </div>
                 {event.kind === "HISTORICAL_WORK" ? (
@@ -366,10 +389,12 @@ function AssetTimeline({
 
 function ContextFact({
   detail,
+  detailTitle,
   label,
   value
 }: {
   readonly detail?: string;
+  readonly detailTitle?: string;
   readonly label: string;
   readonly value: number | string | null | undefined;
 }): React.ReactElement {
@@ -380,7 +405,9 @@ function ContextFact({
       </dt>
       <dd className="m-0 mt-1 text-[13px] leading-5">{value ?? "Not recorded"}</dd>
       {detail ? (
-        <dd className="m-0 mt-0.5 text-[11px] leading-4 text-muted-foreground">{detail}</dd>
+        <dd className="m-0 mt-0.5 text-[11px] leading-4 text-muted-foreground" title={detailTitle}>
+          {detail}
+        </dd>
       ) : null}
     </div>
   );

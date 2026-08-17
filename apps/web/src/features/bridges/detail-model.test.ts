@@ -36,7 +36,7 @@ describe("bridge detail view model", () => {
     expect(currentRecommendations(recommendations)).toHaveLength(1);
   });
 
-  it("keeps inspections and works in the unified asset timeline", () => {
+  it("keeps inspections, works, and traffic observations in the unified asset timeline", () => {
     const history = [
       { kind: "INSPECTION" },
       { kind: "TRAFFIC_OBSERVATION" },
@@ -45,6 +45,7 @@ describe("bridge detail view model", () => {
 
     expect(relevantTimelineEvents(history).map((event) => event.kind)).toEqual([
       "INSPECTION",
+      "TRAFFIC_OBSERVATION",
       "HISTORICAL_WORK"
     ]);
   });

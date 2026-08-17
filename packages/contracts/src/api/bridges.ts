@@ -13,6 +13,7 @@ import { documentStatusSchema } from "../domain/document.js";
 import { findingStatusSchema } from "../domain/finding.js";
 import { inspectionTypeSchema } from "../domain/inspection.js";
 import { recommendationStatusSchema } from "../domain/recommendation.js";
+import { trafficObservationSourceSchema } from "../domain/traffic.js";
 import {
   evidenceCitationSchema,
   inflationAdjustedEstimateSchema,
@@ -149,7 +150,8 @@ export const bridgePortfolioTrafficSchema = z
     observationYear: yearSchema,
     observedOn: isoDateSchema.nullable(),
     dailyTraffic: z.number().int().nonnegative().nullable(),
-    truckSharePercent: nonNegativeDecimalSchema.nullable()
+    truckSharePercent: nonNegativeDecimalSchema.nullable(),
+    source: trafficObservationSourceSchema
   })
   .strict();
 
@@ -320,6 +322,8 @@ export const bridgeDetailResponseSchema = z
             observedOn: isoDateSchema.nullable(),
             dailyTraffic: z.number().int().nonnegative().nullable(),
             truckSharePercent: nonNegativeDecimalSchema.nullable(),
+            source: trafficObservationSourceSchema,
+            sourceDescription: z.string().min(1).nullable(),
             evidence: z.array(evidenceCitationSchema)
           })
           .strict()
@@ -484,7 +488,9 @@ export const bridgeHistoryEventSchema = z.discriminatedUnion("kind", [
       kind: z.literal("TRAFFIC_OBSERVATION"),
       observationYear: z.number().int(),
       dailyTraffic: z.number().int().nonnegative().nullable(),
-      truckSharePercent: nonNegativeDecimalSchema.nullable()
+      truckSharePercent: nonNegativeDecimalSchema.nullable(),
+      source: trafficObservationSourceSchema,
+      sourceDescription: z.string().min(1).nullable()
     })
     .strict()
 ]);
