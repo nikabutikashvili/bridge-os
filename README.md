@@ -1,6 +1,6 @@
 # Bridge OS
 
-Bridge portfolio management. Ingests German Bauwerksbuch (bridge inspection record) PDFs and turns them into structured, traceable data for monitoring, maintenance planning, budgeting, and tender preparation.
+Bridge portfolio management. Ingests German Bauwerksbuch PDFs and turns them into structured, traceable data for monitoring, maintenance planning, budgeting, and tender preparation.
 
 ## Stack
 
@@ -34,10 +34,23 @@ pnpm dev
 
 ## What you can do
 
-- **Portfolio** — browse bridges, filter and sort by condition, road, or inspection status.
-- **Prioritization** — bridges and findings are ranked by a deterministic policy, shown as a list of reasons (unresolved condition ratings, recommendation urgency, inspection age/due status, condition trend, traffic volume) rather than a single opaque score.
+- **Portfolio** — browse bridges; filter and sort by condition, road, or inspection status.
 - **Findings & recommendations** — inspection findings and the recommendations linked to them.
-- **Source evidence** — every extracted fact links back to the source PDF, page, and excerpt it came from.
-- **Planning** — turn a recommendation into a managerial intervention and track it through its lifecycle (planned → budgeted → tender preparation → tendered → in progress → completed).
-- **Budgeting** — assign interventions to a yearly budget program, track approved amount vs. cost estimates.
-- **Work packages** — generate a tender-preparation draft from a planned intervention, with explicit readiness gaps (missing quantity, estimate, drawings, etc.).
+- **Source evidence** — every extracted fact links back to the source PDF, page, and excerpt.
+- **Planning** — turn a recommendation into a managerial intervention (planned → budgeted → tender preparation → tendered → in progress → completed).
+- **Budgeting** — assign interventions to a yearly programme; old source estimates are restated with the NRW road construction price index.
+- **Work packages** — tender-preparation draft from a planned intervention, with explicit readiness gaps.
+
+## Ranking
+
+Attention, planning, and budget use the same deterministic reason list — not a single score.
+
+From the Bauwerksbuch: S/V/D ratings, recommendation urgency, inspection due date, condition trend.
+
+Joined at read time from **seeded snapshots** (no live API calls):
+
+- **Traffic** — BASt Dauerzählstellen. DTV and HGV.
+- **Network** — OSM closure detour with the crossing excluded. Extra vehicle-km/day if the structure is lost.
+- **Weather** — Open-Meteo ERA5-land. Freeze/thaw, heavy rain, and de-icing days joined to open durability findings (corrosion, water ingress, scour).
+- **Flood** — PEGELONLINE plus published Rhine peaks. Watch only when the structure is already scour-sensitive; current low water is not treated as a flood.
+- **Costs** — NRW Baupreisindex Straßenbau (demo series, 2015 = 100). Historical source estimates shown in current euros.
