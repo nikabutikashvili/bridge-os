@@ -355,6 +355,7 @@ const shortReasonLabels: Record<BridgeAttentionReason, string> = {
   DURABILITY_FINDING: "Durability 2+",
   ENVIRONMENTAL_EXPOSURE: "Climate watch",
   NETWORK_CRITICALITY: "Network impact",
+  FLOOD_EXPOSURE: "Flood watch",
   INSPECTION_DUE_SOON: "Due soon",
   MEDIUM_OR_HIGHER_RECOMMENDATION: "Work open",
   MISSING_CRITICAL_DATA: "Data gap",

@@ -18,6 +18,7 @@ import {
   type BridgePortfolioResponse,
   type BridgeRecommendationsResponse,
   type EvidenceCitation,
+  type FloodExposureAssessment,
   type InspectionDueStatus
 } from "@bridge-os/contracts";
 import {
@@ -45,6 +46,8 @@ import {
   DAMAGE_MECHANISM_POLICY_VERSION,
   deriveDamageMechanisms
 } from "./damage-mechanisms.js";
+import { mapBridgeHydrology } from "./flood-exposure.js";
+import { loadFloodAssessments } from "./load-flood-assessments.js";
 import {
   deriveNetworkCriticality,
   hasHighNetworkConsequence,
@@ -99,6 +102,8 @@ interface PortfolioRow extends Record<string, unknown> {
   networkAlternativeCrossingCount: number | null;
   networkRoadClass: "AUTOBAHN" | "BUNDESSTRASSE" | "LANDESSTRASSE" | "OTHER" | null;
   extraVehicleKm: string | null;
+  hasFloodExposure: boolean;
+  hasOpenScourFinding: boolean;
   hasPhoto: boolean;
 }
 
@@ -214,6 +219,8 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
           p.network_alternative_crossing_count as "networkAlternativeCrossingCount",
           p.network_road_class as "networkRoadClass",
           p.extra_vehicle_km as "extraVehicleKm",
+          p.has_flood_exposure as "hasFloodExposure",
+          p.has_open_scour_finding as "hasOpenScourFinding",
           exists (
             select 1
             from documents d
@@ -285,6 +292,7 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
       environmentRows,
       networkRows,
       mechanismFindingRows,
+      floodByBridge,
       portfolioItem,
       evidenceRows
     ] = await Promise.all([
@@ -388,6 +396,7 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
         .from(findings)
         .leftJoin(components, eq(components.id, findings.componentId))
         .where(eq(findings.bridgeId, id)),
+      loadFloodAssessments(this.database, [id]),
       this.getPortfolioItem(id, asOf),
       this.loadBridgeOverviewEvidence(id)
     ]);
@@ -400,6 +409,7 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
     const evidenceByEntity = groupEvidence(evidenceRows);
     const latestTraffic = trafficRows[0];
     const asOfYear = Number(asOf.slice(0, 4));
+    const loadedFlood = floodByBridge.get(id);
 
     return bridgeDetailResponseSchema.parse({
       data: {
@@ -481,9 +491,11 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
           dailyTraffic: latestTraffic?.dailyTraffic ?? null,
           components: componentRows,
           findings: mechanismFindingRows,
+          hydrology: loadedFlood?.assessment ?? null,
           rows: environmentRows
         }),
-        network: mapLoadedNetwork(networkRows[0], latestTraffic ?? null)
+        network: mapLoadedNetwork(networkRows[0], latestTraffic ?? null),
+        hydrology: mapLoadedHydrology(loadedFlood)
       },
       asOf
     });
@@ -1005,6 +1017,8 @@ export class PostgresBridgePortfolioReader implements BridgePortfolioReader {
         p.network_alternative_crossing_count as "networkAlternativeCrossingCount",
         p.network_road_class as "networkRoadClass",
         p.extra_vehicle_km as "extraVehicleKm",
+        p.has_flood_exposure as "hasFloodExposure",
+        p.has_open_scour_finding as "hasOpenScourFinding",
         exists (
           select 1
           from documents d
@@ -1232,6 +1246,65 @@ function portfolioCtes(asOf: string): SQL {
       from network_metrics n
       order by n.bridge_id, n.observation_year desc
     ),
+    latest_hydrology as (
+      select
+        h.bridge_id,
+        h.water_level_cm,
+        h.inspection_trigger_cm
+      from hydrological_metrics h
+    ),
+    flood_unmatched as (
+      select e.bridge_id
+      from hydrological_flood_events e
+      where e.peak_water_level_cm >= coalesce(e.mhw_cm, e.marke_i_cm, 0)
+        and not exists (
+          select 1
+          from hydrological_flood_events later
+          where later.bridge_id = e.bridge_id
+            and later.peaked_on > e.peaked_on
+            and later.peak_water_level_cm >= coalesce(later.mhw_cm, later.marke_i_cm, 0)
+        )
+        and not exists (
+          select 1
+          from inspections i
+          where i.bridge_id = e.bridge_id
+            and i.type = 'SPECIAL'
+            and i.inspected_on is not null
+            and i.inspected_on >= e.peaked_on
+            and i.inspected_on < (e.peaked_on + interval '12 months')
+        )
+    ),
+    scour_sensitive as (
+      select b.id as bridge_id
+      from bridges b
+      where b.crossed_feature ~* 'bach|tal|fluss|gewässer|gewasser|river'
+        and (
+          exists (
+            select 1
+            from findings f
+            where f.bridge_id = b.id
+              and (
+                coalesce(f.defect_type, '') ~* 'kolk|scour|unterspül|unterspul'
+                or coalesce(f.description, '') ~* 'kolk|scour|unterspül|unterspul'
+              )
+          )
+          or exists (
+            select 1
+            from components c
+            where c.bridge_id = b.id
+              and coalesce(c.type, '') ~* 'gründung|grundung|pfahl|widerlager'
+          )
+        )
+    ),
+    open_scour as (
+      select distinct f.bridge_id
+      from findings f
+      where f.status in ('OPEN', 'MONITORING')
+        and (
+          coalesce(f.defect_type, '') ~* 'kolk|scour|unterspül|unterspul'
+          or coalesce(f.description, '') ~* 'kolk|scour|unterspül|unterspul'
+        )
+    ),
     active_recommendations as (
       select
         r.*,
@@ -1324,6 +1397,15 @@ function portfolioCtes(asOf: string): SQL {
         ln.road_class as network_road_class,
         (coalesce(ln.additional_distance_km, 0) * coalesce(lt.daily_traffic, 0)) as extra_vehicle_km,
         (
+          lh.bridge_id is not null
+          and ss_flood.bridge_id is not null
+          and (
+            lh.water_level_cm >= lh.inspection_trigger_cm
+            or fu.bridge_id is not null
+          )
+        ) as has_flood_exposure,
+        (os.bridge_id is not null) as has_open_scour_finding,
+        (
           case
             when coalesce(lt.daily_traffic, 0) >= 50000 then 3
             when coalesce(lt.daily_traffic, 0) >= 30000 then 2
@@ -1389,6 +1471,10 @@ function portfolioCtes(asOf: string): SQL {
       left join latest_traffic lt on lt.bridge_id = b.id
       left join latest_environment le on le.bridge_id = b.id
       left join latest_network ln on ln.bridge_id = b.id
+      left join latest_hydrology lh on lh.bridge_id = b.id
+      left join flood_unmatched fu on fu.bridge_id = b.id
+      left join scour_sensitive ss_flood on ss_flood.bridge_id = b.id
+      left join open_scour os on os.bridge_id = b.id
     ),
     portfolio as (
       select
@@ -1403,7 +1489,8 @@ function portfolioCtes(asOf: string): SQL {
             coalesce(pb.maximum_stability, 0),
             coalesce(pb.maximum_traffic_safety, 0)
           ) >= 2
-            or (pb.network_points >= 8 and pb.network_concern) then 4
+            or (pb.network_points >= 8 and pb.network_concern)
+            or (pb.has_flood_exposure and pb.has_open_scour_finding) then 4
           when pb.inspection_status in ('DUE_SOON', 'UNKNOWN')
             or pb.condition_score is null
             or coalesce(pb.maximum_durability, 0) >= 2
@@ -1416,7 +1503,8 @@ function portfolioCtes(asOf: string): SQL {
               )
             )
             or pb.condition_trend = 'DETERIORATING'
-            or pb.highest_recommendation_urgency_rank >= 2 then 3
+            or pb.highest_recommendation_urgency_rank >= 2
+            or pb.has_flood_exposure then 3
           when pb.open_findings > 0 or pb.open_recommendations > 0 then 2
           else 1
         end as attention_priority
@@ -1520,7 +1608,9 @@ function mapPortfolioRow(row: PortfolioRow) {
       maximumStability: row.maximumStability,
       maximumTrafficSafety: row.maximumTrafficSafety,
       networkBand: networkAssessment?.band ?? null
-    })
+    }),
+    hasFloodExposure: row.hasFloodExposure,
+    hasOpenScourFinding: row.hasOpenScourFinding
   });
 
   return {
@@ -1614,6 +1704,7 @@ function mapBridgeEnvironment(input: {
     readonly componentType: string | null;
     readonly componentMaterial: string | null;
   }[];
+  readonly hydrology: FloodExposureAssessment | null;
   readonly rows: readonly (typeof environmentalMetrics.$inferSelect)[];
 }) {
   const current = input.rows[0];
@@ -1677,7 +1768,8 @@ function mapBridgeEnvironment(input: {
       crossedFeature: input.crossedFeature,
       dailyTraffic: input.dailyTraffic,
       components: input.components,
-      findings: input.findings
+      findings: input.findings,
+      hydrology: input.hydrology
     })
   };
 }
@@ -1711,6 +1803,86 @@ function mapLoadedNetwork(
     sourceDescription: row.sourceDescription,
     trafficAppliesTo: row.trafficAppliesTo,
     truckSharePercent: traffic?.truckSharePercent ?? null
+  });
+}
+
+function mapLoadedHydrology(
+  loaded:
+    | {
+        readonly metric: {
+          readonly stationUuid: string;
+          readonly stationName: string;
+          readonly stationNumber: string | null;
+          readonly waterName: string;
+          readonly riverKm: string | null;
+          readonly latitude: string | null;
+          readonly longitude: string | null;
+          readonly distanceKm: string | null;
+          readonly observedAt: Date;
+          readonly waterLevelCm: number;
+          readonly unit: string;
+          readonly stateMnwMhw:
+            | "LOW"
+            | "NORMAL"
+            | "HIGH"
+            | "UNKNOWN"
+            | "COMMENTED"
+            | "OUTDATED"
+            | null;
+          readonly stateNswHsw:
+            | "LOW"
+            | "NORMAL"
+            | "HIGH"
+            | "UNKNOWN"
+            | "COMMENTED"
+            | "OUTDATED"
+            | null;
+          readonly mhwCm: number | null;
+          readonly hswCm: number | null;
+          readonly hhwCm: number | null;
+          readonly mnwCm: number | null;
+          readonly mwCm: number | null;
+          readonly markeICm: number | null;
+          readonly markeIICm: number | null;
+          readonly inspectionTriggerCm: number;
+          readonly source: "PEGELONLINE" | "WSV_PUBLISHED";
+          readonly sourceDescription: string | null;
+          readonly formulaVersion: string;
+        };
+        readonly assessment: FloodExposureAssessment;
+      }
+    | undefined
+) {
+  if (loaded === undefined) {
+    return null;
+  }
+  const { metric, assessment } = loaded;
+  return mapBridgeHydrology({
+    stationUuid: metric.stationUuid,
+    stationName: metric.stationName,
+    stationNumber: metric.stationNumber,
+    waterName: metric.waterName,
+    riverKm: metric.riverKm,
+    latitude: metric.latitude,
+    longitude: metric.longitude,
+    distanceKm: metric.distanceKm,
+    observedAt: metric.observedAt.toISOString(),
+    waterLevelCm: metric.waterLevelCm,
+    unit: metric.unit,
+    stateMnwMhw: metric.stateMnwMhw,
+    stateNswHsw: metric.stateNswHsw,
+    mhwCm: metric.mhwCm,
+    hswCm: metric.hswCm,
+    hhwCm: metric.hhwCm,
+    mnwCm: metric.mnwCm,
+    mwCm: metric.mwCm,
+    markeICm: metric.markeICm,
+    markeIICm: metric.markeIICm,
+    inspectionTriggerCm: metric.inspectionTriggerCm,
+    source: metric.source,
+    sourceDescription: metric.sourceDescription,
+    formulaVersion: metric.formulaVersion,
+    assessment
   });
 }
 

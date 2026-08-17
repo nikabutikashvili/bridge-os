@@ -59,6 +59,7 @@ describeDatabase("PostgresPlanningService", () => {
         "MEDIUM_TERM_URGENCY",
         "LONG_UNRESOLVED",
         "NETWORK_CRITICALITY",
+        "POST_FLOOD_INSPECTION",
         "HIGH_ENVIRONMENTAL_EXPOSURE"
       ])
     );

@@ -21,7 +21,9 @@ import {
 } from "@bridge-os/db";
 import { and, asc, desc, eq, inArray } from "drizzle-orm";
 
+import { loadFloodAssessments } from "../bridges/load-flood-assessments.js";
 import {
+  floodBudgetRow,
   groupBy,
   latestTrafficByBridge,
   mapBudgetItem,
@@ -72,13 +74,14 @@ export class PostgresBudgetService implements BudgetService {
       ...new Set(baseRows.map((row) => row.partialStructureId))
     ];
     const bridgeIds = [...new Set(baseRows.map((row) => row.bridgeId))];
-    const [findingRows, inspectionRows, trafficRows, environmentRows, networkRows] =
+    const [findingRows, inspectionRows, trafficRows, environmentRows, networkRows, floodByBridge] =
       await Promise.all([
       this.loadFindingRows(recommendationIds),
       this.loadInspectionRows(partialStructureIds),
       this.loadTrafficRows(bridgeIds),
       this.loadEnvironmentRows(bridgeIds),
-      this.loadNetworkRows(bridgeIds)
+      this.loadNetworkRows(bridgeIds),
+      loadFloodAssessments(this.database, bridgeIds)
     ]);
     const findingsByRecommendation = groupBy(
       findingRows,
@@ -100,6 +103,7 @@ export class PostgresBudgetService implements BudgetService {
           trafficByBridge.get(row.bridgeId) ?? null,
           environmentByBridge.get(row.bridgeId) ?? null,
           networkByBridge.get(row.bridgeId) ?? null,
+          floodBudgetRow(floodByBridge.get(row.bridgeId)?.assessment ?? null),
           asOf
         )
       )

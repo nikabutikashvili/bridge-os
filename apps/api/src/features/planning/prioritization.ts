@@ -20,6 +20,8 @@ export interface MaintenancePriorityInput {
   readonly dailyTraffic: number | null;
   readonly heavyVehicleDaily: number | null;
   readonly alternativeCrossingCount: number | null;
+  readonly hasFloodExposure: boolean;
+  readonly floodReasonDetail: string | null;
   readonly recommendationSourceDate: string | null;
   readonly urgency: string | null;
 }
@@ -50,7 +52,8 @@ const reasonOrder: Record<PlanningPriorityReasonCode, number> = {
   INSPECTION_DUE_SOON: 9,
   MEDIUM_TERM_URGENCY: 10,
   NETWORK_CRITICALITY: 11,
-  HIGH_ENVIRONMENTAL_EXPOSURE: 12
+  POST_FLOOD_INSPECTION: 12,
+  HIGH_ENVIRONMENTAL_EXPOSURE: 13
 };
 
 export function deriveMaintenancePriority(
@@ -71,6 +74,7 @@ export function deriveMaintenancePriority(
   addInspectionReason(reasons, input.inspectionStatus);
   addConditionReason(reasons, input.conditionDelta);
   addNetworkReason(reasons, input);
+  addFloodReason(reasons, input);
   addEnvironmentalReason(reasons, input.hasEnvironmentalExposure);
 
   reasons.sort((left, right) => {
@@ -247,6 +251,23 @@ function addNetworkReason(
       parts.length === 0
         ? "Seeded network metrics place this structure above the low-consequence band."
         : parts.join(", ") + "."
+  });
+}
+
+function addFloodReason(
+  reasons: PriorityReasonDefinition[],
+  input: MaintenancePriorityInput
+): void {
+  if (!input.hasFloodExposure) {
+    return;
+  }
+  reasons.push({
+    code: "POST_FLOOD_INSPECTION",
+    severity: "HIGH",
+    label: "Post-flood extraordinary inspection",
+    detail:
+      input.floodReasonDetail ??
+      "A seeded high-water event exceeded the inspection trigger on a scour-sensitive crossing, and no Sonderprüfung followed."
   });
 }
 

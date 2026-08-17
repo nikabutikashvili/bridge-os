@@ -4,6 +4,8 @@ import {
   bridgeDataOriginSchema,
   createDocumentSchema,
   createEnvironmentalMetricSchema,
+  createHydrologicalMetricSchema,
+  createHydrologicalFloodEventSchema,
   createNetworkMetricSchema,
   createFindingSchema,
   createHistoricalWorkSchema,
@@ -253,6 +255,64 @@ describe("network metric contracts", () => {
         source: "OSM_ROUTED",
         sourceDescription: "Offline OSM route with the crossing excluded.",
         formulaVersion: "closure-impact-v1"
+      }).success
+    ).toBe(true);
+  });
+});
+
+describe("hydrology contracts", () => {
+  it("keeps the flood-event year aligned with the peak date", () => {
+    const base = {
+      bridgeId,
+      eventYear: 2021,
+      peakedOn: "2021-02-07",
+      peakWaterLevelCm: 869,
+      stationUuid: "a6ee8177-107b-47dd-bcfd-30960ccc6e9c",
+      stationName: "KÖLN",
+      waterName: "RHEIN",
+      mhwCm: 725,
+      hswCm: 830,
+      hhwCm: 1069,
+      markeICm: 620,
+      markeIICm: 830,
+      source: "WSV_PUBLISHED" as const,
+      sourceDescription: "Published Köln Hochwasser archive."
+    };
+
+    expect(createHydrologicalFloodEventSchema.safeParse(base).success).toBe(true);
+    expect(
+      createHydrologicalFloodEventSchema.safeParse({
+        ...base,
+        peakedOn: "2020-02-07"
+      }).success
+    ).toBe(false);
+    expect(
+      createHydrologicalMetricSchema.safeParse({
+        bridgeId,
+        stationUuid: "f33c3cc9-dc4b-4b77-baa9-5a5f10704398",
+        stationName: "WESEL",
+        stationNumber: "2770040",
+        waterName: "RHEIN",
+        riverKm: "814.000",
+        latitude: "51.646143",
+        longitude: "6.606820",
+        distanceKm: "10.0",
+        observedAt: "2026-08-17T13:15:00.000Z",
+        waterLevelCm: 66,
+        unit: "cm",
+        stateMnwMhw: "LOW",
+        stateNswHsw: "NORMAL",
+        mhwCm: 804,
+        hswCm: 1060,
+        hhwCm: 1231,
+        mnwCm: 144,
+        mwCm: 348,
+        markeICm: 870,
+        markeIICm: 1060,
+        inspectionTriggerCm: 804,
+        source: "PEGELONLINE",
+        sourceDescription: "PEGELONLINE snapshot.",
+        formulaVersion: "hydrology-metrics-v1"
       }).success
     ).toBe(true);
   });

@@ -5,6 +5,7 @@ export * from "./document.js";
 export * from "./environment.js";
 export * from "./finding.js";
 export * from "./historical-work.js";
+export * from "./hydrology.js";
 export * from "./inspection.js";
 export * from "./network.js";
 export * from "./planned-intervention.js";

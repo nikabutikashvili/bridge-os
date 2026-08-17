@@ -158,3 +158,17 @@ export const networkTrafficAppliesToEnum = pgEnum("network_traffic_applies_to", 
   "CARRIED",
   "CROSSED"
 ]);
+
+export const hydrologicalMetricSourceEnum = pgEnum("hydrological_metric_source", [
+  "PEGELONLINE",
+  "WSV_PUBLISHED"
+]);
+
+export const hydrologicalWaterStateEnum = pgEnum("hydrological_water_state", [
+  "LOW",
+  "NORMAL",
+  "HIGH",
+  "UNKNOWN",
+  "COMMENTED",
+  "OUTDATED"
+]);

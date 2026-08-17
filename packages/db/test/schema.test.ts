@@ -22,6 +22,8 @@ import {
   historicalWorks,
   inspections,
   networkMetrics,
+  hydrologicalFloodEvents,
+  hydrologicalMetrics,
   partialStructures,
   plannedInterventions,
   recommendationFindings,
@@ -54,6 +56,8 @@ describe("database schema", () => {
       trafficObservations,
       environmentalMetrics,
       networkMetrics,
+      hydrologicalMetrics,
+      hydrologicalFloodEvents,
       workPackages,
       documents,
       documentProcessingRuns,
@@ -84,6 +88,8 @@ describe("database schema", () => {
       "traffic_observations",
       "environmental_metrics",
       "network_metrics",
+      "hydrological_metrics",
+      "hydrological_flood_events",
       "work_packages",
       "documents",
       "document_processing_runs",
@@ -266,5 +272,19 @@ describe("database schema", () => {
         "network_metrics_formula_version_not_blank"
       ])
     );
+  });
+
+  it("stores one hydrology snapshot per bridge and flood years beside it", () => {
+    const metricConfig = getTableConfig(hydrologicalMetrics);
+    const eventConfig = getTableConfig(hydrologicalFloodEvents);
+
+    expect(metricConfig.indexes.map((index) => index.config.name)).toContain(
+      "hydrological_metrics_bridge_unique"
+    );
+    expect(eventConfig.indexes.map((index) => index.config.name)).toContain(
+      "hydrological_flood_events_bridge_year_unique"
+    );
+    expect(metricConfig.foreignKeys).toHaveLength(1);
+    expect(eventConfig.foreignKeys).toHaveLength(1);
   });
 });

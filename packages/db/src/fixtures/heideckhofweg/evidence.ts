@@ -38,7 +38,8 @@ export const heideckhofwegEvidenceIds = {
   capJointSealing: "44058840-0000-4000-8000-000000001014",
   pavementJointRepair: "44058840-0000-4000-8000-000000001015",
   drainageRepair: "44058840-0000-4000-8000-000000001016",
-  corrosionProtection: "44058840-0000-4000-8000-000000001017"
+  corrosionProtection: "44058840-0000-4000-8000-000000001017",
+  scourKolk: "44058840-0000-4000-8000-000000001018"
 } as const;
 
 const fixtureTimestamp = heideckhofwegFixtureTimestamp;
@@ -97,7 +98,7 @@ export const heideckhofwegEvidenceFixture = {
       documentId: structureBookId,
       pageNumber: 18,
       sourceExcerpt:
-        "[DEMO-FIXTUR] Prüfungen: 2005 2,3; 2008 1,1; 2011 1,7; 2014 2,3; 2017 2,0; 2020 1,7; 2023 1,8.",
+        "[DEMO-FIXTUR] Prüfungen: 2005 2,3; 2008 1,1; 2011 HP 1,7 plus Sonderprüfung Kolk 15.03.2011; 2014 2,3; 2017 2,0; 2020 1,7; 2023 1,8.",
       boundingBoxX: "0.070000",
       boundingBoxY: "0.200000",
       boundingBoxWidth: "0.810000",
@@ -127,7 +128,7 @@ export const heideckhofwegEvidenceFixture = {
       documentId: structureBookId,
       pageNumber: 14,
       sourceExcerpt:
-        "[DEMO-FIXTUR] Kostenübersicht: Neubau 1982–1983; Instandsetzung 2008; Belag und Abdichtung 2018.",
+        "[DEMO-FIXTUR] Kostenübersicht: Neubau 1982–1983; Instandsetzung 2008; Kolksicherung 2012; Belag und Abdichtung 2018.",
       boundingBoxX: null,
       boundingBoxY: null,
       boundingBoxWidth: null,
@@ -217,6 +218,21 @@ export const heideckhofwegEvidenceFixture = {
       pageNumber: 11,
       sourceExcerpt:
         "[DEMO-FIXTUR] S-006: Beschichtung verwittert, lokale Korrosionsansätze an Geländerpfosten; S0/V1/D2.",
+      boundingBoxX: null,
+      boundingBoxY: null,
+      boundingBoxWidth: null,
+      boundingBoxHeight: null,
+      extractionConfidence: null,
+      extractionMethod: "IMPORT",
+      createdAt: fixtureTimestamp,
+      updatedAt: fixtureTimestamp
+    },
+    {
+      id: heideckhofwegEvidenceIds.scourKolk,
+      documentId: structureBookId,
+      pageNumber: 18,
+      sourceExcerpt:
+        "[DEMO-FIXTUR] Sonderprüfung 15.03.2011 nach Rheinhochwasser: Kolk / Unterspülung am nördlichen Widerlager, S2/V0/D2, später geschlossen.",
       boundingBoxX: null,
       boundingBoxY: null,
       boundingBoxWidth: null,
@@ -393,6 +409,10 @@ export const heideckhofwegEvidenceFixture = {
       {
         findingId: heideckhofwegIds.findings.corrosionWeathering,
         evidenceId: heideckhofwegEvidenceIds.corrosionWeathering
+      },
+      {
+        findingId: heideckhofwegIds.findings.scourKolk,
+        evidenceId: heideckhofwegEvidenceIds.scourKolk
       }
     ].flatMap(({ evidenceId, findingId }) =>
       [

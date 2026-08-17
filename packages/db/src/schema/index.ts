@@ -7,6 +7,7 @@ export * from "./enums.js";
 export * from "./environment.js";
 export * from "./findings.js";
 export * from "./historical-work.js";
+export * from "./hydrology.js";
 export * from "./inspections.js";
 export * from "./network.js";
 export * from "./planned-interventions.js";

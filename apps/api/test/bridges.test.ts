@@ -305,6 +305,7 @@ const bridgeDetail: BridgeDetailResponse = {
     latestTraffic: null,
     environment: null,
     network: null,
+    hydrology: null,
     photoUrl: null,
     location: {
       countryCode: "DE",

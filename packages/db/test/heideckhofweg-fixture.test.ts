@@ -48,13 +48,17 @@ describe("Heideckhofweg development fixture", () => {
       left.inspectedOn.localeCompare(right.inspectedOn)
     );
     expect(inspections.at(-1)?.conditionScore).toBe("1.8");
-    expect(new Set(inspections.map((inspection) => inspection.conditionScore))).toEqual(
-      new Set(["1.1", "1.7", "1.8", "2.0", "2.3"])
-    );
+    expect(
+      new Set(
+        inspections
+          .map((inspection) => inspection.conditionScore)
+          .filter((score): score is string => score !== null)
+      )
+    ).toEqual(new Set(["1.1", "1.7", "1.8", "2.0", "2.3"]));
   });
 
   it("provides linked findings and planning-ready recommendations", () => {
-    expect(heideckhofwegFixture.findings).toHaveLength(6);
+    expect(heideckhofwegFixture.findings).toHaveLength(7);
     expect(heideckhofwegFixture.recommendations).toHaveLength(5);
     expect(heideckhofwegFixture.plannedInterventions).toHaveLength(3);
 
@@ -115,16 +119,16 @@ describe("Heideckhofweg development fixture", () => {
       bridges: 1,
       partialStructures: 1,
       components: 7,
-      inspections: 7,
-      findings: 6,
+      inspections: 8,
+      findings: 7,
       recommendations: 5,
       plannedInterventions: 3,
       budgetPrograms: 1,
       budgetProgramInterventions: 2,
-      historicalWorks: 3,
+      historicalWorks: 4,
       trafficObservations: 1,
       documents: 2,
-      sourceEvidence: 17
+      sourceEvidence: 18
     });
   });
 });

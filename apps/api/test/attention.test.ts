@@ -13,7 +13,9 @@ const currentBridge = {
   openFindings: 0,
   openRecommendations: 0,
   hasEnvironmentalExposure: false,
-  hasHighNetworkConsequence: false
+  hasHighNetworkConsequence: false,
+  hasFloodExposure: false,
+  hasOpenScourFinding: false
 };
 
 describe("deriveBridgeAttention", () => {
@@ -99,6 +101,25 @@ describe("deriveBridgeAttention", () => {
         maximumStability: 3
       }).level
     ).toBe("CRITICAL");
+  });
+
+  it("adds a post-flood inspection watch without inventing critical", () => {
+    expect(
+      deriveBridgeAttention({
+        ...currentBridge,
+        hasFloodExposure: true
+      })
+    ).toEqual({
+      level: "MEDIUM",
+      reasons: ["FLOOD_EXPOSURE"]
+    });
+    expect(
+      deriveBridgeAttention({
+        ...currentBridge,
+        hasFloodExposure: true,
+        hasOpenScourFinding: true
+      }).level
+    ).toBe("HIGH");
   });
 
   it("keeps a healthy high-volume structure routine", () => {

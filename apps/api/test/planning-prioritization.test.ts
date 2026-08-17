@@ -19,6 +19,8 @@ const baseline: MaintenancePriorityInput = {
   dailyTraffic: null,
   heavyVehicleDaily: null,
   alternativeCrossingCount: null,
+  hasFloodExposure: false,
+  floodReasonDetail: null,
   recommendationSourceDate: null,
   urgency: null
 };
@@ -168,6 +170,7 @@ describe("deriveMaintenancePriority", () => {
       extraVehicleKmPerDay: 1_600_000,
       heavyVehicleDaily: 6_000,
       hasEnvironmentalExposure: true,
+      hasFloodExposure: true,
       inspectionStatus: "OVERDUE",
       networkBand: "HIGH",
       maximumDurability: 3,
@@ -187,7 +190,22 @@ describe("deriveMaintenancePriority", () => {
       "CONDITION_DETERIORATING",
       "LONG_UNRESOLVED",
       "NETWORK_CRITICALITY",
+      "POST_FLOOD_INSPECTION",
       "HIGH_ENVIRONMENTAL_EXPOSURE"
     ]);
+  });
+
+  it("adds a post-flood inspection reason when the watch is active", () => {
+    expect(
+      deriveMaintenancePriority({
+        ...baseline,
+        hasFloodExposure: true,
+        floodReasonDetail:
+          "Musterbrücke should receive an extraordinary inspection following the 2021 high-water event."
+      }).reasons[0]
+    ).toMatchObject({
+      code: "POST_FLOOD_INSPECTION",
+      severity: "HIGH"
+    });
   });
 });

@@ -2,6 +2,7 @@ import {
   createPlannedInterventionResponseSchema,
   planningResponseSchema,
   type CreatePlannedIntervention,
+  type FloodExposureAssessment,
   type InspectionDueStatus,
   type PlanningItem,
   type PlanningPriorityLevel,
@@ -31,6 +32,8 @@ import {
 } from "drizzle-orm";
 
 import { hasHighEnvironmentalExposure } from "../bridges/climate-exposure.js";
+import { hasHighFloodExposure } from "../bridges/flood-exposure.js";
+import { loadFloodAssessments } from "../bridges/load-flood-assessments.js";
 import { networkPriorityInput } from "../bridges/network-criticality.js";
 import { adjustForConstructionPriceInflation } from "../budget/inflation-adjustment.js";
 import { deriveInspectionDueStatus } from "./inspection-due.js";
@@ -106,13 +109,14 @@ export class PostgresPlanningService implements PlanningService {
     const partialStructureIds = [
       ...new Set(baseRows.map((row) => row.partialStructureId))
     ];
-    const [findingRows, inspectionRows, trafficRows, environmentRows, networkRows] =
+    const [findingRows, inspectionRows, trafficRows, environmentRows, networkRows, floodByBridge] =
       await Promise.all([
       this.loadFindingRows(recommendationIds),
       this.loadInspectionRows(partialStructureIds),
       this.loadTrafficRows(bridgeIds),
       this.loadEnvironmentRows(bridgeIds),
-      this.loadNetworkRows(bridgeIds)
+      this.loadNetworkRows(bridgeIds),
+      loadFloodAssessments(this.database, bridgeIds)
     ]);
     const findingsByRecommendation = groupFindings(findingRows);
     const inspectionByPartialStructure = buildInspectionContext(
@@ -134,6 +138,7 @@ export class PostgresPlanningService implements PlanningService {
         trafficByBridge.get(row.bridgeId) ?? null,
         environmentByBridge.get(row.bridgeId) ?? null,
         networkByBridge.get(row.bridgeId) ?? null,
+        floodByBridge.get(row.bridgeId)?.assessment ?? null,
         asOf
       )
     );
@@ -399,6 +404,7 @@ function mapPlanningItem(
   traffic: TrafficRow | null,
   environment: EnvironmentRow | null,
   network: NetworkRow | null,
+  flood: FloodExposureAssessment | null,
   asOf: string
 ): PlanningItem {
   const activeFindingRows = findingRows.filter(
@@ -432,6 +438,8 @@ function mapPlanningItem(
       deicingDays: environment?.deicingDays ?? null,
       maximumDurability: maximum(activeFindingRows, "durabilityRating")
     }),
+    hasFloodExposure: hasHighFloodExposure(flood),
+    floodReasonDetail: flood?.recommendedAction?.summary ?? flood?.summary ?? null,
     inspectionStatus: inspection.status,
     maximumDurability: maximum(activeFindingRows, "durabilityRating"),
     maximumStability: maximum(activeFindingRows, "stabilityRating"),

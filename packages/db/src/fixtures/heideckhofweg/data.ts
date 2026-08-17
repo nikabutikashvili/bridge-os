@@ -51,7 +51,8 @@ export const heideckhofwegIds = {
     simple2014: "44058840-0000-4000-8000-000000000204",
     main2017: "44058840-0000-4000-8000-000000000205",
     simple2020: "44058840-0000-4000-8000-000000000206",
-    main2023: "44058840-0000-4000-8000-000000000207"
+    main2023: "44058840-0000-4000-8000-000000000207",
+    special2011: "44058840-0000-4000-8000-000000000208"
   },
   findings: {
     concreteCracking: "44058840-0000-4000-8000-000000000301",
@@ -59,7 +60,8 @@ export const heideckhofwegIds = {
     openCapJoint: "44058840-0000-4000-8000-000000000303",
     pavementJoint: "44058840-0000-4000-8000-000000000304",
     drainageBlister: "44058840-0000-4000-8000-000000000305",
-    corrosionWeathering: "44058840-0000-4000-8000-000000000306"
+    corrosionWeathering: "44058840-0000-4000-8000-000000000306",
+    scourKolk: "44058840-0000-4000-8000-000000000307"
   },
   recommendations: {
     concreteRepair: "44058840-0000-4000-8000-000000000401",
@@ -77,7 +79,8 @@ export const heideckhofwegIds = {
   historicalWorks: {
     originalConstruction: "44058840-0000-4000-8000-000000000501",
     concreteMaintenance: "44058840-0000-4000-8000-000000000502",
-    pavementRenewal: "44058840-0000-4000-8000-000000000503"
+    pavementRenewal: "44058840-0000-4000-8000-000000000503",
+    scourRepair: "44058840-0000-4000-8000-000000000504"
   },
   traffic2015: "44058840-0000-4000-8000-000000000601",
   documents: {
@@ -255,6 +258,17 @@ export const heideckhofwegFixture = {
       inspector: null,
       conditionScore: "1.7",
       cycleMonths: 72,
+      createdAt: fixtureTimestamp,
+      updatedAt: fixtureTimestamp
+    },
+    {
+      id: heideckhofwegIds.inspections.special2011,
+      ...bridgeScope,
+      type: "SPECIAL",
+      inspectedOn: "2011-03-15",
+      inspector: null,
+      conditionScore: null,
+      cycleMonths: null,
       createdAt: fixtureTimestamp,
       updatedAt: fixtureTimestamp
     },
@@ -439,6 +453,30 @@ export const heideckhofwegFixture = {
       trafficSafetyRating: 1,
       durabilityRating: 2,
       status: "MONITORING",
+      createdAt: fixtureTimestamp,
+      updatedAt: fixtureTimestamp
+    },
+    {
+      id: heideckhofwegIds.findings.scourKolk,
+      ...bridgeScope,
+      inspectionId: heideckhofwegIds.inspections.special2011,
+      componentId: heideckhofwegIds.components.abutments,
+      sourceIdentifier: "DEMO-S-2011-001",
+      defectType: "Kolk / Unterspülung",
+      description:
+        "Lokale Kolkbildung und Unterspülung am nördlichen Widerlager nach dem Rheinhochwasser.",
+      location: "Widerlager Nord, wasserseitige Gründung",
+      extent: "Lokale Kolkmulde",
+      dimensionLength: null,
+      dimensionWidth: null,
+      dimensionDepth: "0.400",
+      dimensionUnit: "m",
+      quantity: null,
+      quantityUnit: null,
+      stabilityRating: 2,
+      trafficSafetyRating: 0,
+      durabilityRating: 2,
+      status: "RESOLVED",
       createdAt: fixtureTimestamp,
       updatedAt: fixtureTimestamp
     }
@@ -694,6 +732,24 @@ export const heideckhofwegFixture = {
       unit: "m²",
       contractAmount: "84500.00",
       finalAmount: "86740.00",
+      currency: "EUR",
+      createdAt: fixtureTimestamp,
+      updatedAt: fixtureTimestamp
+    },
+    {
+      id: heideckhofwegIds.historicalWorks.scourRepair,
+      ...bridgeScope,
+      type: "INSTANDSETZUNG",
+      title: "Kolkverfüllung und Widerlagersicherung (Demo)",
+      reason: "Sonderprüfung nach Rheinhochwasser 2011; Kolk am Widerlager",
+      contractor: null,
+      client: "Straßenbauverwaltung NRW (Demo)",
+      startedOn: "2012-04-02",
+      endedOn: "2012-06-15",
+      quantity: null,
+      unit: null,
+      contractAmount: "64000.00",
+      finalAmount: "67200.00",
       currency: "EUR",
       createdAt: fixtureTimestamp,
       updatedAt: fixtureTimestamp

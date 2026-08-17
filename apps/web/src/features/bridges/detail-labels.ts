@@ -3,6 +3,9 @@ import type {
   BridgeAttentionReason,
   DamageMechanismBand,
   DamageMechanismKind,
+  FloodExposureBand,
+  HydrologicalMetricSource,
+  HydrologicalWaterState,
   InspectionDueStatus,
   NetworkCriticalityBand,
   NetworkMetricSource,
@@ -35,7 +38,8 @@ export function attentionReasonLabel(reason: BridgeAttentionReason): string {
     OVERDUE_INSPECTION: "Inspection is overdue",
     STABILITY_FINDING: "Structural-safety finding rated 2 or higher",
     TRAFFIC_SAFETY_FINDING: "Traffic-safety finding rated 2 or higher",
-    NETWORK_CRITICALITY: "High network consequence if this crossing is lost"
+    NETWORK_CRITICALITY: "High network consequence if this crossing is lost",
+    FLOOD_EXPOSURE: "Post-flood inspection due on a scour-sensitive waterway crossing"
   };
   return labels[reason];
 }
@@ -217,4 +221,43 @@ export function networkSourceLabel(source: NetworkMetricSource): string {
     BAST_NETWORK: "BASt network"
   };
   return labels[source];
+}
+
+export function floodBandLabel(band: FloodExposureBand): string {
+  const labels: Record<FloodExposureBand, string> = {
+    BELOW_TRIGGER: "Below trigger",
+    MODERATE: "Moderate",
+    HIGH: "High",
+    EXTREME: "Extreme"
+  };
+  return labels[band];
+}
+
+export function floodBandTone(band: FloodExposureBand): StatusTone {
+  if (band === "EXTREME" || band === "HIGH") return "warning";
+  if (band === "MODERATE") return "info";
+  return "neutral";
+}
+
+export function hydrologicalSourceLabel(source: HydrologicalMetricSource): string {
+  const labels: Record<HydrologicalMetricSource, string> = {
+    PEGELONLINE: "PEGELONLINE snapshot",
+    WSV_PUBLISHED: "WSV published peak"
+  };
+  return labels[source];
+}
+
+export function hydrologicalWaterStateLabel(
+  state: HydrologicalWaterState | null
+): string {
+  if (state === null) return "Not recorded";
+  const labels: Record<HydrologicalWaterState, string> = {
+    LOW: "Low",
+    NORMAL: "Normal",
+    HIGH: "High",
+    UNKNOWN: "Unknown",
+    COMMENTED: "Station comment",
+    OUTDATED: "Outdated"
+  };
+  return labels[state];
 }

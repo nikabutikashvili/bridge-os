@@ -14,6 +14,7 @@ import { findingStatusSchema } from "../domain/finding.js";
 import { inspectionTypeSchema } from "../domain/inspection.js";
 import { recommendationStatusSchema } from "../domain/recommendation.js";
 import { bridgeEnvironmentSchema } from "../domain/environment.js";
+import { bridgeHydrologySchema } from "../domain/hydrology.js";
 import {
   bridgeNetworkSchema,
   bridgePortfolioNetworkSchema
@@ -141,7 +142,8 @@ export const bridgeAttentionReasonSchema = z.enum([
   "OPEN_FINDING",
   "MISSING_CRITICAL_DATA",
   "ENVIRONMENTAL_EXPOSURE",
-  "NETWORK_CRITICALITY"
+  "NETWORK_CRITICALITY",
+  "FLOOD_EXPOSURE"
 ]);
 
 export const bridgeInspectionSummarySchema = z
@@ -339,7 +341,8 @@ export const bridgeDetailResponseSchema = z
           .strict()
           .nullable(),
         environment: bridgeEnvironmentSchema.nullable(),
-        network: bridgeNetworkSchema.nullable()
+        network: bridgeNetworkSchema.nullable(),
+        hydrology: bridgeHydrologySchema.nullable()
       })
       .strict(),
     asOf: isoDateSchema

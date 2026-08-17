@@ -87,6 +87,7 @@ describeDatabase("PostgresBridgePortfolioReader", () => {
         "TRAFFIC_SAFETY_FINDING",
         "DURABILITY_FINDING",
         "ENVIRONMENTAL_EXPOSURE",
+        "FLOOD_EXPOSURE",
         "DETERIORATING_CONDITION",
         "MEDIUM_OR_HIGHER_RECOMMENDATION"
       ]
@@ -136,6 +137,18 @@ describeDatabase("PostgresBridgePortfolioReader", () => {
       roadClass: "AUTOBAHN",
       assessment: { band: "MEDIUM" }
     });
+    expect(detail?.data.hydrology).toMatchObject({
+      stationName: "WESEL",
+      waterLevelCm: 66,
+      inspectionTriggerCm: 804,
+      policyVersion: "flood-exposure-v1",
+      assessment: {
+        triggerExceeded: false,
+        scourSensitive: true,
+        unmatchedPostFloodInspection: true,
+        recommendedAction: { kind: "EXTRAORDINARY_INSPECTION", eventYear: 2021 }
+      }
+    });
     expect(detail?.data.environment).toMatchObject({
       observationYear: 2025,
       source: "OPEN_METEO",
@@ -158,7 +171,7 @@ describeDatabase("PostgresBridgePortfolioReader", () => {
       RC_CORROSION: "HIGH",
       STEEL_CORROSION: "HIGH",
       WATER_INGRESS: "HIGH",
-      SCOUR: "LOW"
+      SCOUR: "HIGH"
     });
     expect(detail?.data.attention).toMatchObject({
       level: "HIGH",
@@ -181,7 +194,7 @@ describeDatabase("PostgresBridgePortfolioReader", () => {
     expect(inspections?.data.every((inspection) => inspection.evidence.length > 0)).toBe(
       true
     );
-    expect(findings?.data).toHaveLength(6);
+    expect(findings?.data).toHaveLength(7);
     expect(findings?.data.some((finding) => finding.evidence.length > 0)).toBe(
       true
     );

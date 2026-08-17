@@ -21,6 +21,7 @@ import {
 import { ConditionHistoryChart } from "./condition-history-chart";
 import { currentRecommendations, relevantTimelineEvents } from "./detail-model";
 import { EnvironmentPanel } from "./environment-panel";
+import { HydrologyPanel } from "./hydrology-panel";
 import { NetworkPanel } from "./network-panel";
 import {
   inspectionTypeGermanTerm,
@@ -66,6 +67,7 @@ export function DetailOverview({
       </div>
 
       <NetworkPanel network={bridge.network} />
+      <HydrologyPanel bridgeId={bridge.id} hydrology={bridge.hydrology} />
       <EnvironmentPanel bridgeId={bridge.id} environment={bridge.environment} />
 
       <CurrentActions

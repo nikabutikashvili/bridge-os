@@ -84,7 +84,8 @@ describe("deriveDamageMechanisms", () => {
         crossedFeature: "Fiktivbach",
         dailyTraffic: 41_878,
         components: demoComponents,
-        findings: demoFindings
+        findings: demoFindings,
+        hydrology: null
       })
     );
 
@@ -128,7 +129,8 @@ describe("deriveDamageMechanisms", () => {
           durabilityRating: 1,
           status: "OPEN"
         })
-      ]
+      ],
+      hydrology: null
     }).filter((mechanism) => mechanism.kind === "WATER_INGRESS");
 
     expect(water?.band).toBe("LOW");
@@ -150,8 +152,9 @@ describe("deriveDamageMechanisms", () => {
           installYear: 1974
         }
       ],
-      findings: []
-    }).filter((mechanism) => mechanism.kind === "SCOUR");
+        findings: [],
+        hydrology: null
+      }).filter((mechanism) => mechanism.kind === "SCOUR");
 
     expect(scour).toMatchObject({ band: "MEDIUM", confidence: "LOW" });
   });
@@ -173,10 +176,68 @@ describe("deriveDamageMechanisms", () => {
           durabilityRating: 2,
           status: "OPEN"
         })
-      ]
+      ],
+      hydrology: null
     }).filter((mechanism) => mechanism.kind === "SCOUR");
 
     expect(scour).toMatchObject({ band: "HIGH", confidence: "MEDIUM" });
+  });
+
+  it("replaces the rainfall proxy with the seeded gauge story", () => {
+    const [scour] = deriveDamageMechanisms({
+      asOfYear: 2026,
+      climate: heideckhofwegClimate,
+      constructionYear: 1983,
+      crossedFeature: "Fiktivbach",
+      dailyTraffic: 41_878,
+      components: demoComponents,
+      findings: demoFindings,
+      hydrology: {
+        band: "HIGH",
+        triggerExceeded: false,
+        scourSensitive: true,
+        hasOpenScourFinding: false,
+        unmatchedPostFloodInspection: true,
+        summary:
+          "This structure should receive an extraordinary inspection following the 2021 high-water event.",
+        reasons: [
+          {
+            code: "NEAREST_GAUGE",
+            label: "WESEL (RHEIN)",
+            detail: "66 cm versus an 804 cm inspection trigger."
+          },
+          {
+            code: "UNMATCHED_FLOOD_EVENT",
+            label: "2021 high without Sonderprüfung",
+            detail: "Peak 869 cm at KÖLN on 2021-02-07 has no special inspection."
+          },
+          {
+            code: "SCOUR_HISTORY",
+            label: "Historically scour-sensitive foundation",
+            detail: "DEMO-S-2011-001 is recorded against the foundation."
+          }
+        ],
+        history: [],
+        recommendedAction: {
+          kind: "EXTRAORDINARY_INSPECTION",
+          eventYear: 2021,
+          peakedOn: "2021-02-07",
+          summary:
+            "This structure should receive an extraordinary inspection following the 2021 high-water event."
+        }
+      }
+    }).filter((mechanism) => mechanism.kind === "SCOUR");
+
+    expect(scour).toMatchObject({
+      band: "HIGH",
+      confidence: "MEDIUM"
+    });
+    expect(scour?.summary).toMatch(/2021 high-water event/i);
+    expect(scour?.reasons.map((reason) => reason.code)).toEqual(
+      expect.arrayContaining(["NEAREST_GAUGE", "UNMATCHED_FLOOD_EVENT", "SCOUR_HISTORY"])
+    );
+    expect(scour?.reasons.map((reason) => reason.code)).not.toContain("NO_LOCAL_GAUGE");
+    expect(scour?.reasons.map((reason) => reason.code)).not.toContain("HEAVY_RAIN");
   });
 });
 

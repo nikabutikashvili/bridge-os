@@ -2,10 +2,16 @@ import type {
   DamageMechanismAssessment,
   DamageMechanismBand,
   DamageMechanismConfidence,
-  DamageMechanismKind
+  DamageMechanismKind,
+  FloodExposureAssessment
 } from "@bridge-os/contracts";
 
 import { DAMAGE_MECHANISM_POLICY_VERSION } from "./climate-exposure.js";
+import {
+  detectWatercourse,
+  isFoundationComponent,
+  isScourFinding
+} from "./flood-exposure.js";
 
 export { DAMAGE_MECHANISM_POLICY_VERSION };
 
@@ -44,6 +50,7 @@ export interface DamageMechanismInput {
   readonly dailyTraffic: number | null;
   readonly components: readonly MechanismComponentInput[];
   readonly findings: readonly MechanismFindingInput[];
+  readonly hydrology: FloodExposureAssessment | null;
 }
 
 interface MechanismReason {
@@ -316,53 +323,76 @@ function assessScour(
       detail: `Bauwerksbuch crossed feature: “${input.crossedFeature ?? ""}”.`
     });
   }
-  const heavyRain = input.climate.heavyRainDays20 ?? 0;
-  if (heavyRain >= 8) {
-    points += 1;
-    reasons.push({
-      code: "HEAVY_RAIN",
-      label: `${String(heavyRain)} heavy-rain days`,
-      detail: "Used as a flood-load proxy because no local stream gauge is attached."
-    });
+  const hydrology = input.hydrology;
+  if (hydrology === null) {
+    const heavyRain = input.climate.heavyRainDays20 ?? 0;
+    if (heavyRain >= 8) {
+      points += 1;
+      reasons.push({
+        code: "HEAVY_RAIN",
+        label: `${String(heavyRain)} heavy-rain days`,
+        detail: "Used as a flood-load proxy because no local stream gauge is attached."
+      });
+    }
+  } else {
+    for (const reason of hydrology.reasons) {
+      if (
+        reason.code === "NEAREST_GAUGE" ||
+        reason.code === "TRIGGER_EXCEEDED" ||
+        reason.code === "UNMATCHED_FLOOD_EVENT" ||
+        reason.code === "SCOUR_HISTORY"
+      ) {
+        reasons.push(reason);
+      }
+    }
+    if (hydrology.triggerExceeded || hydrology.unmatchedPostFloodInspection) {
+      points += 2;
+    }
   }
   const foundation = input.components.find((component) =>
-    matchesText(component.type, ["grundung", "gründung", "pfahl", "widerlager"])
+    isFoundationComponent(component.type)
   );
-  if (foundation) {
+  if (foundation && hydrology === null) {
     reasons.push({
       code: "FOUNDATION_TYPE",
       label: foundation.type ?? "Foundation recorded",
       detail: "Foundation type is known from the structure book; it is not itself a scour finding."
     });
   }
-  const scourFindings = findings.filter((finding) =>
-    matchesAny(finding, ["kolk", "scour", "unterspul", "unterspül"])
-  );
-  if (scourFindings.length === 0) {
+  const scourFindings = findings.filter((finding) => isScourFinding(finding));
+  if (scourFindings.length === 0 && hydrology === null) {
     reasons.push({
       code: "NO_SCOUR_FINDING",
       label: "No historical scour finding",
       detail: "Section 7.4 does not record Kolk. This assessment stays a watch, not a calibrated scour model."
     });
-  } else {
+  } else if (scourFindings.length > 0) {
     points += 2;
   }
-  reasons.push({
-    code: "NO_LOCAL_GAUGE",
-    label: "No on-site water-level gauge",
-    detail: "PEGELONLINE covers federal waterways, not these valley streams. Rainfall is the honest driver."
-  });
+  if (hydrology === null) {
+    reasons.push({
+      code: "NO_LOCAL_GAUGE",
+      label: "No on-site water-level gauge",
+      detail: "PEGELONLINE covers federal waterways, not these valley streams. Rainfall is the honest driver."
+    });
+  }
 
   const band: DamageMechanismBand =
-    scourFindings.length > 0 ? "HIGH" : points >= 2 ? "MEDIUM" : "LOW";
+    scourFindings.length > 0 || (hydrology?.unmatchedPostFloodInspection ?? false)
+      ? "HIGH"
+      : points >= 2
+        ? "MEDIUM"
+        : "LOW";
   const confidence: DamageMechanismConfidence =
-    scourFindings.length > 0 ? "MEDIUM" : "LOW";
+    scourFindings.length > 0 ? "MEDIUM" : hydrology === null ? "LOW" : "MEDIUM";
 
   return {
     kind: "SCOUR",
     band,
     confidence,
-    summary: scourSummary(band, watercourse),
+    summary:
+      hydrology?.summary ??
+      scourSummary(band, watercourse),
     reasons,
     linkedFindings: uniqueFindings(scourFindings)
   };
@@ -499,14 +529,4 @@ function yearsSince(year: number | null, asOfYear: number): number | null {
 function oldestYear(years: readonly (number | null)[]): number | null {
   const known = years.filter((year): year is number => year !== null);
   return known.length === 0 ? null : Math.min(...known);
-}
-
-function detectWatercourse(crossedFeature: string | null): string | null {
-  if (crossedFeature === null || crossedFeature.trim().length === 0) {
-    return null;
-  }
-  if (!matchesText(crossedFeature, ["bach", "tal", "fluss", "gewasser", "gewässer", "river"])) {
-    return null;
-  }
-  return crossedFeature.trim();
 }

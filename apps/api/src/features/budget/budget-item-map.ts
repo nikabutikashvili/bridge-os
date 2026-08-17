@@ -1,6 +1,7 @@
-import type { BudgetItem, NetworkRoadClass } from "@bridge-os/contracts";
+import type { BudgetItem, FloodExposureAssessment, NetworkRoadClass } from "@bridge-os/contracts";
 
 import { hasHighEnvironmentalExposure } from "../bridges/climate-exposure.js";
+import { hasHighFloodExposure } from "../bridges/flood-exposure.js";
 import { networkPriorityInput } from "../bridges/network-criticality.js";
 import { deriveInspectionDueStatus } from "../planning/inspection-due.js";
 import { deriveMaintenancePriority } from "../planning/prioritization.js";
@@ -57,6 +58,11 @@ export interface BudgetItemNetworkRow {
   readonly roadClass: NetworkRoadClass;
 }
 
+export interface BudgetItemFloodRow {
+  readonly hasFloodExposure: boolean;
+  readonly floodReasonDetail: string | null;
+}
+
 export interface BudgetItemTrafficRow {
   readonly dailyTraffic: number | null;
   readonly heavyVehicleDaily: number | null;
@@ -70,6 +76,7 @@ export function mapBudgetItem(
   traffic: BudgetItemTrafficRow | null,
   environment: BudgetItemEnvironmentRow | null,
   network: BudgetItemNetworkRow | null,
+  flood: BudgetItemFloodRow | null,
   asOf: string
 ): BudgetItem {
   const activeFindings = findingRows.filter(
@@ -167,6 +174,8 @@ export function mapBudgetItem(
         deicingDays: environment?.deicingDays ?? null,
         maximumDurability: maximum(activeFindings, "durabilityRating")
       }),
+      hasFloodExposure: flood?.hasFloodExposure ?? false,
+      floodReasonDetail: flood?.floodReasonDetail ?? null,
       inspectionStatus: deriveInspectionDueStatus(datedInspections[0], asOf),
       maximumDurability: maximum(activeFindings, "durabilityRating"),
       maximumStability: maximum(activeFindings, "stabilityRating"),
@@ -197,6 +206,18 @@ export function latestTrafficByBridge<Row extends { readonly bridgeId: string }>
     if (!latest.has(row.bridgeId)) latest.set(row.bridgeId, row);
   }
   return latest;
+}
+
+export function floodBudgetRow(
+  assessment: FloodExposureAssessment | null
+): BudgetItemFloodRow | null {
+  if (assessment === null) {
+    return null;
+  }
+  return {
+    hasFloodExposure: hasHighFloodExposure(assessment),
+    floodReasonDetail: assessment.recommendedAction?.summary ?? assessment.summary
+  };
 }
 
 function maximum(
