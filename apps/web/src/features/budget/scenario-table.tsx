@@ -2,7 +2,6 @@
 
 import type {
   BudgetScenarioItem,
-  BudgetScenarioResponse,
   PlanningPriorityLevel
 } from "@bridge-os/contracts";
 import { AlertCircle } from "lucide-react";
@@ -32,18 +31,16 @@ import {
   TableRow
 } from "../../components/ui/table";
 import { formatCurrency } from "../../lib/formatters";
+import { readScenarioResponse, useScenarioSession } from "./scenario-session";
 
-interface ScenarioTableProps {
-  readonly rows: BudgetScenarioResponse["data"];
-  readonly scenarioId: string;
-  readonly years: readonly number[];
-}
-
-export function ScenarioTable({
-  rows,
-  scenarioId,
-  years
-}: ScenarioTableProps): React.ReactElement {
+export function ScenarioTable(): React.ReactElement {
+  const { scenario } = useScenarioSession();
+  if (scenario === null) {
+    throw new Error("ScenarioTable requires an active scenario.");
+  }
+  const rows = scenario.data;
+  const scenarioId = scenario.scenario.id;
+  const years = scenario.scenario.years;
   if (rows.length === 0) {
     return (
       <div className="min-h-0 flex-1">
@@ -96,6 +93,7 @@ function ScenarioRow({
   readonly years: readonly number[];
 }): React.ReactElement {
   const router = useRouter();
+  const { applyScenario } = useScenarioSession();
   const [assignedYear, setAssignedYear] = useState(yearValue(item.assignedYear));
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -121,7 +119,7 @@ function ScenarioRow({
             method: "PUT"
           }
         );
-        if (!response.ok) throw await responseError(response);
+        applyScenario(await readScenarioResponse(response));
         router.refresh();
       } catch (caught) {
         setAssignedYear(previous);
@@ -277,13 +275,4 @@ function urgencyLabel(value: string): string {
 
 function titleCase(value: string): string {
   return value.charAt(0) + value.slice(1).toLocaleLowerCase("en-US");
-}
-
-async function responseError(response: Response): Promise<Error> {
-  const payload = (await response.json().catch(() => null)) as {
-    error?: { message?: string };
-  } | null;
-  return new Error(
-    payload?.error?.message ?? `Request failed (${String(response.status)}).`
-  );
 }

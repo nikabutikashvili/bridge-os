@@ -59,7 +59,7 @@ async function fetchJson<Schema extends { parse: (value: unknown) => unknown }>(
   schema: Schema,
   message: string
 ): Promise<ReturnType<Schema["parse"]>> {
-  const response = await fetch(url, { next: { revalidate: 30 } });
+  const response = await fetch(url, { cache: "no-store" });
   if (!response.ok) {
     const payload: unknown = await response.json().catch(() => null);
     const error = errorEnvelopeSchema.safeParse(payload);

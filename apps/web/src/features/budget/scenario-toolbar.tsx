@@ -29,6 +29,11 @@ import {
 
 import { budgetCompareHref, budgetScenariosHref } from "./budget-query";
 import { ScenarioCreateButton } from "./scenario-create-button";
+import {
+  mutationError,
+  readScenarioResponse,
+  useScenarioSession
+} from "./scenario-session";
 
 interface ScenarioToolbarProps {
   readonly defaultYear: number;
@@ -42,17 +47,27 @@ export function ScenarioToolbar({
   scenario
 }: ScenarioToolbarProps): React.ReactElement {
   const router = useRouter();
+  const { applyScenario } = useScenarioSession();
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const compareCandidates = list.filter((item) => item.id !== scenario?.id);
   const selectedId = scenario?.id ?? list[0]?.id;
 
-  function mutate(path: string, init: RequestInit, onDone?: () => void): void {
+  function mutate(
+    path: string,
+    init: RequestInit,
+    onDone?: () => void,
+    applyBody = true
+  ): void {
     setError(null);
     startTransition(async () => {
       try {
         const response = await fetch(path, init);
-        if (!response.ok) throw await responseError(response);
+        if (applyBody) {
+          applyScenario(await readScenarioResponse(response));
+        } else if (!response.ok) {
+          throw await mutationError(response);
+        }
         onDone?.();
         router.refresh();
       } catch (caught) {
@@ -152,7 +167,8 @@ export function ScenarioToolbar({
               mutate(
                 `/api/budget/scenarios/${scenario.id}`,
                 { method: "DELETE" },
-                () => router.push(budgetScenariosHref())
+                () => router.push(budgetScenariosHref()),
+                false
               )
             }
             size="sm"
@@ -169,14 +185,5 @@ export function ScenarioToolbar({
         </span>
       ) : null}
     </div>
-  );
-}
-
-async function responseError(response: Response): Promise<Error> {
-  const payload = (await response.json().catch(() => null)) as {
-    error?: { message?: string };
-  } | null;
-  return new Error(
-    payload?.error?.message ?? `Request failed (${String(response.status)}).`
   );
 }

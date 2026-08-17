@@ -17,6 +17,7 @@ import { BudgetTable } from "../../src/features/budget/budget-table";
 import { BudgetTabs } from "../../src/features/budget/budget-tabs";
 import { ScenarioCompare } from "../../src/features/budget/scenario-compare";
 import { ScenarioHorizon } from "../../src/features/budget/scenario-horizon";
+import { ScenarioSession } from "../../src/features/budget/scenario-session";
 import { ScenarioTable } from "../../src/features/budget/scenario-table";
 import { ScenarioToolbar } from "../../src/features/budget/scenario-toolbar";
 import { formatGermanDate } from "../../src/lib/formatters";
@@ -46,7 +47,11 @@ export default async function BudgetPage({
       : null;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <ScenarioSession
+      initial={selectedScenario}
+      key={selectedScenarioId ?? "none"}
+    >
+      <div className="flex min-h-0 flex-1 flex-col">
       <header className="flex h-9 shrink-0 items-center justify-between gap-4 px-4">
         <div className="flex min-w-0 items-baseline gap-3">
           <h1 className="m-0 font-mono text-[12px] font-medium tracking-[0.16em] text-chrome">
@@ -120,7 +125,7 @@ export default async function BudgetPage({
         </div>
       ) : (
         <>
-          <ScenarioHorizon scenario={selectedScenario} />
+          <ScenarioHorizon />
           <section
             aria-labelledby="budget-scenario-heading"
             className="mx-4 mb-4 mt-4 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border border-border-strong bg-card"
@@ -142,14 +147,11 @@ export default async function BudgetPage({
                 · {String(selectedScenario.data.length)} candidates
               </p>
             </header>
-            <ScenarioTable
-              rows={selectedScenario.data}
-              scenarioId={selectedScenario.scenario.id}
-              years={selectedScenario.scenario.years}
-            />
+            <ScenarioTable />
           </section>
         </>
       )}
-    </div>
+      </div>
+    </ScenarioSession>
   );
 }

@@ -3,32 +3,31 @@
 import type { BudgetScenarioResponse } from "@bridge-os/contracts";
 import { Save } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { type SyntheticEvent, useEffect, useState, useTransition } from "react";
+import { type SyntheticEvent, useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 import { formatCurrency } from "../../lib/formatters";
+import { readScenarioResponse, useScenarioSession } from "./scenario-session";
 
-interface ScenarioHorizonProps {
-  readonly scenario: BudgetScenarioResponse;
-}
-
-export function ScenarioHorizon({
-  scenario
-}: ScenarioHorizonProps): React.ReactElement {
+export function ScenarioHorizon(): React.ReactElement {
   const router = useRouter();
-  const [amounts, setAmounts] = useState(envelopeState(scenario));
+  const { applyScenario, scenario } = useScenarioSession();
+  const [amounts, setAmounts] = useState(() =>
+    scenario === null ? {} : envelopeState(scenario)
+  );
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  useEffect(() => {
-    setAmounts(envelopeState(scenario));
-  }, [scenario]);
+  if (scenario === null) {
+    throw new Error("ScenarioHorizon requires an active scenario.");
+  }
+  const active = scenario;
 
   function submit(event: SyntheticEvent<HTMLFormElement>): void {
     event.preventDefault();
-    const envelopes = scenario.scenario.years.map((year) => {
+    const envelopes = active.scenario.years.map((year) => {
       const normalized = normalizeAmount(amounts[String(year)] ?? "");
       return { year, normalized };
     });
@@ -40,7 +39,7 @@ export function ScenarioHorizon({
     startTransition(async () => {
       try {
         const response = await fetch(
-          `/api/budget/scenarios/${scenario.scenario.id}`,
+          `/api/budget/scenarios/${active.scenario.id}`,
           {
             body: JSON.stringify({
               envelopes: envelopes.map((entry) => ({
@@ -48,14 +47,14 @@ export function ScenarioHorizon({
                 approvedBudget:
                   entry.normalized === null || entry.normalized === undefined
                     ? null
-                    : { amount: entry.normalized, currency: scenario.scenario.currency }
+                    : { amount: entry.normalized, currency: active.scenario.currency }
               }))
             }),
             headers: { "content-type": "application/json" },
             method: "PATCH"
           }
         );
-        if (!response.ok) throw await responseError(response);
+        applyScenario(await readScenarioResponse(response));
         router.refresh();
       } catch (caught) {
         setError(
@@ -70,9 +69,9 @@ export function ScenarioHorizon({
       <section
         aria-label="Scenario horizon"
         className="grid gap-3"
-        style={{ gridTemplateColumns: `repeat(${String(scenario.scenario.years.length + 1)}, minmax(0, 1fr))` }}
+        style={{ gridTemplateColumns: `repeat(${String(active.scenario.years.length + 1)}, minmax(0, 1fr))` }}
       >
-        {scenario.yearSummaries.map((year) => {
+        {active.yearSummaries.map((year) => {
           const over = year.summary.budgetStatus === "OVER_BUDGET";
           return (
             <article
@@ -128,12 +127,12 @@ export function ScenarioHorizon({
             Unassigned
           </span>
           <p className="m-0 font-mono text-[22px] font-medium tabular-nums leading-none">
-            {scenario.unassigned.count}
+            {active.unassigned.count}
           </p>
           <p className="m-0 text-[11px] leading-4 text-muted-foreground">
-            {formatMoney(scenario.unassigned.knownCost)} known
-            {scenario.unassigned.missingEstimateCount > 0
-              ? ` · ${String(scenario.unassigned.missingEstimateCount)} missing estimate`
+            {formatMoney(active.unassigned.knownCost)} known
+            {active.unassigned.missingEstimateCount > 0
+              ? ` · ${String(active.unassigned.missingEstimateCount)} missing estimate`
               : ""}
           </p>
         </article>
@@ -149,7 +148,7 @@ export function ScenarioHorizon({
           </span>
         ) : null}
         <p className="m-0 font-mono text-[10px] tracking-[0.12em] text-muted-foreground">
-          {scenario.scenario.status === "ADOPTED" ? "ADOPTED · editing creates a new draft" : "DRAFT"}
+          {active.scenario.status === "ADOPTED" ? "ADOPTED · editing creates a new draft" : "DRAFT"}
         </p>
       </div>
     </form>
@@ -182,13 +181,4 @@ function normalizeAmount(value: string): string | null | undefined {
   return normalized.includes(".")
     ? `${normalized}${"0".repeat(2 - fractionLength)}`
     : `${normalized}.00`;
-}
-
-async function responseError(response: Response): Promise<Error> {
-  const payload = (await response.json().catch(() => null)) as {
-    error?: { message?: string };
-  } | null;
-  return new Error(
-    payload?.error?.message ?? `Request failed (${String(response.status)}).`
-  );
 }
